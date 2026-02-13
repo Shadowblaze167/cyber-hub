@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // NEXUS_v2</title>
+    <title>CYBERNETIX // NEXUS_v3</title>
     <style>
         :root {
             --neon: #00ff41;
             --bg: #050505;
-            --glass: rgba(10, 10, 10, 0.9);
+            --glass: rgba(10, 10, 10, 0.95);
             --border: #1a1a1a;
-            --glow: 0 0 15px rgba(0, 255, 65, 0.3);
         }
 
         body, html {
@@ -18,236 +17,140 @@
             background-color: var(--bg);
             color: var(--neon);
             font-family: 'Courier New', monospace;
-            height: 100vh;
-            overflow: hidden;
+            height: 100vh; overflow: hidden;
         }
 
-        /* --- ANIMATED LOGIN --- */
+        /* --- ANIMATED LOGIN SCREEN --- */
         #login-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            flex-direction: column;
-            transition: opacity 1s ease-out;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; flex-direction: column;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .login-box {
             border: 1px solid var(--neon);
-            padding: 50px;
-            background: #000;
-            box-shadow: var(--glow);
+            padding: 40px;
+            background: rgba(0,0,0,0.8);
             text-align: center;
-            position: relative;
-            animation: scan 3s infinite;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+            animation: flicker 2s infinite;
         }
 
-        @keyframes scan {
-            0%, 100% { border-color: var(--neon); }
-            50% { border-color: #004411; }
+        @keyframes flicker {
+            0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; }
         }
+
+        .login-box h2 { letter-spacing: 5px; margin-bottom: 20px; }
 
         .login-box input {
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid #222;
-            color: var(--neon);
-            font-size: 1.5rem;
-            text-align: center;
-            outline: none;
-            margin: 30px 0;
-            width: 300px;
-            letter-spacing: 5px;
+            background: #000; border: 1px solid #333;
+            color: var(--neon); font-size: 1.5rem;
+            text-align: center; width: 280px; padding: 10px;
+            outline: none; margin-bottom: 20px;
         }
 
-        .login-box input:focus { border-bottom-color: var(--neon); }
+        .login-box input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
 
-        /* --- DASHBOARD UI --- */
+        .submit-btn {
+            background: var(--neon); color: #000;
+            border: none; padding: 12px 30px; font-weight: bold;
+            cursor: pointer; width: 100%; text-transform: uppercase;
+        }
+
+        .submit-btn:hover { background: #fff; }
+
+        /* --- DASHBOARD (Hidden Initially) --- */
         #dashboard {
-            display: none;
-            height: 100vh;
-            grid-template-columns: 280px 1fr;
-            opacity: 0;
-            transition: opacity 1.5s ease-in;
+            display: none; opacity: 0;
+            height: 100vh; grid-template-columns: 280px 1fr;
+            transition: opacity 1s ease-in;
         }
 
-        nav {
-            background: #000;
-            border-right: 1px solid var(--border);
-            padding: 30px;
-        }
+        nav { background: #000; border-right: 1px solid var(--border); padding: 25px; }
+        main { padding: 40px; overflow-y: auto; background: radial-gradient(#111 1px, transparent 1px); background-size: 20px 20px; }
 
-        .vpn-stat {
-            background: #0a0a0a;
-            border-left: 3px solid var(--neon);
-            padding: 15px;
-            margin: 25px 0;
-            font-size: 0.8rem;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--glass); border: 1px solid var(--border); padding: 20px; border-radius: 5px; }
+        .card:hover { border-color: var(--neon); }
 
-        main {
-            padding: 40px;
-            overflow-y: auto;
-            background-image: linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
+        .loading-bar { width: 0%; height: 2px; background: var(--neon); position: fixed; top: 0; left: 0; transition: width 0.5s; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .card:hover { border-color: var(--neon); box-shadow: var(--glow); }
-
-        .btn {
-            background: var(--neon);
-            color: black;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-            text-transform: uppercase;
-        }
-
-        input[type="text"] {
-            width: 90%;
-            background: #000;
-            border: 1px solid #333;
-            color: var(--neon);
-            padding: 12px;
-            margin-top: 10px;
-        }
-
-        .scanline {
-            width: 100%;
-            height: 100px;
-            z-index: 10;
-            background: linear-gradient(0deg, rgba(0, 255, 65, 0) 0%, rgba(0, 255, 65, 0.1) 50%, rgba(0, 255, 65, 0) 100%);
-            opacity: 0.1;
-            position: absolute;
-            bottom: 100%;
-            animation: scanline 8s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -100px; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="scanline"></div>
+    <div class="loading-bar" id="load-bar"></div>
 
     <div id="login-overlay">
         <div class="login-box">
-            <h1 style="margin:0; font-size: 1.2rem; letter-spacing: 5px;">SYSTEM_LOCKED</h1>
-            <p style="font-size: 0.6rem; color: #444;">AUTHORIZATION REQUIRED // NODE: 0x882</p>
-            <input type="password" id="pass-input" placeholder="••••••••" autocomplete="off" onkeypress="handleEnter(event)">
-            <p id="err-msg" style="color:#ff3131; font-size:0.7rem; display:none;">ACCESS_DENIED: WRONG_KEY</p>
-            <button onclick="validate()" style="background:var(--neon); color:black; border:none; padding:10px 30px; cursor:pointer; font-weight:bold;">DECRYPT</button>
+            <h2>AUTHENTICATE</h2>
+            <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') startAuth()">
+            <button class="submit-btn" id="sub-btn" onclick="startAuth()">Login System</button>
+            <p id="err" style="color:red; font-size:0.7rem; margin-top:15px; display:none;">ACCESS_DENIED</p>
         </div>
     </div>
 
     <div id="dashboard">
         <nav>
-            <h1 style="letter-spacing: 3px; font-size: 1.2rem;">CYBERNETIX_</h1>
-            <div class="vpn-stat">
-                <p>UPLINK: <span style="color:white">SECURE</span></p>
-                <p>VPN: <span id="v-stat" style="color:#555">OFFLINE</span></p>
-                <button onclick="toggleVPN()" style="background:transparent; color:var(--neon); border:1px solid var(--neon); font-size:0.6rem; width:100%; cursor:pointer; padding:5px;">TOGGLE_ENCRYPTION</button>
-            </div>
-            <p style="font-size:0.7rem; color:#444">> ROOT_READY</p>
-            <p style="font-size:0.7rem; color:#444">> LOGS_CLEAR</p>
+            <h2 style="color:white">CYBERNETIX_</h2>
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            <p style="font-size:0.8rem;">STATUS: <span style="color:var(--neon)">ONLINE</span></p>
+            <p style="font-size:0.8rem;">IP: 192.168.1.XX</p>
         </nav>
-
         <main>
-            <h2 style="margin-bottom:30px; border-bottom: 1px solid #222; padding-bottom: 10px;">OPERATIONAL_MODULES</h2>
+            <h1 style="font-size:1.5rem; margin-bottom:30px;">// SYSTEM_DASHBOARD</h1>
             <div class="grid">
-                
                 <div class="card">
-                    <span style="font-size:0.6rem; color:#888;">01 // MP4_EXTRACTOR</span>
-                    <h3>YouTube Video</h3>
-                    <input type="text" id="yt-mp4" placeholder="Enter Video URL...">
-                    <button class="btn" onclick="sim('MP4')">Download MP4</button>
+                    <h3>YouTube Video (MP4)</h3>
+                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
+                    <button class="submit-btn" style="margin-top:10px;">Download</button>
                 </div>
-
                 <div class="card">
-                    <span style="font-size:0.6rem; color:#888;">02 // AUDIO_EXTRACTOR</span>
-                    <h3>YouTube Audio</h3>
-                    <input type="text" id="yt-mp3" placeholder="Enter Video URL...">
-                    <button class="btn" style="background:white" onclick="sim('MP3')">Download MP3</button>
+                    <h3>YouTube Audio (MP3)</h3>
+                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
+                    <button class="submit-btn" style="margin-top:10px; background:white;">Extract</button>
                 </div>
-
-                <div class="card">
-                    <span style="font-size:0.6rem; color:#888;">03 // PROXY_GATE</span>
-                    <h3>VPN Proxy Control</h3>
-                    <select style="width:100%; padding:12px; background:#000; color:var(--neon); border:1px solid #333;">
-                        <option>Switzerland (Zurich)</option>
-                        <option>Iceland (Reykjavik)</option>
-                        <option>Singapore (Standard)</option>
-                    </select>
-                    <button class="btn">Connect to Node</button>
-                </div>
-
             </div>
         </main>
     </div>
 
     <script>
-        // SHA-256 Hash for "shan1234"
-        const HASH = "979e8c45f47012bc09a47a13c3894b4556ec0e1815b3c66f77242d59048a1478";
+        // HASH for "shan1234"
+        const SECRET = "979e8c45f47012bc09a47a13c3894b4556ec0e1815b3c66f77242d59048a1478";
 
-        async function validate() {
-            const input = document.getElementById('pass-input').value.trim();
-            const errMsg = document.getElementById('err-msg');
+        async function startAuth() {
+            const btn = document.getElementById('sub-btn');
+            const input = document.getElementById('pass-field').value.trim();
+            const err = document.getElementById('err');
+            
+            btn.innerText = "DECRYPTING...";
+            
+            // Hash the input
+            const msgUint8 = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // Hashing logic
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input);
-            const buffer = await crypto.subtle.digest('SHA-256', data);
-            const hashHex = Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-
-            if(hashHex === HASH) {
-                const overlay = document.getElementById('login-overlay');
-                const dash = document.getElementById('dashboard');
+            if (hashHex === SECRET) {
+                // Animated Transition
+                document.getElementById('load-bar').style.width = "100%";
+                document.getElementById('login-overlay').style.opacity = "0";
                 
-                overlay.style.opacity = '0';
                 setTimeout(() => {
-                    overlay.style.display = 'none';
-                    dash.style.display = 'grid';
-                    setTimeout(() => { dash.style.opacity = '1'; }, 50);
-                }, 1000);
+                    document.getElementById('login-overlay').style.display = "none";
+                    const dash = document.getElementById('dashboard');
+                    dash.style.display = "grid";
+                    setTimeout(() => { dash.style.opacity = "1"; }, 50);
+                }, 800);
             } else {
-                errMsg.style.display = 'block';
-                document.getElementById('pass-input').value = '';
+                err.style.display = "block";
+                btn.innerText = "LOGIN SYSTEM";
+                document.getElementById('pass-field').value = "";
             }
         }
-
-        function handleEnter(e) { if(e.key === 'Enter') validate(); }
-
-        function toggleVPN() {
-            const s = document.getElementById('v-stat');
-            s.innerText = (s.innerText === "OFFLINE") ? "ENCRYPTED" : "OFFLINE";
-            s.style.color = (s.innerText === "ENCRYPTED") ? "#00ff41" : "#555";
-        }
-
-        function sim(t) { alert("Establishing secure tunnel... Initiating " + t + " fetch sequence."); }
     </script>
 </body>
 </html>
