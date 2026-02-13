@@ -3,53 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_SYNERGY</title>
+    <title>OMNI_X_NEON_VAPOR</title>
     <style>
-        :root { --neon: #00ff41; --dim: #003300; --glow: rgba(0, 255, 65, 0.4); }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
+        :root { --neon: #00ff41; --cyan: #0ff; --magenta: #f0f; --bg: #000; }
+        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; overflow: hidden; }
         
-        /* High-Density Matrix */
-        canvas { position: fixed; inset: 0; z-index: 1; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
+        /* High-Density Data Rain */
+        canvas { position: fixed; inset: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
         /* --- BIOS --- */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #bbb; }
-        .cursor { display: inline-block; width: 10px; height: 18px; background: #bbb; animation: blink 1s infinite; }
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #444; font-family: monospace; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: #444; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- COOL UI LOGIN --- */
-        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; background: #000; }
+        /* --- HIGH-END UI LOGIN --- */
+        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; background: radial-gradient(circle, #001100 0%, #000 100%); }
         
         .login-card { 
-            position: relative; padding: 60px; text-align: center; background: #000; 
-            border: 1px solid var(--neon); box-shadow: 0 0 15px var(--dim);
-            animation: glowPulse 4s infinite ease-in-out;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; padding: 50px 80px; text-align: center; 
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1), inset 0 0 20px rgba(0, 255, 65, 0.1);
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        @keyframes glowPulse {
-            0%, 100% { box-shadow: 0 0 10px var(--dim); border-color: var(--dim); }
-            50% { box-shadow: 0 0 30px var(--neon); border-color: var(--neon); }
+        .login-card h2 { 
+            font-weight: 200; letter-spacing: 15px; margin-bottom: 30px; color: #fff;
+            text-shadow: 0 0 10px var(--neon);
         }
 
-        /* Implosion Animation */
-        .implode { transform: scale(0) rotate(720deg); filter: blur(50px); opacity: 0; }
-
+        /* Input Field Styling */
         input { 
-            background: transparent; border: 1px solid var(--dim); color: var(--neon); 
-            padding: 15px; width: 260px; text-align: center; font-size: 1.4rem; outline: none; 
-            font-family: inherit; transition: 0.3s; margin-top: 20px;
-            letter-spacing: 2px;
+            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 65, 0.3); 
+            color: #fff; padding: 15px; width: 300px; text-align: center; font-size: 1.2rem; 
+            border-radius: 50px; outline: none; transition: 0.4s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
-        input:focus { border-color: var(--neon); background: rgba(0, 20, 0, 0.5); }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); width: 340px; }
 
-        /* --- LEGACY TERMINAL --- */
-        #dashboard { display: none; grid-template-columns: 240px 1fr 240px; height: 100vh; position: relative; z-index: 10; border-top: 1px solid var(--dim); }
-        nav, aside { background: #000; border: 1px solid var(--dim); padding: 15px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
-        .nav-btn { background: none; border: 1px solid var(--dim); color: var(--neon); padding: 8px; text-align: left; cursor: pointer; font-size: 0.7rem; font-family: inherit; text-transform: uppercase; }
-        .nav-btn:hover { background: var(--neon); color: #000; }
-        main { flex-grow: 1; display: flex; flex-direction: column; border: 1px solid var(--dim); }
-        #terminal { flex-grow: 1; padding: 25px; font-size: 0.85rem; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; }
-        .stat-block { border-bottom: 1px solid var(--dim); padding: 10px; font-size: 0.7rem; margin-bottom: 10px; }
+        /* Fractured Dissolve Animation */
+        .dissolve { transform: scale(1.5); filter: blur(30px) brightness(2); opacity: 0; }
+
+        /* --- MODERN DASHBOARD --- */
+        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 10px; gap: 10px; }
+        
+        nav, aside, main { 
+            background: rgba(0, 5, 0, 0.9); 
+            border: 1px solid rgba(0, 255, 65, 0.1); 
+            border-radius: 15px; padding: 20px; overflow-y: auto;
+        }
+
+        .nav-btn { 
+            background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.1); 
+            color: var(--neon); padding: 12px; text-align: left; cursor: pointer; 
+            font-size: 0.75rem; border-radius: 8px; margin-bottom: 8px; transition: 0.2s;
+        }
+        .nav-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
+
+        #terminal { font-family: monospace; font-size: 0.9rem; color: #88ff88; line-height: 1.6; }
+        .stat-line { font-size: 0.8rem; color: #555; margin-bottom: 10px; border-bottom: 1px solid #111; padding-bottom: 5px; }
+        .val { color: var(--neon); float: right; }
     </style>
 </head>
 <body onkeydown="resetIdle(); handleInput(event)">
@@ -57,36 +72,36 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>KERNEL_CORE_INIT... [OK]</p>
-    <p>Copyright 1996-2026. All Rights Reserved.</p>
+    <p>> OMNI_CORE BOOTLOADER v9.0</p>
+    <p>> MEMORY_TEST: PASS</p>
+    <p>> SECURE_VIRTUAL_ENV: ACTIVE</p>
     <br>
-    <p style="color:red">ERROR: SECURE_BOOT_VIOLATION</p>
-    <p>Manual bypass required. Enter token: <span class="cursor"></span></p>
+    <p>> SYSTEM_HALT: UNAUTHORIZED_USER_DETECTED</p>
+    <p>> AWAITING_BYPASS_COMMAND... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card" id="lCard">
-        <div style="letter-spacing: 5px; font-size: 0.7rem; opacity: 0.7;">ENCRYPTED_SESSION_V4</div>
-        <input type="password" id="passInput" placeholder="********" onkeypress="if(event.key==='Enter') validate()">
-        <p style="font-size: 10px; margin-top: 15px; color: var(--dim);">AWAITING_KEY_INJECTION</p>
+        <h2>IDENT_V4</h2>
+        <input type="password" id="passInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') validate()">
+        <p style="color: #444; font-size: 0.7rem; margin-top: 25px; letter-spacing: 2px;">ENCRYPTION ACTIVE // TRACE_BLOCK: ON</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav id="tool-nav">
-        <p style="text-align:center; font-size:0.6rem; color: #333;">[EXPLOITS]</p>
+        <h3 style="font-size:0.8rem; opacity:0.5; margin-bottom:20px;">EXPLOIT_PAYLOADS</h3>
     </nav>
     <main><div id="terminal"></div></main>
     <aside>
-        <p style="text-align:center; font-size:0.6rem; color: #333;">[MONITOR]</p>
-        <div class="stat-block">
-            IP: <span id="v-ip">...</span><br>
-            ST: <span id="v-stat" style="color:red">UNSAFE</span><br>
-            T: <span id="idle-txt">300s</span>
-        </div>
-        <button class="nav-btn" onclick="toggleVPN()">[VPN_TUNNEL]</button>
-        <button class="nav-btn" onclick="downloadLogs()">[SAVE_DATA]</button>
-        <button class="nav-btn" style="color:red; margin-top:auto;" onclick="location.reload()">[LOGOUT]</button>
+        <h3 style="font-size:0.8rem; opacity:0.5; margin-bottom:20px;">NODE_STATUS</h3>
+        <div class="stat-line">LOCAL_IP <span class="val" id="v-ip">...</span></div>
+        <div class="stat-line">CONNECTION <span class="val" id="v-stat" style="color:red">EXPOSED</span></div>
+        <div class="stat-line">AUTO_PURGE <span class="val" id="idle-txt">300s</span></div>
+        <br>
+        <button class="nav-btn" style="width:100%" onclick="toggleVPN()">SECURE_NODE</button>
+        <button class="nav-btn" style="width:100%" onclick="downloadLogs()">EXTRACT_SESSION</button>
+        <button class="nav-btn" style="width:100%; margin-top:auto; background:rgba(255,0,0,0.1); color:red; border-color:red;" onclick="location.reload()">TERMINATE</button>
     </aside>
 </div>
 
@@ -94,15 +109,15 @@
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "0123456789ABCDEF";
-    const fontSize = 14;
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&";
+    const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
 
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0";
+        ctx.fillStyle = "#00ff41";
         ctx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
             const text = chars[Math.floor(Math.random() * chars.length)];
@@ -111,7 +126,7 @@
             drops[i]++;
         }
     }
-    setInterval(draw, 35);
+    setInterval(draw, 33);
 
     let buffer = "", logs = [], idleTime = 0;
 
@@ -127,25 +142,25 @@
     function validate() {
         if(document.getElementById('passInput').value === "admin@99") {
             const card = document.getElementById('lCard');
-            card.classList.add('implode'); // Trigger cool animation
+            card.classList.add('dissolve');
             setTimeout(() => {
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('dashboard').style.display = "grid";
                 loadTools();
-                log("BREACH SUCCESS. KERNEL ACCESS GRANTED.");
+                log("NODE_INITIALIZED. WELCOME TO OMNI_X.");
                 fetchIP();
-            }, 600);
+            }, 800);
         }
     }
 
     function loadTools() {
         const nav = document.getElementById('tool-nav');
-        const list = ["PORT_SCAN", "SQL_INJ", "RSA_DECR", "MAC_SPOOF", "ROOT_WIPE", "SHELL_X", "DNS_INJ", "PACKET_S", "TRACE_R", "BASH_L", "XSS_PRB", "KERN_BR", "SAML_FG", "PROX_HP", "SALT_CK", "DATA_DM", "LOG_PRG", "CPU_STR", "REM_KIL", "NET_MAP"];
-        list.forEach(item => {
+        const list = ["KERNEL_SPOOF", "SQL_PULSE", "RSA_SHATTER", "MAC_FLIP", "WIPE_TRACE", "ROOT_SHELL", "DNS_POISON", "PACKET_VAL", "REMOTE_KILL", "NET_CRAWL"];
+        list.forEach((item, idx) => {
             let btn = document.createElement('button');
             btn.className = "nav-btn";
-            btn.innerHTML = `> ${item}`;
-            btn.onclick = () => log(`Executing: ${item}... OK.`);
+            btn.innerHTML = `[MOD_${idx+1}] ${item}`;
+            btn.onclick = () => log(`Executing payload: ${item}... SUCCESS.`);
             nav.appendChild(btn);
         });
     }
@@ -161,19 +176,19 @@
     function log(text) {
         const t = document.getElementById('terminal'), d = document.createElement('div');
         t.appendChild(d);
-        d.innerHTML = `> [${new Date().toLocaleTimeString()}] ${text}`;
+        d.innerHTML = `<span style="color:#444">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
         t.scrollTop = t.scrollHeight;
-        logs.push(d.innerHTML);
+        logs.push(d.innerText);
     }
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "UNSAFE") {
-            vS.innerText = "SECURED"; vS.style.color = "var(--neon)";
-            log("VPN TUNNEL ACTIVE.");
+        if(vS.innerText === "EXPOSED") {
+            vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
+            log("ENCRYPTED TUNNEL ESTABLISHED.");
         } else {
-            vS.innerText = "UNSAFE"; vS.style.color = "red";
-            log("VPN TUNNEL LOST.");
+            vS.innerText = "EXPOSED"; vS.style.color = "red";
+            log("WARNING: CONNECTION EXPOSED.");
         }
     }
 
