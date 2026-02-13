@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // NEXUS_v3</title>
+    <title>CYBERNETIX // SYSTEM V4</title>
     <style>
         :root {
             --neon: #00ff41;
             --bg: #050505;
             --glass: rgba(10, 10, 10, 0.95);
             --border: #1a1a1a;
+            --scan-color: rgba(0, 255, 65, 0.1);
         }
 
         body, html {
@@ -20,137 +21,119 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* --- ANIMATED LOGIN SCREEN --- */
+        /* --- ANIMATED LOGIN OVERLAY --- */
         #login-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             display: flex; justify-content: center; align-items: center;
             z-index: 9999; flex-direction: column;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1s ease-in-out;
         }
 
         .login-box {
-            border: 1px solid var(--neon);
-            padding: 40px;
-            background: rgba(0,0,0,0.8);
+            border: 2px solid var(--neon);
+            padding: 50px;
+            background: rgba(0,0,0,0.9);
             text-align: center;
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
-            animation: flicker 2s infinite;
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes flicker {
-            0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; }
+        /* Scanning Line Animation */
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--neon);
+            box-shadow: 0 0 15px var(--neon);
+            animation: scan 2s linear infinite;
+            opacity: 0.7;
         }
+        @keyframes scan { 0% {top:0;} 100% {top:100%;} }
 
-        .login-box h2 { letter-spacing: 5px; margin-bottom: 20px; }
-
-        .login-box input {
-            background: #000; border: 1px solid #333;
-            color: var(--neon); font-size: 1.5rem;
-            text-align: center; width: 280px; padding: 10px;
+        .login-box h1 { margin: 0 0 30px 0; letter-spacing: 5px; font-size: 1.5rem; text-shadow: 0 0 10px var(--neon); }
+        
+        input {
+            background: #111; border: 1px solid #444;
+            color: white; font-size: 1.2rem;
+            text-align: center; width: 250px; padding: 12px;
             outline: none; margin-bottom: 20px;
+            font-family: monospace; letter-spacing: 2px;
         }
 
-        .login-box input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
+        input:focus { border-color: var(--neon); }
 
-        .submit-btn {
-            background: var(--neon); color: #000;
+        .btn {
+            background: var(--neon); color: black;
             border: none; padding: 12px 30px; font-weight: bold;
             cursor: pointer; width: 100%; text-transform: uppercase;
+            font-size: 1rem; transition: 0.2s;
         }
+        .btn:hover { background: white; box-shadow: 0 0 20px white; }
 
-        .submit-btn:hover { background: #fff; }
-
-        /* --- DASHBOARD (Hidden Initially) --- */
+        /* --- DASHBOARD (Hidden) --- */
         #dashboard {
             display: none; opacity: 0;
             height: 100vh; grid-template-columns: 280px 1fr;
-            transition: opacity 1s ease-in;
+            transition: opacity 1.5s ease-in;
         }
 
-        nav { background: #000; border-right: 1px solid var(--border); padding: 25px; }
-        main { padding: 40px; overflow-y: auto; background: radial-gradient(#111 1px, transparent 1px); background-size: 20px 20px; }
+        nav { background: #080808; border-right: 1px solid #222; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        
+        main { 
+            padding: 40px; 
+            overflow-y: auto; 
+            background: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--glass); border: 1px solid var(--border); padding: 20px; border-radius: 5px; }
-        .card:hover { border-color: var(--neon); }
-
-        .loading-bar { width: 0%; height: 2px; background: var(--neon); position: fixed; top: 0; left: 0; transition: width 0.5s; }
+        .card { background: var(--glass); border: 1px solid #333; padding: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,255,65,0.1); }
 
     </style>
 </head>
 <body>
 
-    <div class="loading-bar" id="load-bar"></div>
-
     <div id="login-overlay">
         <div class="login-box">
-            <h2>AUTHENTICATE</h2>
-            <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') startAuth()">
-            <button class="submit-btn" id="sub-btn" onclick="startAuth()">Login System</button>
-            <p id="err" style="color:red; font-size:0.7rem; margin-top:15px; display:none;">ACCESS_DENIED</p>
+            <div class="scan-line"></div>
+            <h1>SYSTEM LOCKED</h1>
+            <p style="font-size:0.7rem; color:#888; margin-bottom:20px;">ENTER AUTHORIZATION KEY</p>
+            
+            <input type="password" id="pass" placeholder="••••••••" onkeypress="checkEnter(event)">
+            
+            <button class="btn" onclick="login()">UNLOCK</button>
+            <p id="error-msg" style="color:red; font-size:0.8rem; margin-top:15px; display:none;">ACCESS DENIED</p>
         </div>
     </div>
 
     <div id="dashboard">
         <nav>
-            <h2 style="color:white">CYBERNETIX_</h2>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <p style="font-size:0.8rem;">STATUS: <span style="color:var(--neon)">ONLINE</span></p>
-            <p style="font-size:0.8rem;">IP: 192.168.1.XX</p>
-        </nav>
-        <main>
-            <h1 style="font-size:1.5rem; margin-bottom:30px;">// SYSTEM_DASHBOARD</h1>
-            <div class="grid">
-                <div class="card">
-                    <h3>YouTube Video (MP4)</h3>
-                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
-                    <button class="submit-btn" style="margin-top:10px;">Download</button>
-                </div>
-                <div class="card">
-                    <h3>YouTube Audio (MP3)</h3>
-                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
-                    <button class="submit-btn" style="margin-top:10px; background:white;">Extract</button>
-                </div>
+            <h2 style="margin:0;">CYBERNETIX</h2>
+            <div style="font-size:0.7rem; color:#666;">
+                <p>USER: ADMIN</p>
+                <p>STATUS: <span style="color:var(--neon)">CONNECTED</span></p>
             </div>
-        </main>
-    </div>
-
-    <script>
-        // HASH for "shan1234"
-        const SECRET = "979e8c45f47012bc09a47a13c3894b4556ec0e1815b3c66f77242d59048a1478";
-
-        async function startAuth() {
-            const btn = document.getElementById('sub-btn');
-            const input = document.getElementById('pass-field').value.trim();
-            const err = document.getElementById('err');
             
-            btn.innerText = "DECRYPTING...";
-            
-            // Hash the input
-            const msgUint8 = new TextEncoder().encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            <div style="margin-top:auto; border:1px solid #333; padding:10px;">
+                <p style="font-size:0.7rem; margin:0 0 5px 0;">VPN STATUS</p>
+                <button id="vpn-btn" onclick="toggleVPN()" style="width:100%; background:transparent; color:#555; border:1px solid #555; padding:5px; cursor:pointer;">DISCONNECTED</button>
+            </div>
+        </nav>
 
-            if (hashHex === SECRET) {
-                // Animated Transition
-                document.getElementById('load-bar').style.width = "100%";
-                document.getElementById('login-overlay').style.opacity = "0";
+        <main>
+            <h2 style="border-bottom:1px solid #333; padding-bottom:15px; margin-bottom:30px;">ACTIVE MODULES</h2>
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
                 
-                setTimeout(() => {
-                    document.getElementById('login-overlay').style.display = "none";
-                    const dash = document.getElementById('dashboard');
-                    dash.style.display = "grid";
-                    setTimeout(() => { dash.style.opacity = "1"; }, 50);
-                }, 800);
-            } else {
-                err.style.display = "block";
-                btn.innerText = "LOGIN SYSTEM";
-                document.getElementById('pass-field').value = "";
-            }
-        }
-    </script>
-</body>
-</html>
+                <div class="card">
+                    <h3>YouTube Video</h3>
+                    <input type="text" style="width:90%; background:black; color:white; border:1px solid #333; padding:10px;" placeholder="https://youtube.com/...">
+                    <button class="btn" style="margin-top:10px; font-size:0.8rem;">Download MP4</button>
+                </div>
+
+                <div class="card">
+                    <h3>Audio Extractor</h3>
+                    <input type="text" style="width:90%; background:
