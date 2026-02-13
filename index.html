@@ -3,98 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_URBAN_SELECT</title>
+    <title>OMNI_X_FINAL_SINGULARITY</title>
     <style>
-        :root { --neon: #00ff41; --dim: #003300; --glass: rgba(0, 10, 0, 0.75); --border: rgba(0, 255, 65, 0.3); }
+        :root { --neon: #00ff41; --dim: #003300; --glass: rgba(0, 10, 0, 0.8); --border: rgba(0, 255, 65, 0.3); }
         body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
-        canvas { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #555; }
-        .cursor { display: inline-block; width: 8px; height: 16px; background: #00ff41; animation: blink 1s infinite; }
+        
+        /* SCANLINE & CRT EFFECT */
+        body::before { content: " "; display: block; position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 2000; background-size: 100% 3px, 3px 100%; pointer-events: none; }
+
+        canvas { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; transition: filter 1s; }
+
+        /* BOOT SCREEN */
+        #boot-loader { position: fixed; inset: 0; z-index: 1500; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 1s ease-out; }
+        .load-box { width: 400px; padding: 25px; border: 1px solid var(--dim); background: rgba(0,10,0,0.95); }
+        .bar-bg { width: 100%; height: 2px; background: #001100; margin-top: 15px; position: relative; overflow: hidden; }
+        .bar-fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); }
+        .boot-text { font-size: 0.65rem; color: #444; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
+
+        /* SECURITY LAYERS */
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #333; display: none; }
+        .cursor { display: inline-block; width: 8px; height: 16px; background: var(--neon); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+        
         #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; }
-        .login-card { position: relative; padding: 60px; text-align: center; background: var(--glass); border: 1px solid var(--neon); backdrop-filter: blur(8px); box-shadow: 0 0 80px rgba(0, 255, 65, 0.1); border-radius: 4px; }
-        input, select { background: rgba(0, 20, 0, 0.8); border: 1px solid var(--dim); color: #fff; padding: 10px; width: 260px; text-align: center; font-size: 1rem; outline: none; border-radius: 4px; font-family: inherit; margin-top: 10px; }
-        input { font-size: 1.2rem; letter-spacing: 6px; }
-        #dashboard { display: none; grid-template-columns: 260px 1fr 260px; height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box; }
-        .panel { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; border-radius: 4px; }
-        .p-hdr { background: rgba(0, 255, 65, 0.1); padding: 12px; font-size: 0.7rem; letter-spacing: 3px; text-align: center; border-bottom: 1px solid var(--border); color: #fff; }
-        .nav-btn { background: transparent; border: none; color: #008811; padding: 12px 15px; text-align: left; cursor: pointer; font-size: 0.75rem; transition: 0.2s; text-transform: uppercase; font-family: inherit; }
-        .nav-btn:hover { color: var(--neon); background: rgba(0, 255, 65, 0.1); border-left: 2px solid var(--neon); }
-        #terminal { flex-grow: 1; padding: 20px; font-size: 0.85rem; overflow-y: auto; color: #aaffaa; line-height: 1.5; }
-        .stat-row { padding: 10px 15px; font-size: 0.75rem; border-bottom: 1px solid rgba(0, 255, 65, 0.1); display: flex; justify-content: space-between; align-items: center; }
+        .login-card { padding: 60px; text-align: center; background: var(--glass); border: 1px solid var(--neon); backdrop-filter: blur(15px); box-shadow: 0 0 100px rgba(0, 255, 65, 0.1); border-radius: 2px; }
+        
+        input, select { background: rgba(0, 20, 0, 0.9); border: 1px solid var(--dim); color: #fff; padding: 12px; width: 260px; text-align: center; font-family: inherit; margin-top: 10px; outline: none; }
+        input { font-size: 1.4rem; letter-spacing: 10px; border-bottom: 2px solid var(--neon); }
+
+        /* OPERATOR HUD */
+        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box; }
+        .panel { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); display: flex; flex-direction: column; }
+        .p-hdr { background: rgba(0, 255, 65, 0.15); padding: 12px; font-size: 0.7rem; letter-spacing: 4px; text-align: center; border-bottom: 1px solid var(--border); font-weight: bold; }
+        .nav-btn { background: transparent; border: none; color: #008811; padding: 12px 20px; text-align: left; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; font-family: inherit; transition: 0.2s; border-left: 2px solid transparent; }
+        .nav-btn:hover { color: var(--neon); background: rgba(0, 255, 65, 0.1); border-left: 2px solid var(--neon); padding-left: 25px; }
+        
+        #terminal { flex-grow: 1; padding: 20px; font-size: 0.8rem; overflow-y: auto; color: #8f8; line-height: 1.6; }
+        .stat-row { padding: 12px 15px; font-size: 0.7rem; border-bottom: 1px solid rgba(0, 255, 65, 0.1); display: flex; justify-content: space-between; align-items: center; }
         .val { color: var(--neon); font-weight: bold; }
+        
+        .glitch { animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both; transform: translate3d(0, 0, 0); }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
     </style>
 </head>
 <body onkeydown="resetIdle(); handleKey(event)">
 
 <canvas id="matrix"></canvas>
 
+<div id="boot-loader">
+    <div class="load-box">
+        <div style="font-size: 0.6rem; letter-spacing: 4px; opacity: 0.5; margin-bottom: 5px;">LOADER::SYS_OS_10.4</div>
+        <div class="bar-bg"><div class="bar-fill" id="load-bar"></div></div>
+        <div class="boot-text" id="boot-status">Waking kernel...</div>
+    </div>
+</div>
+
 <div id="bios-screen">
-    <p>> OMNI_X_REBOOT</p>
-    <p>> BIOS_VER: 5.0.1-URBAN_PRO</p>
+    <p>> OMNI_X_ENVIRONMENT_LOCKED</p>
+    <p>> ALL_TRAFFIC_LOGGED</p>
     <br>
-    <p>> ENCRYPTED_VOL_MOUNT... [OK]</p>
-    <p>> AWAITING_ROOT_CMD <span class="cursor"></span></p>
+    <p>> AWAITING_OVERRIDE... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="letter-spacing: 5px; font-size: 0.8rem; opacity: 0.8;">AUTHORIZATION_REQUIRED</div>
-        <input type="password" id="passInput" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') validate()">
+        <div style="letter-spacing: 8px; font-size: 0.9rem; color: #fff;">GATEKEEPER_ID</div>
+        <input type="password" id="passInput" placeholder="PASS" onkeypress="if(event.key==='Enter') validate()">
     </div>
 </div>
 
 <div id="dashboard">
-    <nav class="panel">
-        <div class="p-hdr">ATTACK_VECTORS</div>
-        <div id="tool-nav" style="display:flex; flex-direction:column; padding: 10px 0;"></div>
-    </nav>
-    <main class="panel">
-        <div class="p-hdr">URBAN_TERMINAL</div>
-        <div id="terminal"></div>
-    </main>
+    <nav class="panel"><div class="p-hdr">OPERATIONS</div><div id="tool-nav"></div></nav>
+    <main class="panel" id="main-panel"><div class="p-hdr">COMMAND_LOG</div><div id="terminal"></div></main>
     <aside class="panel">
-        <div class="p-hdr">METRICS</div>
+        <div class="p-hdr">TELEMETRY</div>
         <div class="stat-row">LOCAL_IP <span class="val" id="v-ip">...</span></div>
-        <div class="stat-row">URBAN_VPN <span class="val" id="v-stat" style="color:#ff3333">OFF</span></div>
+        <div class="stat-row">LATENCY <span class="val" id="v-ping">0ms</span></div>
+        <div class="stat-row">URBAN_VPN <span class="val" id="v-stat" style="color:#f33">INACTIVE</span></div>
         <div class="stat-row">
-            NODE_LOC 
-            <select id="urban-node" style="width: 120px; margin:0; font-size: 0.7rem;">
-                <option value="NYC_USA">USA (NYC)</option>
-                <option value="LDN_UK">UK (LDN)</option>
-                <option value="TYO_JPN">JPN (TYO)</option>
-                <option value="BER_GER">GER (BER)</option>
+            NODE 
+            <select id="urban-node" onchange="updatePing()" style="width: 100px; font-size: 0.6rem; margin:0;">
+                <option value="US_EAST">USA (NYC)</option><option value="UK_WEST">UK (LDN)</option>
+                <option value="JP_TOK">JPN (TYO)</option><option value="DE_FRA">GER (FRA)</option>
             </select>
         </div>
-        <div class="stat-row">PURGE_IN <span class="val" id="idle-txt">300s</span></div>
-        <button class="nav-btn" style="margin-top:auto;" onclick="connectUrban()">[ CONNECT_URBAN ]</button>
-        <button class="nav-btn" onclick="downloadLogs()">[ EXPORT_LOGS ]</button>
-        <button class="nav-btn" style="color:#ff3333; border-top:1px solid rgba(255,0,0,0.2);" onclick="location.reload()">[ TERMINATE ]</button>
+        <div class="stat-row">AUTO_PURGE <span class="val" id="idle-txt">300s</span></div>
+        <button class="nav-btn" style="margin-top:auto;" onclick="connectUrban()">[ INITIALIZE_URBAN ]</button>
+        <button class="nav-btn" onclick="downloadLogs()">[ EXTRACT_BUFFER ]</button>
+        <button class="nav-btn" style="color:#f33; border-top:1px solid rgba(255,0,0,0.1);" onclick="location.reload()">[ KILL_SESSION ]</button>
     </aside>
 </div>
 
 <script>
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
+    let matrixColor = "#0F0";
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize); resize();
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%*ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ";
     const fontSize = 14;
-    let columns = Math.floor(canvas.width / fontSize);
-    let drops = Array(columns).fill(1);
+    let drops = Array(Math.floor(canvas.width / fontSize)).fill(1);
+    
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
-        for (let i = 0; i < drops.length; i++) {
+        ctx.fillStyle = matrixColor; ctx.font = fontSize + "px monospace";
+        drops.forEach((y, i) => {
             const text = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            ctx.fillText(text, i * fontSize, y * fontSize);
+            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
-        }
+        });
     }
     setInterval(draw, 33);
 
-    let buffer = "", unlocked = false, logs = [], idleTime = 0;
+    let progress = 0;
+    const bootInterval = setInterval(() => {
+        progress += Math.random() * 8;
+        if(progress >= 100) {
+            progress = 100; clearInterval(bootInterval);
+            setTimeout(() => { document.getElementById('boot-loader').style.display = "none"; document.getElementById('bios-screen').style.display = "block"; }, 800);
+        }
+        document.getElementById('load-bar').style.width = progress + "%";
+        document.getElementById('boot-status').innerText = progress < 50 ? "Linking hardware..." : "Finalizing session...";
+    }, 120);
+
+    let buffer = "", unlocked = false, logs = [], idleTime = 0, vpnActive = false;
 
     function handleKey(e) {
         if (unlocked) return;
@@ -111,31 +144,38 @@
         if(btoa(document.getElementById('passInput').value) === "YWRtaW5AOTk=") { 
             document.getElementById('login-screen').style.display = "none";
             document.getElementById('dashboard').style.display = "grid";
-            loadTools();
-            log("OMNI_X LOADED. URBAN_VPN INTERFACE READY.");
-            fetchIP();
-        }
+            loadTools(); log("OMNI_OS INITIALIZED. URBAN_SHELL READY."); fetchIP(); updatePing();
+        } else { log("SECURITY_ALERT: UNKNOWN_USER."); document.getElementById('passInput').value = ""; }
+    }
+
+    function updatePing() {
+        const node = document.getElementById('urban-node').value;
+        const pMap = { "US_EAST": 35, "UK_WEST": 88, "JP_TOK": 195, "DE_FRA": 72 };
+        setInterval(() => {
+            const jitter = Math.floor(Math.random() * 10);
+            document.getElementById('v-ping').innerText = (pMap[node] + jitter) + "ms";
+        }, 1000);
     }
 
     function connectUrban() {
         const node = document.getElementById('urban-node').value;
-        const vS = document.getElementById('v-stat');
-        log(`REQUESTING TUNNEL VIA URBAN_SERVER_${node}...`);
-        setTimeout(() => log("OBFUSCATING PACKET HEADERS..."), 600);
-        setTimeout(() => log(`HANDSHAKE ESTABLISHED: ${node}_SECURE_GATE`), 1400);
+        document.getElementById('main-panel').classList.add('glitch');
+        log(`URBAN_PROTOCOL: ATTEMPTING HANDSHAKE WITH ${node}...`);
         setTimeout(() => {
-            vS.innerText = "CONNECTED"; vS.style.color = "var(--neon)";
-            log(`URBAN_VPN: ACTIVE [NODE: ${node}]. TRAFFIC IS NOW ANONYMOUS.`);
-        }, 2200);
+            vpnActive = true;
+            matrixColor = "#00ffff"; // Change Matrix to Cyan/Blue
+            document.getElementById('v-stat').innerText = "PROTECTED";
+            document.getElementById('v-stat').style.color = "var(--neon)";
+            document.getElementById('main-panel').classList.remove('glitch');
+            log(`TUNNEL_OPEN: NODE ${node} IS NOW ANONYMOUS.`);
+        }, 2000);
     }
 
     function loadTools() {
         const nav = document.getElementById('tool-nav');
-        const list = ["KERNEL_PANIC", "SQL_INJECT", "RSA_CRACK", "MAC_SPOOF", "TRACE_WIPE", "ROOT_SHELL", "DNS_POISON", "PACKET_SNIFF", "NODE_KILL", "NET_CRAWL", "BASH_BRUTE", "XSS_VECTOR", "SAML_FORGE", "PROXY_CHAIN", "SALT_HASH", "DATA_EXFIL", "LOG_CLEAN", "CPU_OVERCLK", "REMOTE_WIPE", "GRID_MAP"];
-        list.forEach(item => {
-            let btn = document.createElement('button');
-            btn.className = "nav-btn"; btn.innerHTML = `> ${item}`;
-            btn.onclick = () => log(`RUNNING: ${item}... [OK]`);
+        ["SQL_INJECT", "RSA_CRACK", "MAC_SPOOF", "ROOT_SHELL", "DNS_POISON", "PACKET_SNIFF", "LOG_CLEAN", "CPU_STRESS"].forEach(item => {
+            let btn = document.createElement('button'); btn.className = "nav-btn"; btn.innerHTML = `> ${item}`;
+            btn.onclick = () => { log(`EXECUTING: ${item}... OK.`); document.getElementById('main-panel').classList.add('glitch'); setTimeout(()=>document.getElementById('main-panel').classList.remove('glitch'), 200); };
             nav.appendChild(btn);
         });
     }
@@ -147,13 +187,13 @@
 
     function log(text) {
         const t = document.getElementById('terminal'), d = document.createElement('div');
-        t.appendChild(d); d.innerHTML = `<span style="opacity:0.5; font-size:10px;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+        t.appendChild(d); d.innerHTML = `<span style="opacity:0.4; font-size:10px;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
         t.scrollTop = t.scrollHeight; logs.push(d.innerText);
     }
 
     function resetIdle() { idleTime = 0; }
     setInterval(() => { idleTime++; document.getElementById('idle-txt').innerText = `${300 - idleTime}s`; if(idleTime >= 300) location.reload(); }, 1000);
-    function downloadLogs() { const blob = new Blob([logs.join('\n')], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "urban_logs.txt"; a.click(); }
+    function downloadLogs() { const blob = new Blob([logs.join('\n')], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "session.txt"; a.click(); }
 </script>
 </body>
 </html>
