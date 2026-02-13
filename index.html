@@ -3,52 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_GLOBAL_SIEGE</title>
+    <title>OMNI_X_ZERO_DAY</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 10, 0, 0.95); --border: 1px solid var(--neon); }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 8, 0, 0.95); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: #000; color: #aaa; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
+        /* 100-Stream Matrix Background */
         canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
-        /* --- DECOY BIOS --- */
+        /* --- STAGE 0: DECOY BIOS --- */
         #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; }
         .cursor { display: inline-block; width: 10px; height: 18px; background: #ccc; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- CINEMATIC LOGIN --- */
+        /* --- STAGE 1: HYPER-MATRIX LOGIN --- */
         #login-screen { position: fixed; inset: 0; z-index: 500; background: #000; display: none; justify-content: center; align-items: center; }
         .login-card { 
-            border: var(--border); padding: 50px; text-align: center; background: rgba(0,20,0,0.95); 
-            box-shadow: 0 0 70px var(--neon); transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            backdrop-filter: blur(10px);
+            border: var(--border); padding: 60px; text-align: center; background: rgba(0,0,0,0.9); 
+            box-shadow: 0 0 80px var(--neon); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px); z-index: 600;
         }
-        .shatter { transform: scale(3) rotate(15deg); opacity: 0; filter: blur(20px); pointer-events: none; }
+        .shatter { transform: scale(0) rotate(-180deg); opacity: 0; }
+        h2 { letter-spacing: 15px; color: var(--neon); margin-bottom: 30px; text-shadow: 0 0 10px var(--neon); }
+        input { background: transparent; border: none; border-bottom: 2px solid #222; color: var(--neon); padding: 10px; width: 300px; text-align: center; font-size: 1.5rem; outline: none; }
 
-        input { background: transparent; border: none; border-bottom: 2px solid #333; color: var(--neon); padding: 10px; width: 280px; text-align: center; font-size: 1.5rem; outline: none; }
-
-        /* --- GLOBAL DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; opacity: 0; transition: 1.5s; }
+        /* --- STAGE 2: PURE TERMINAL DASHBOARD --- */
+        #dashboard { display: none; grid-template-columns: 300px 1fr 280px; height: 100vh; position: relative; z-index: 10; opacity: 0; transition: 1s; }
         
-        nav, aside { background: rgba(0, 5, 0, 0.98); border: 1px solid #111; padding: 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        nav, aside { background: var(--glass); border: 1px solid #111; padding: 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
         nav { border-right: var(--border); }
         aside { border-left: var(--border); }
 
-        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 10px; text-align: left; cursor: pointer; font-size: 0.65rem; transition: 0.2s; text-transform: uppercase; }
-        .nav-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); font-weight: bold; }
+        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 10px; text-align: left; cursor: pointer; font-size: 0.65rem; transition: 0.1s; text-transform: uppercase; }
+        .nav-btn:hover { background: var(--neon); color: #000; font-weight: bold; }
 
-        main { flex-grow: 1; display: grid; grid-template-rows: 1fr 180px; background: rgba(0,0,0,0.85); position: relative; }
-        
-        /* TACTICAL MAP */
-        #map-area { position: relative; background: radial-gradient(circle, #0a1a0a 0%, #000 100%); margin: 10px; border: 1px solid #222; overflow: hidden; }
-        .map-grid { position: absolute; inset: 0; background-image: radial-gradient(var(--neon) 1px, transparent 1px); background-size: 30px 30px; opacity: 0.1; }
-        .ping { position: absolute; width: 8px; height: 8px; background: #ff3131; border-radius: 50%; box-shadow: 0 0 15px #ff3131; animation: mapPulse 2s ease-out forwards; }
-        @keyframes mapPulse { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(5); opacity: 0; } }
+        main { flex-grow: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.9); padding: 10px; }
+        #terminal { flex-grow: 1; background: #000; border: 1px solid #222; padding: 20px; color: var(--neon); font-size: 0.85rem; overflow-y: auto; white-space: pre-wrap; border-left: 4px solid var(--neon); }
 
-        #terminal { background: #000; border-top: var(--border); padding: 15px; color: var(--neon); font-size: 0.75rem; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
-
-        /* STATUS WIDGETS */
-        .stat-box { font-size: 0.7rem; border: 1px solid #222; padding: 10px; background: rgba(0,255,65,0.03); margin-bottom: 10px; }
-        .danger { color: #ff3131; text-shadow: 0 0 5px #ff3131; }
+        .stat-widget { font-size: 0.7rem; border: 1px solid #333; padding: 12px; background: rgba(0,255,65,0.02); margin-bottom: 10px; line-height: 1.6; }
+        .danger { color: #ff3131; }
 
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--neon); }
@@ -59,93 +52,92 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>CORE_OS v9.2.0-RELEASE // NODE: UNKNOWN</p>
-    <p>Memory Integrity: 100% // Disk 0: MOUNT_ERROR</p>
+    <p>OMNI_BIOS v1.0.4 // (C) 2026</p>
+    <p>CPU Architecture: x64 // Logic Core: ACTIVE</p>
+    <p>Searching for Boot Partition...</p>
     <br><br>
-    <p class="danger">SYSTEM_HALT: BOOT_DEVICE_NOT_FOUND</p>
-    <p>Awaiting bypass command... <span class="cursor"></span></p>
+    <p class="danger">FATAL: SYSTEM ENTROPY CRITICAL. HALTING.</p>
+    <p>Enter override command to proceed... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card" id="lCard">
-        <h2 style="letter-spacing: 15px; color: var(--neon);">ENCRYPT_REQ</h2>
-        <input type="password" id="passInput" placeholder="ACCESS_KEY" onkeypress="if(event.key==='Enter') validate()">
+        <h2>ACCESS_GATE</h2>
+        <input type="password" id="passInput" placeholder="ENCRYPTION_KEY" onkeypress="if(event.key==='Enter') validate()">
     </div>
 </div>
 
 <div id="dashboard">
     <nav id="tool-nav">
-        <h4 style="color:white; border-bottom:1px solid #333; padding-bottom:10px;">200+ MODULES</h4>
-        </nav>
+        <h4 style="color:white; border-bottom:1px solid #222; padding-bottom:10px;">200+ EXPLOIT_MODS</h4>
+    </nav>
 
     <main>
-        <div id="map-area">
-            <div class="map-grid"></div>
-            <div style="position:absolute; bottom:10px; right:10px; color:var(--neon); font-size:0.6rem;">LIVE_SATELLITE_FEED</div>
-        </div>
         <div id="terminal"></div>
     </main>
 
-    <aside id="system-stats">
-        <h4 style="color:white">NETWORK_SYNC</h4>
-        <div class="stat-box">
-            IP: <span id="v-ip">FETCHING...</span><br>
-            ST: <span id="v-stat" style="color:red">NON-SECURE</span><br>
+    <aside>
+        <h4 style="color:white">SESSION_INTEGRITY</h4>
+        <div class="stat-widget">
+            ADDR: <span id="v-ip">FETCHING...</span><br>
+            STAT: <span id="v-stat" style="color:red">NON-SECURE</span><br>
+            TIME: <span id="timer">00:00:00</span><br>
             PURGE: <span id="idle-txt">300s</span>
         </div>
-        <button class="nav-btn" onclick="toggleVPN()">TOGGLE_PROXY</button>
-        <button class="nav-btn" onclick="downloadLogs()">EXPORT_LOGS</button>
-        <button class="nav-btn" style="background:red; color:white; border:none; margin-top:auto;" onclick="location.reload()">LOCKDOWN</button>
+        <button class="nav-btn" onclick="toggleVPN()">ENCRYPT_NODE</button>
+        <button class="nav-btn" onclick="downloadLogs()">EXTRACT_LOGS</button>
+        <button class="nav-btn" style="background:red; color:white; border:none; margin-top:auto;" onclick="location.reload()">TERMINATE</button>
     </aside>
 </div>
 
 <script>
+    // 100-Stream Matrix Engine
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "0123456789ABCDEF";
-    const drops = Array(Math.floor(canvas.width/16)).fill(1);
+    
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&";
+    // Creating 100 vertical streams (adjusted to screen width)
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+
     function drawMatrix() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0"; ctx.font = "14px monospace";
-        drops.forEach((y, i) => {
-            ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16);
-            if(y*16 > canvas.height && Math.random() > 0.98) drops[i] = 0;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0F0";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
             drops[i]++;
-        });
+        }
     }
-    setInterval(drawMatrix, 35);
+    setInterval(drawMatrix, 33);
 
     let buffer = "", logs = [], idleTime = 0;
 
-    // Feature Generator (200 Modules)
-    const prefixes = ["BRUTE", "SQL", "PACKET", "KERNEL", "SATELLITE", "NEURAL", "REMOTE", "SPOOF", "SNIFF", "BYPASS", "CELL", "GRID", "QUANTUM", "FIREWALL"];
-    const suffixes = ["CRACK", "INJECT", "SNIFFER", "FLIP", "UPLINK", "SYNC", "ACCESS", "WIPE", "MIRROR", "SCAN", "BREACH", "DECRYPT", "LOOP", "STORM"];
+    // 200 Feature Generator
+    const pfx = ["SQL", "BRUTE", "KERNEL", "SPOOF", "SNIFF", "BUFFER", "DDoS", "ROOT", "CRYPTO", "SHELL"];
+    const sfx = ["BYPASS", "INJECT", "WIPE", "MIRROR", "SCAN", "BREACH", "FLIP", "SYNC", "FETCH", "CRACK"];
 
-    function generateFeatures() {
+    function generateTools() {
         const nav = document.getElementById('tool-nav');
         for(let i=1; i<=200; i++) {
-            let p = prefixes[Math.floor(Math.random()*prefixes.length)];
-            let s = suffixes[Math.floor(Math.random()*suffixes.length)];
+            let n = pfx[Math.floor(Math.random()*pfx.length)] + "_" + sfx[Math.floor(Math.random()*sfx.length)];
             let btn = document.createElement('button');
             btn.className = "nav-btn";
-            btn.innerHTML = `[MOD_${i.toString().padStart(3,'0')}] ${p}_${s}`;
-            btn.onclick = () => launchTask(`${p}_${s}`);
+            btn.innerHTML = `[MODULE_${i.toString().padStart(3,'0')}] ${n}`;
+            btn.onclick = () => typeLog(`Executing ${n} sub-routine... success.`);
             nav.appendChild(btn);
         }
     }
 
-    function launchTask(name) {
-        typeLog(`Initializing Protocol: ${name}...`);
-        const map = document.getElementById('map-area');
-        const ping = document.createElement('div');
-        ping.className = "ping";
-        ping.style.left = Math.random()*90 + "%";
-        ping.style.top = Math.random()*85 + "%";
-        map.appendChild(ping);
-        setTimeout(() => ping.remove(), 2000);
-    }
-
+    // Access Logic
     function handleInput(e) {
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
@@ -164,10 +156,10 @@
                 const dash = document.getElementById('dashboard');
                 dash.style.display = "grid";
                 setTimeout(() => dash.style.opacity = "1", 50);
-                generateFeatures();
-                typeLog("Omni-X Millennium Active. Satellite mapping synchronized.");
+                generateTools();
+                typeLog("Omni-X Millennium Zero-Day initialized. All modules live.");
                 fetchIP();
-            }, 800);
+            }, 600);
         }
     }
 
@@ -176,7 +168,7 @@
             const res = await fetch('https://api.ipify.org?format=json');
             const data = await res.json();
             document.getElementById('v-ip').innerText = data.ip;
-        } catch { document.getElementById('v-ip').innerText = "8.8.8.8"; }
+        } catch { document.getElementById('v-ip').innerText = "127.0.0.1"; }
     }
 
     function typeLog(text) {
@@ -191,10 +183,10 @@
         const vS = document.getElementById('v-stat');
         if(vS.innerText === "NON-SECURE") {
             vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
-            typeLog("Identity masked. Routing through Swiss proxy.");
+            typeLog("Identity scrubbed. Routing through virtual Stockholm node.");
         } else {
             vS.innerText = "NON-SECURE"; vS.style.color = "red";
-            typeLog("Proxy dropped. Warning: IP exposed.");
+            typeLog("Security warning: Proxy tunnel disconnected.");
         }
     }
 
@@ -205,11 +197,16 @@
         if(idleTime >= 300) location.reload();
     }, 1000);
 
+    let s=0; setInterval(() => {
+        s++; let h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60;
+        document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sc.toString().padStart(2,'0')}`;
+    }, 1000);
+
     function downloadLogs() {
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = "session_logs.txt"; a.click();
+        a.href = url; a.download = "session_zero_day.txt"; a.click();
     }
 </script>
 </body>
