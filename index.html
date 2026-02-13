@@ -3,91 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // ADVANCED_OS</title>
+    <title>CYBERNETIX // NEXUS_ULTIMATE</title>
     <style>
         :root { 
             --neon: #00ff41; 
-            --glass: rgba(0, 20, 0, 0.85); 
+            --glass: rgba(0, 15, 0, 0.9); 
             --border: 1px solid rgba(0, 255, 65, 0.4);
-            --glow: 0 0 15px rgba(0, 255, 65, 0.2);
+            --glow: 0 0 20px rgba(0, 255, 65, 0.3);
         }
 
         body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
-        /* Matrix Rain Background */
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.8; }
+        /* High-Density Matrix Rain */
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.7; }
 
-        #ui-wrapper { position: relative; z-index: 10; height: 100vh; width: 100vw; backdrop-filter: brightness(0.4); }
+        #ui-layer { position: relative; z-index: 10; height: 100vh; width: 100vw; backdrop-filter: brightness(0.3); }
 
         /* --- LOGIN UI --- */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; }
         .login-card { 
             background: var(--glass); border: var(--border); padding: 50px; 
-            backdrop-filter: blur(15px); box-shadow: var(--glow); text-align: center;
-            animation: fadeIn 1s ease-in;
+            backdrop-filter: blur(20px); box-shadow: var(--glow); text-align: center;
+            border-radius: 8px; animation: glitch-entry 0.5s ease-out;
+        }
+
+        @keyframes glitch-entry {
+            0% { opacity: 0; transform: scale(0.9); filter: hue-rotate(90deg); }
+            100% { opacity: 1; transform: scale(1); filter: hue-rotate(0deg); }
         }
 
         input { 
-            background: rgba(0,0,0,0.8); border: 1px solid #333; color: var(--neon); 
-            padding: 15px; width: 280px; text-align: center; font-size: 1.2rem; 
-            margin-bottom: 25px; outline: none; border-radius: 2px;
+            background: rgba(0,0,0,0.8); border: 1px solid #222; color: var(--neon); 
+            padding: 15px; width: 300px; text-align: center; font-size: 1.3rem; 
+            margin-bottom: 25px; outline: none; letter-spacing: 5px;
         }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
 
         .btn { 
             background: var(--neon); color: black; font-weight: bold; border: none; 
-            padding: 12px 40px; cursor: pointer; text-transform: uppercase; 
-            transition: 0.3s; width: 100%; letter-spacing: 2px;
+            padding: 15px; cursor: pointer; text-transform: uppercase; 
+            transition: 0.2s; width: 100%; letter-spacing: 3px; font-size: 1rem;
         }
-        .btn:hover { background: #fff; box-shadow: 0 0 20px #fff; transform: scale(1.02); }
+        .btn:hover { background: #fff; box-shadow: 0 0 30px #fff; }
 
-        /* --- ADVANCED DASHBOARD --- */
+        /* --- DASHBOARD UI --- */
         #dashboard { display: none; grid-template-columns: 300px 1fr; height: 100vh; opacity: 0; transition: opacity 1s; }
         
         nav { 
-            background: rgba(0, 5, 0, 0.95); border-right: var(--border); 
+            background: rgba(0, 8, 0, 0.98); border-right: var(--border); 
             padding: 30px; display: flex; flex-direction: column; gap: 20px;
         }
 
-        .sys-info { font-size: 0.75rem; border: 1px solid #1a1a1a; padding: 15px; background: rgba(0,0,0,0.5); }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .sys-monitor { font-size: 0.75rem; border: 1px solid #1a1a1a; padding: 15px; background: rgba(0,255,65,0.05); }
 
-        main { padding: 40px; overflow-y: auto; }
+        main { padding: 40px; overflow-y: auto; background: rgba(0,0,0,0.2); }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
         .card { 
             background: var(--glass); border: var(--border); padding: 25px; 
-            backdrop-filter: blur(10px); position: relative; transition: 0.3s;
+            backdrop-filter: blur(10px); position: relative;
         }
-        .card:hover { border-color: #fff; box-shadow: var(--glow); }
 
-        .tag { font-size: 0.6rem; color: #000; background: var(--neon); padding: 2px 6px; position: absolute; top: 10px; right: 10px; }
+        .module-header { font-size: 0.6rem; color: #888; letter-spacing: 2px; margin-bottom: 10px; display: block; }
 
         #terminal { 
-            background: rgba(0,0,0,0.9); border: var(--border); height: 180px; 
+            background: #000; border: var(--border); height: 180px; 
             margin-top: 30px; padding: 15px; font-size: 0.8rem; overflow-y: auto;
-            border-radius: 4px; box-shadow: inset 0 0 10px #000;
+            color: var(--neon); box-shadow: inset 0 0 20px #000;
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
     </style>
 </head>
 <body>
 
     <canvas id="matrix"></canvas>
 
-    <div id="ui-wrapper">
+    <div id="ui-layer">
         <div id="login-screen">
             <div class="login-card">
-                <h1 style="letter-spacing: 8px; margin: 0 0 10px 0;">CYBERNETIX</h1>
-                <p style="font-size: 0.65rem; color: #888; margin-bottom: 30px;">KERNEL VERSION 5.0.4 // ENCRYPTED</p>
-                <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') login()">
-                <button class="btn" onclick="login()">Enter Terminal</button>
+                <h1 style="letter-spacing: 12px; margin: 0 0 10px 0;">SECURE_GATE</h1>
+                <p style="font-size: 0.7rem; color: #555; margin-bottom: 30px;">AUTHORIZATION_REQUIRED // ENCRYPTION_v4</p>
+                <input type="password" id="pass-field" placeholder="••••••••" onkeypress="if(event.key==='Enter') runAuth()">
+                <button class="btn" onclick="runAuth()">Decrypt & Boot</button>
+                <p id="fail" style="color:#ff3131; display:none; margin-top:15px; font-size:0.8rem;">[!] ACCESS_DENIED: HASH_MISMATCH</p>
             </div>
         </div>
 
         <div id="dashboard">
             <nav>
-                <h2 style="letter-spacing: 4px;">CNX_OS</h2>
-                <div class="sys-info">
-                    <div class="stat-row"><span>
+                <h2 style="letter-spacing: 5px; color:#fff;">CYBERNETIX</h2>
+                <div class="sys-monitor">
+                    <p>STATUS: <span style="color:var(--neon)">ONLINE</span></p>
+                    <p>ENCRYPTION: <span style="color:var(--neon)">AES-256</span></p>
+                    <p>IP: <span id="ip-val" style="color:#fff">192.168.1.XX</span></p>
+                </div>
+                <button class="btn" style="font-size: 0.7rem;" onclick="toggleVPN()">Toggle VPN</button>
+                <button class="btn" style="font-size: 0.7rem; background: #111; color: #fff;" onclick="location.reload()">Emergency Lock</button>
+            </nav>
+
+            <main>
+                <div class="grid">
+                    <div class="card">
+                        <span class="module-header">01 // YOUTUBE_EXTRACTOR</span>
+                        <input type="text" placeholder="VIDEO URL..." style="width: 90%; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom:10px;">
+                        <button class="btn" style="font-size:0.7rem; width:48%;" onclick="log('Downloading MP4...')">MP4</button>
+                        <button class="btn" style="font-size:0.7rem; width:48%; background:white;" onclick="log('Extracting MP3...')">MP3</button>
+                    </div>
+
+                    <div class="card">
+                        <span class="module-header">02 // NETWORK_INFILTRATOR</span>
+                        <input type="text" placeholder="TARGET IP..." style="width: 90%; background: #000; color: #fff; border: 1px solid #333; padding: 10px; margin-bottom:10px;">
+                        <button class="btn" style="font-size:0.7rem;" onclick="log('Scanning target ports...')">Run Nmap Scan</button>
+                    </div>
+
+                    <div class="card">
+                        <span class="module-header">03 // PROXY_GATEWAY</span>
+                        <p style="font-size:0.8rem;">Mask identity through multi-hop proxy nodes.</p>
+                        <button class="btn" style="font-size:0.7rem; background:#222; color:white;" onclick="spoofIP()">Randomize IP</button>
+                    </div>
+                </div>
+
+                <div id="terminal">
+                    <div>> [SYSTEM] Kernel Loaded. Waiting for user...</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // MATRIX ANIMATION
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({length: columns}).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
+            drops.forEach((y, i) => {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(drawMatrix, 35);
+
+        // LOGIN SYSTEM (Last Method: Obfuscated String Match)
+        function runAuth() {
+            const input = document.getElementById('pass-field').value;
+            // Password is admin@99
+            const secret = ['a','d','m','i','n','@','9','9'].join('');
+
+            if (input === secret) {
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    const dash = document.getElementById('dashboard');
+                    dash.style.display = 'grid';
+                    setTimeout(() => dash.style.opacity = '1', 50);
+                    log("Authorization successful. Welcome, Admin.");
+                }, 500);
+            } else {
+                document.getElementById('fail').style.display = 'block';
+                document.getElementById('pass-field').value = '';
+            }
+        }
+
+        // TOOL LOGIC
+        function log(msg) {
+            const term = document.getElementById('terminal');
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span style="color:#555;">[${new Date().toLocaleTimeString()}]</span> > ${msg}`;
+            term.appendChild(entry);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function toggleVPN() {
+            log("Rerouting traffic through Zurich node...");
+            setTimeout(() => log("VPN Status: ACTIVE (Encrypted)"), 800);
+        }
+
+        function spoofIP() {
+            const newIP = `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.1.${Math.floor(Math.random()*255)}`;
+            document.getElementById('ip-val').innerText = newIP;
+            log(`Identity Spoofed. New IP: ${newIP}`);
+        }
+    </script>
+</body>
+</html>
