@@ -3,47 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_ZERO_DAY</title>
+    <title>OMNI_X_BINARY_OVERLOAD</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 8, 0, 0.95); --border: 1px solid var(--neon); }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 10, 0, 0.96); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: #000; color: #aaa; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
-        /* 100-Stream Matrix Background */
+        /* 100+ Stream Matrix Background */
         canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
-        /* --- STAGE 0: DECOY BIOS --- */
+        /* --- STAGE 0: BIOS --- */
         #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; }
         .cursor { display: inline-block; width: 10px; height: 18px; background: #ccc; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- STAGE 1: HYPER-MATRIX LOGIN --- */
+        /* --- STAGE 1: LOGIN (MATRIX FOCUSED) --- */
         #login-screen { position: fixed; inset: 0; z-index: 500; background: #000; display: none; justify-content: center; align-items: center; }
         .login-card { 
-            border: var(--border); padding: 60px; text-align: center; background: rgba(0,0,0,0.9); 
-            box-shadow: 0 0 80px var(--neon); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(15px); z-index: 600;
+            border: var(--border); padding: 60px; text-align: center; background: rgba(0,0,0,0.92); 
+            box-shadow: 0 0 100px rgba(0,255,65,0.2); transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px); z-index: 600;
         }
-        .shatter { transform: scale(0) rotate(-180deg); opacity: 0; }
-        h2 { letter-spacing: 15px; color: var(--neon); margin-bottom: 30px; text-shadow: 0 0 10px var(--neon); }
-        input { background: transparent; border: none; border-bottom: 2px solid #222; color: var(--neon); padding: 10px; width: 300px; text-align: center; font-size: 1.5rem; outline: none; }
-
-        /* --- STAGE 2: PURE TERMINAL DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 300px 1fr 280px; height: 100vh; position: relative; z-index: 10; opacity: 0; transition: 1s; }
+        .shatter { transform: scale(0.1); opacity: 0; filter: blur(20px); }
         
-        nav, aside { background: var(--glass); border: 1px solid #111; padding: 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        h2 { letter-spacing: 12px; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin-bottom: 25px; }
+        input { background: transparent; border: none; border-bottom: 2px solid #222; color: var(--neon); padding: 12px; width: 280px; text-align: center; font-size: 1.5rem; outline: none; }
+
+        /* --- STAGE 2: 200-MODULE TERMINAL --- */
+        #dashboard { display: none; grid-template-columns: 280px 1fr 260px; height: 100vh; position: relative; z-index: 10; opacity: 0; transition: 1.2s; }
+        
+        nav, aside { background: var(--glass); border: 1px solid #111; padding: 15px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
         nav { border-right: var(--border); }
         aside { border-left: var(--border); }
 
-        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 10px; text-align: left; cursor: pointer; font-size: 0.65rem; transition: 0.1s; text-transform: uppercase; }
+        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 8px; text-align: left; cursor: pointer; font-size: 0.65rem; transition: 0.1s; text-transform: uppercase; }
         .nav-btn:hover { background: var(--neon); color: #000; font-weight: bold; }
 
-        main { flex-grow: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.9); padding: 10px; }
-        #terminal { flex-grow: 1; background: #000; border: 1px solid #222; padding: 20px; color: var(--neon); font-size: 0.85rem; overflow-y: auto; white-space: pre-wrap; border-left: 4px solid var(--neon); }
+        main { flex-grow: 1; display: flex; flex-direction: column; background: rgba(0,0,0,0.9); padding: 15px; }
+        #terminal { flex-grow: 1; background: #000; border: 1px solid #222; padding: 20px; color: var(--neon); font-size: 0.8rem; overflow-y: auto; white-space: pre-wrap; border-left: 3px solid var(--neon); }
 
-        .stat-widget { font-size: 0.7rem; border: 1px solid #333; padding: 12px; background: rgba(0,255,65,0.02); margin-bottom: 10px; line-height: 1.6; }
+        .widget { font-size: 0.7rem; border: 1px solid #222; padding: 12px; background: rgba(0,255,65,0.02); margin-bottom: 10px; }
         .danger { color: #ff3131; }
 
-        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--neon); }
     </style>
 </head>
@@ -52,24 +53,24 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>OMNI_BIOS v1.0.4 // (C) 2026</p>
-    <p>CPU Architecture: x64 // Logic Core: ACTIVE</p>
-    <p>Searching for Boot Partition...</p>
+    <p>CORE_LOADER v2.0.1 // INIT SEQUENCE</p>
+    <p>Memory Bank A: OK // Memory Bank B: OK</p>
+    <p>Master Boot Record: [NOT FOUND]</p>
     <br><br>
-    <p class="danger">FATAL: SYSTEM ENTROPY CRITICAL. HALTING.</p>
-    <p>Enter override command to proceed... <span class="cursor"></span></p>
+    <p class="danger">SYSTEM HALTED. NO BOOT DEVICE DETECTED.</p>
+    <p>Awaiting authentication bypass... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card" id="lCard">
-        <h2>ACCESS_GATE</h2>
-        <input type="password" id="passInput" placeholder="ENCRYPTION_KEY" onkeypress="if(event.key==='Enter') validate()">
+        <h2>GATE_AUTH</h2>
+        <input type="password" id="passInput" placeholder="SYSTEM_KEY" onkeypress="if(event.key==='Enter') validate()">
     </div>
 </div>
 
 <div id="dashboard">
     <nav id="tool-nav">
-        <h4 style="color:white; border-bottom:1px solid #222; padding-bottom:10px;">200+ EXPLOIT_MODS</h4>
+        <h4 style="color:white; border-bottom:1px solid #333; padding-bottom:10px;">200_EXPLOIT_MODS</h4>
     </nav>
 
     <main>
@@ -77,33 +78,33 @@
     </main>
 
     <aside>
-        <h4 style="color:white">SESSION_INTEGRITY</h4>
-        <div class="stat-widget">
-            ADDR: <span id="v-ip">FETCHING...</span><br>
-            STAT: <span id="v-stat" style="color:red">NON-SECURE</span><br>
+        <h4 style="color:white">SESSION_INFO</h4>
+        <div class="widget">
+            IP: <span id="v-ip">FETCHING...</span><br>
+            STATUS: <span id="v-stat" style="color:red">EXPOSED</span><br>
             TIME: <span id="timer">00:00:00</span><br>
             PURGE: <span id="idle-txt">300s</span>
         </div>
-        <button class="nav-btn" onclick="toggleVPN()">ENCRYPT_NODE</button>
-        <button class="nav-btn" onclick="downloadLogs()">EXTRACT_LOGS</button>
-        <button class="nav-btn" style="background:red; color:white; border:none; margin-top:auto;" onclick="location.reload()">TERMINATE</button>
+        <button class="nav-btn" onclick="toggleVPN()">SECURE_CONNECTION</button>
+        <button class="nav-btn" onclick="downloadLogs()">DOWNLOAD_LOGS</button>
+        <button class="nav-btn" style="background:red; color:white; border:none; margin-top:auto;" onclick="location.reload()">EMERGENCY_LOCK</button>
     </aside>
 </div>
 
 <script>
-    // 100-Stream Matrix Engine
+    // Hyper-Dense Matrix Engine
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&";
-    // Creating 100 vertical streams (adjusted to screen width)
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&";
     const fontSize = 14;
+    // Calculated to ensure 100+ streams on standard screens
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
 
     function drawMatrix() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; // Trails
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0F0";
         ctx.font = fontSize + "px monospace";
@@ -121,9 +122,9 @@
 
     let buffer = "", logs = [], idleTime = 0;
 
-    // 200 Feature Generator
-    const pfx = ["SQL", "BRUTE", "KERNEL", "SPOOF", "SNIFF", "BUFFER", "DDoS", "ROOT", "CRYPTO", "SHELL"];
-    const sfx = ["BYPASS", "INJECT", "WIPE", "MIRROR", "SCAN", "BREACH", "FLIP", "SYNC", "FETCH", "CRACK"];
+    // 200 Module Generation
+    const pfx = ["SQL", "BRUTE", "KERNEL", "SPOOF", "SNIFF", "DDoS", "ROOT", "CRYPTO", "PROXY", "FIREWALL"];
+    const sfx = ["BREACH", "INJECT", "WIPE", "MIRROR", "SCAN", "CRACK", "FLIP", "SYNC", "UPLINK", "BURST"];
 
     function generateTools() {
         const nav = document.getElementById('tool-nav');
@@ -131,13 +132,13 @@
             let n = pfx[Math.floor(Math.random()*pfx.length)] + "_" + sfx[Math.floor(Math.random()*sfx.length)];
             let btn = document.createElement('button');
             btn.className = "nav-btn";
-            btn.innerHTML = `[MODULE_${i.toString().padStart(3,'0')}] ${n}`;
-            btn.onclick = () => typeLog(`Executing ${n} sub-routine... success.`);
+            btn.innerHTML = `[MOD_${i.toString().padStart(3,'0')}] ${n}`;
+            btn.onclick = () => typeLog(`Module ${n} initiated... status: OK.`);
             nav.appendChild(btn);
         }
     }
 
-    // Access Logic
+    // Auth Logic
     function handleInput(e) {
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
@@ -157,7 +158,7 @@
                 dash.style.display = "grid";
                 setTimeout(() => dash.style.opacity = "1", 50);
                 generateTools();
-                typeLog("Omni-X Millennium Zero-Day initialized. All modules live.");
+                typeLog("Omni-X Millennium Terminal successfully breached.");
                 fetchIP();
             }, 600);
         }
@@ -181,12 +182,12 @@
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "NON-SECURE") {
+        if(vS.innerText === "EXPOSED") {
             vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
-            typeLog("Identity scrubbed. Routing through virtual Stockholm node.");
+            typeLog("Proxy node established. Traffic encrypted.");
         } else {
-            vS.innerText = "NON-SECURE"; vS.style.color = "red";
-            typeLog("Security warning: Proxy tunnel disconnected.");
+            vS.innerText = "EXPOSED"; vS.style.color = "red";
+            typeLog("Warning: VPN connection severed.");
         }
     }
 
@@ -206,7 +207,7 @@
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = "session_zero_day.txt"; a.click();
+        a.href = url; a.download = "session_breach_logs.txt"; a.click();
     }
 </script>
 </body>
