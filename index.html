@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_SINGULARITY_FINAL</title>
+    <title>OMNI_X_GOLD_MASTER</title>
     <style>
         :root { 
             --neon: #00ff41; 
-            --dim: #002200; 
-            --glass: rgba(0, 10, 0, 0.85); 
+            --dim: #003300; 
+            --glass: rgba(0, 10, 0, 0.75); /* Increased transparency for better effect */
             --border: rgba(0, 255, 65, 0.3); 
         }
         
@@ -19,24 +19,25 @@
             height: 100vh; overflow: hidden; 
         }
         
-        /* 1. GLOBAL MATRIX RAIN LAYER (Background) */
+        /* 1. MATRIX RAIN LAYER */
         canvas { 
-            position: fixed; inset: 0; z-index: 0; 
-            opacity: 0.8; pointer-events: none;
+            display: block; position: fixed; inset: 0; z-index: 0; 
+            pointer-events: none;
         }
 
-        /* 2. STEALTH BIOS LAYER */
+        /* 2. BIOS LAYER */
         #bios-screen { 
             position: fixed; inset: 0; z-index: 1000; 
-            background: #000; padding: 40px; color: #444; 
+            background: #000; padding: 40px; color: #555; 
+            font-size: 14px;
         }
         .cursor { 
-            display: inline-block; width: 8px; height: 18px; 
-            background: #444; animation: blink 1s infinite; 
+            display: inline-block; width: 8px; height: 16px; 
+            background: #00ff41; animation: blink 1s infinite; 
         }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* 3. LIQUID GLASS LOGIN LAYER */
+        /* 3. LOGIN LAYER */
         #login-screen { 
             position: fixed; inset: 0; z-index: 500; 
             display: none; justify-content: center; align-items: center; 
@@ -45,32 +46,24 @@
             position: relative; padding: 60px; text-align: center; 
             background: var(--glass); 
             border: 1px solid var(--neon);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 0 60px rgba(0, 255, 65, 0.15); 
-            border-radius: 8px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .login-card h2 { 
-            letter-spacing: 8px; font-size: 0.9rem; 
-            margin-bottom: 30px; opacity: 0.8; color: #fff; text-shadow: 0 0 10px var(--neon);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 0 80px rgba(0, 255, 65, 0.1); 
+            border-radius: 4px;
         }
         input { 
             background: rgba(0, 20, 0, 0.6); border: 1px solid var(--dim); color: #fff; 
             padding: 15px; width: 260px; text-align: center; font-size: 1.2rem; 
             outline: none; transition: 0.3s; letter-spacing: 6px; border-radius: 4px;
-            font-family: inherit;
+            font-family: inherit; margin-top: 20px;
         }
         input:focus { 
             border-color: var(--neon); 
             box-shadow: 0 0 25px rgba(0, 255, 65, 0.3); 
         }
-        
-        /* Animation for successful login */
-        .implode { 
-            transform: scale(0.9); opacity: 0; filter: blur(20px); 
-        }
+        .implode { animation: fold 0.5s forwards ease-in-out; }
+        @keyframes fold { to { transform: scale(0); opacity: 0; } }
 
-        /* 4. MAIN DASHBOARD GRID */
+        /* 4. DASHBOARD LAYER */
         #dashboard { 
             display: none; 
             grid-template-columns: 260px 1fr 260px; 
@@ -80,17 +73,17 @@
         .panel { 
             background: var(--glass); backdrop-filter: blur(10px); 
             border: 1px solid var(--border); display: flex; flex-direction: column; 
-            overflow: hidden; border-radius: 6px; 
+            overflow: hidden; border-radius: 4px; 
         }
         .p-hdr { 
-            background: rgba(0, 255, 65, 0.15); padding: 12px; 
+            background: rgba(0, 255, 65, 0.1); padding: 12px; 
             font-size: 0.7rem; letter-spacing: 3px; text-align: center; 
             border-bottom: 1px solid var(--border); 
-            color: #fff; font-weight: bold;
+            color: #fff; text-shadow: 0 0 5px var(--neon);
         }
         
         .nav-btn { 
-            background: transparent; border: none; color: #009922; 
+            background: transparent; border: none; color: #008811; 
             padding: 12px 15px; text-align: left; cursor: pointer; 
             font-size: 0.75rem; transition: 0.2s; text-transform: uppercase; 
             border-left: 2px solid transparent; font-family: inherit;
@@ -98,81 +91,93 @@
         .nav-btn:hover { 
             color: var(--neon); background: rgba(0, 255, 65, 0.1); 
             border-left: 2px solid var(--neon); padding-left: 20px;
+            text-shadow: 0 0 8px var(--neon);
         }
 
         #terminal { 
             flex-grow: 1; padding: 20px; font-size: 0.85rem; 
-            overflow-y: auto; color: #aaffaa; line-height: 1.6; 
-            text-shadow: 0 0 2px rgba(0,255,65,0.3);
+            overflow-y: auto; color: #aaffaa; line-height: 1.5; 
+            text-shadow: 0 0 2px rgba(0,255,65,0.4);
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #004411; border-radius: 3px; }
+        /* Hide Scrollbar */
+        #terminal::-webkit-scrollbar { width: 0px; background: transparent; }
 
         .stat-row { 
             padding: 15px; font-size: 0.75rem; 
             border-bottom: 1px solid rgba(0, 255, 65, 0.1); 
             display: flex; justify-content: space-between; 
         }
-        .val { color: var(--neon); font-weight: bold; text-shadow: 0 0 5px var(--neon); }
+        .val { color: var(--neon); font-weight: bold; }
     </style>
 </head>
-<body onkeydown="resetIdle(); handleInput(event)">
+<body onkeydown="resetIdle(); handleKey(event)">
 
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>> OMNI_BOOTLOADER_V9.0</p>
-    <p>> INTEGRITY_CHECK... [PASS]</p>
-    <p>> SECURE_CONNECTION... [FAILED]</p>
+    <p>> OMNI_BOOT_SEQUENCE_INIT</p>
+    <p>> CPU_0... [OK]</p>
+    <p>> MEMORY_VIRTUALIZATION... [OK]</p>
+    <p>> ENCRYPTED_GATEWAY... [LOCKED]</p>
     <br>
-    <p style="color: #666">> SYSTEM_LOCKED. TERMINAL_IDLE. <span class="cursor"></span></p>
+    <p style="opacity: 0.7">> SYSTEM HALTED. MANUAL OVERRIDE REQUIRED <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card" id="lCard">
-        <h2>IDENTITY_VERIFICATION</h2>
-        <input type="password" id="passInput" placeholder="●●●●●●●●" onkeypress="if(event.key==='Enter') validate()">
-        <p style="font-size: 9px; color: #555; margin-top: 25px; letter-spacing: 3px;">ENCRYPTION: AES-256 // NODE: SECURE</p>
+        <div style="letter-spacing: 5px; font-size: 0.8rem; opacity: 0.8;">SECURE_ACCESS_NODE</div>
+        <input type="password" id="passInput" placeholder="ENTER PASSKEY" onkeypress="if(event.key==='Enter') validate()">
+        <p style="font-size: 9px; color: #666; margin-top: 25px;">ATTEMPTING TO BYPASS WILL TRIGGER LOCKOUT</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav class="panel">
-        <div class="p-hdr">MODULES</div>
+        <div class="p-hdr">ATTACK_VECTORS</div>
         <div id="tool-nav" style="display:flex; flex-direction:column; padding: 10px 0;"></div>
     </nav>
     <main class="panel">
-        <div class="p-hdr">CONSOLE_OUTPUT</div>
+        <div class="p-hdr">ROOT_TERMINAL</div>
         <div id="terminal"></div>
     </main>
     <aside class="panel">
-        <div class="p-hdr">NETWORK_STATUS</div>
-        <div class="stat-row">IP_ADDR <span class="val" id="v-ip">FETCHING...</span></div>
-        <div class="stat-row">VPN_TUNNEL <span class="val" id="v-stat" style="color:#ff3333; text-shadow:none;">OFFLINE</span></div>
-        <div class="stat-row">SESSION_TTL <span class="val" id="idle-txt">300s</span></div>
+        <div class="p-hdr">SYSTEM_METRICS</div>
+        <div class="stat-row">NODE_IP <span class="val" id="v-ip">SCANNING...</span></div>
+        <div class="stat-row">PROXY <span class="val" id="v-stat" style="color:#ff3333">DISCONNECTED</span></div>
+        <div class="stat-row">AUTO_WIPE <span class="val" id="idle-txt">300s</span></div>
         
-        <button class="nav-btn" style="margin-top:auto;" onclick="toggleVPN()">[ TOGGLE_PROXY ]</button>
-        <button class="nav-btn" onclick="downloadLogs()">[ DOWNLOAD_LOGS ]</button>
-        <button class="nav-btn" style="color:#ff3333; border-top:1px solid rgba(255,0,0,0.2);" onclick="location.reload()">[ KILL_SWITCH ]</button>
+        <button class="nav-btn" style="margin-top:auto;" onclick="toggleVPN()">[ ACTIVATE_VPN ]</button>
+        <button class="nav-btn" onclick="downloadLogs()">[ EXPORT_LOGS ]</button>
+        <button class="nav-btn" style="color:#ff3333; border-top:1px solid rgba(255,0,0,0.2);" onclick="location.reload()">[ EMERGENCY_EXIT ]</button>
     </aside>
 </div>
 
 <script>
-    // --- 1. MATRIX RAIN ENGINE (60FPS) ---
+    // --- 1. ROBUST MATRIX ENGINE ---
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; 
-    canvas.height = window.innerHeight;
     
-    // Katakana + Latin characters for authentic look
+    // Resize handler to ensure rain always covers full screen
+    function resizeCanvas() {
+        canvas.width = window.innerWidth; 
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%*ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ";
     const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    // Update columns on resize
+    window.addEventListener('resize', () => {
+        columns = Math.floor(canvas.width / fontSize);
+        drops = Array(columns).fill(1);
+    });
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Lower opacity trail for longer rain
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0F0";
         ctx.font = fontSize + "px monospace";
@@ -186,50 +191,62 @@
     }
     setInterval(draw, 33);
 
-    // --- 2. SECURITY LOGIC ---
+    // --- 2. STEALTH & SECURITY LOGIC ---
     let buffer = "";
+    let systemUnlocked = false;
     
-    function handleInput(e) {
-        // Only track input if we are on the BIOS screen
-        if(document.getElementById('bios-screen').style.display !== "none") {
-            buffer += e.key.toLowerCase();
-            // Keep buffer short to prevent memory leak
-            if (buffer.length > 10) buffer = buffer.slice(-10);
-            
-            if(buffer.includes("root")) {
-                document.getElementById('bios-screen').style.display = "none";
-                document.getElementById('login-screen').style.display = "flex";
-                // UX FIX: Auto-focus the input field
-                setTimeout(() => document.getElementById('passInput').focus(), 100);
-                buffer = "";
-            }
+    function handleKey(e) {
+        // If system is already unlocked, ignore 'root' typing logic
+        if (systemUnlocked) return;
+
+        buffer += e.key.toLowerCase();
+        if (buffer.length > 20) buffer = buffer.slice(-20); // Keep buffer clean
+        
+        if(buffer.includes("root")) {
+            unlockBios();
         }
+    }
+
+    function unlockBios() {
+        systemUnlocked = true; // Disable stealth listener
+        document.getElementById('bios-screen').style.display = "none";
+        document.getElementById('login-screen').style.display = "flex";
+        
+        // Auto-focus input for smooth UX
+        setTimeout(() => {
+            const input = document.getElementById('passInput');
+            input.focus();
+            input.value = ""; 
+        }, 100);
     }
 
     function validate() {
         const input = document.getElementById('passInput').value;
-        // BASE64 CHECK for "admin@99" -> "YWRtaW5AOTk="
+        // Hash Check: admin@99 -> YWRtaW5AOTk=
         if(btoa(input) === "YWRtaW5AOTk=") { 
-            const card = document.getElementById('lCard');
-            card.classList.add('implode'); // Trigger Animation
-            
+            document.getElementById('lCard').classList.add('implode');
             setTimeout(() => {
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('dashboard').style.display = "grid";
-                loadTools();
-                log("ACCESS_GRANTED: Root privileges assigned to session.");
-                fetchIP();
+                initSystem();
             }, 500);
         } else {
-            log("AUTH_ERR: Invalid handshake protocol.");
-            document.getElementById('passInput').value = "";
-            document.getElementById('passInput').style.borderColor = "red";
-            setTimeout(() => document.getElementById('passInput').style.borderColor = "var(--dim)", 500);
+            log("ACCESS_DENIED: Incorrect Passkey.");
+            const field = document.getElementById('passInput');
+            field.value = "";
+            field.style.borderColor = "red";
+            setTimeout(() => field.style.borderColor = "var(--dim)", 500);
         }
     }
 
-    // --- 3. SYSTEM FUNCTIONS ---
+    // --- 3. SYSTEM OPERATIONS ---
     let logs = [], idleTime = 0;
+
+    function initSystem() {
+        log("ROOT_ACCESS_GRANTED. INITIALIZING OMNI_X...");
+        loadTools();
+        fetchIP();
+    }
 
     function loadTools() {
         const nav = document.getElementById('tool-nav');
@@ -243,7 +260,7 @@
             let btn = document.createElement('button');
             btn.className = "nav-btn";
             btn.innerHTML = `> ${item}`;
-            btn.onclick = () => log(`Executing Payload [${item}]... SUCCESS.`);
+            btn.onclick = () => log(`RUNNING: ${item}... [SUCCESS]`);
             nav.appendChild(btn);
         });
     }
@@ -253,7 +270,7 @@
             const res = await fetch('https://api.ipify.org?format=json');
             const data = await res.json();
             document.getElementById('v-ip').innerText = data.ip;
-        } catch { document.getElementById('v-ip').innerText = "127.0.0.1 (LOCAL)"; }
+        } catch { document.getElementById('v-ip').innerText = "127.0.0.1 (HIDDEN)"; }
     }
 
     function log(text) {
@@ -266,14 +283,12 @@
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "OFFLINE") {
-            vS.innerText = "ENCRYPTED"; 
-            vS.style.color = "var(--neon)"; vS.style.textShadow = "0 0 10px var(--neon)";
-            log("VPN_TUNNEL: Rerouting traffic via Node_Zero...");
+        if(vS.innerText === "DISCONNECTED") {
+            vS.innerText = "ENCRYPTED"; vS.style.color = "var(--neon)";
+            log("VPN: TUNNELING TRAFFIC VIA NODE_77.");
         } else {
-            vS.innerText = "OFFLINE"; 
-            vS.style.color = "#ff3333"; vS.style.textShadow = "none";
-            log("WARNING: Secure tunnel collapsed.");
+            vS.innerText = "DISCONNECTED"; vS.style.color = "#ff3333";
+            log("VPN: CONNECTION DROPPED.");
         }
     }
 
@@ -290,7 +305,7 @@
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "omni_session_log.txt"; a.click();
+        a.download = "omni_logs.txt"; a.click();
     }
 </script>
 </body>
