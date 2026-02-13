@@ -3,55 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System_Recovery_Boot</title>
+    <title>SYSTEM_CORE_OMNI</title>
     <style>
-        :root { --neon: #00ff41; --glass: rgba(0, 10, 0, 0.95); --border: 1px solid var(--neon); }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 15, 0, 0.95); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: #000; color: #aaa; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
         canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
 
         /* --- STAGE 0: BIOS FAKE SCREEN --- */
-        #bios-screen { 
-            position: fixed; inset: 0; z-index: 1000; background: #000; 
-            padding: 40px; color: #ccc; display: block;
-        }
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; display: block; }
         .cursor { display: inline-block; width: 10px; height: 18px; background: #ccc; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
         /* --- STAGE 1: MATRIX LOGIN --- */
-        #login-screen { 
-            position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); 
-            display: none; justify-content: center; align-items: center; 
-        }
-        .login-card { 
-            border: var(--border); padding: 50px; text-align: center; background: #000; 
-            box-shadow: 0 0 40px rgba(0,255,65,0.2); z-index: 501;
-        }
-        input { 
-            background: transparent; border: none; border-bottom: 2px solid #333; 
-            color: var(--neon); padding: 10px; width: 250px; text-align: center; 
-            font-size: 1.5rem; outline: none; transition: 0.3s;
-        }
-        input:focus { border-bottom-color: var(--neon); }
+        #login-screen { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; }
+        .login-card { border: var(--border); padding: 50px; text-align: center; background: #000; box-shadow: 0 0 40px rgba(0,255,65,0.2); }
+        input { background: transparent; border: none; border-bottom: 2px solid #333; color: var(--neon); padding: 10px; width: 250px; text-align: center; font-size: 1.5rem; outline: none; }
 
         /* --- STAGE 2: DASHBOARD --- */
         #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; position: relative; z-index: 10; }
-        
-        nav { background: rgba(0, 5, 0, 0.98); border-right: var(--border); padding: 25px; display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 14px; text-align: left; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        nav { background: rgba(0, 5, 0, 0.98); border-right: var(--border); padding: 25px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 12px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
         .nav-btn.active, .nav-btn:hover { background: var(--neon); color: #000; font-weight: bold; }
 
-        main { flex-grow: 1; padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.6); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s; }
+        main { flex-grow: 1; padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.7); }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: var(--glass); border: 1px solid #333; padding: 20px; border-radius: 2px; }
-        .card:hover { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,255,65,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .card { background: var(--glass); border: 1px solid #333; padding: 15px; border-radius: 2px; position: relative; }
         
-        .action-btn { background: var(--neon); color: #000; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; text-transform: uppercase; }
-        #terminal { background: rgba(0,0,0,0.9); border: 1px solid #222; height: 140px; padding: 15px; margin-top: 25px; font-size: 0.8rem; overflow-y: auto; color: var(--neon); border-left: 3px solid var(--neon); }
+        /* Progress & Action UI */
+        .prog-wrap { height: 2px; background: #111; width: 100%; margin-top: 10px; display: none; }
+        .prog-bar { height: 100%; background: var(--neon); width: 0%; transition: width 0.1s; }
+        .action-btn { background: var(--neon); color: #000; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 8px; text-transform: uppercase; font-size: 0.7rem; }
+        .action-btn:hover { background: #fff; }
 
+        #terminal { background: rgba(0,0,0,0.95); border: 1px solid #222; height: 160px; padding: 15px; margin-top: 20px; font-size: 0.8rem; overflow-y: auto; color: var(--neon); border-left: 3px solid var(--neon); white-space: pre-wrap; }
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -63,85 +52,76 @@
     <p>AMIBIOS(C) 2026 American Megatrends, Inc.</p>
     <p>BIOS Date: 02/13/26 19:25:41 Ver: 08.00.16</p>
     <p>CPU: Intel(R) Core(TM) i9-14900K @ 3.20GHz</p>
-    <p>Speed: 3200MHz</p>
-    <br>
-    <p>Press DEL to run Setup</p>
-    <p>Press F11 for BBS POPUP</p>
     <p>Memory Test : 32768MB OK</p>
     <br><br>
-    <p style="color: #ff3131;">CMOS Settings Wrong</p>
-    <p style="color: #ff3131;">CMOS Date/Time Not Set</p>
-    <p>Press F1 to Run SETUP</p>
-    <p>Press F2 to load default values and continue <span class="cursor"></span></p>
+    <p style="color: #ff3131;">ERROR: DISK BOOT FAILURE, INSERT SYSTEM DISK AND PRESS ENTER</p>
+    <p>Waiting for command... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card">
-        <h2 style="letter-spacing: 10px; color: var(--neon); margin-bottom: 30px;">AUTHORIZATION</h2>
+        <h2 style="letter-spacing: 10px; color: var(--neon);">LOGIN_REQUIRED</h2>
         <input type="password" id="passInput" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') validate()">
-        <p style="font-size: 0.6rem; margin-top: 20px; color: #444;">ENCRYPTION_LAYER: 0xFF99</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav>
-        <h2 style="letter-spacing: 5px;">CNX_OS</h2>
-        <div style="font-size: 0.7rem; border: 1px solid #333; padding: 12px; margin-bottom: 20px; background: rgba(0,15,0,0.5);">
+        <h2 style="letter-spacing: 3px; color: #fff;">OMNI_v16</h2>
+        <div style="font-size: 0.7rem; border: 1px solid #222; padding: 10px; background: rgba(0,20,0,0.5);">
             <div>STATUS: <span id="v-stat" style="color:red">INSECURE</span></div>
-            <div>UPLINK: <span id="v-node">LOCAL</span></div>
-            <div>IP_MASK: <span id="v-ip">NONE</span></div>
+            <div>REAL_IP: <span id="v-ip">FETCHING...</span></div>
+            <div id="vpn-info" style="display:none; color:var(--neon); margin-top:5px;">NODE: <span id="v-node">STOCKHOLM_04</span></div>
         </div>
-        <button class="nav-btn active" onclick="showTab('home', this)">01_OVERVIEW</button>
-        <button class="nav-btn" onclick="showTab('vpn-tab', this)">02_VPN_TUNNEL</button>
-        <button class="nav-btn" onclick="showTab('arsenal', this)">03_HACK_TOOLS</button>
-        <button class="nav-btn" onclick="showTab('utility', this)">04_UTILITIES</button>
-        <button class="action-btn" style="background:#222; color:#fff; margin-top:auto;" onclick="location.reload()">TERMINATE</button>
+        <button class="nav-btn active" onclick="showTab('home', this)">01. SYSTEM_STATS</button>
+        <button class="nav-btn" onclick="showTab('vpn-tab', this)">02. VPN_GATEWAY</button>
+        <button class="nav-btn" onclick="showTab('arsenal', this)">03. HACK_TOOLS</button>
+        <button class="nav-btn" onclick="showTab('media', this)">04. MEDIA_SERVER</button>
+        <button class="action-btn" style="background:#333; color:red; margin-top:auto;" onclick="location.reload()">LOCKDOWN</button>
     </nav>
 
     <main>
         <div id="home" class="tab-content active">
             <div class="grid">
-                <div class="card"><h3>CPU_LOAD</h3><p id="cpu">8%</p></div>
-                <div class="card"><h3>ENCRYPTION</h3><p>AES-256</p></div>
-                <div class="card"><h3>SESSIONS</h3><p>3 ACTIVE</p></div>
+                <div class="card"><h3>CPU_THREADS</h3><p id="cpu">0%</p></div>
+                <div class="card"><h3>ENCRYPTION</h3><p>AES-512 GCM</p></div>
+                <div class="card"><h3>NETWORK</h3><p>CONNECTED</p></div>
                 <div class="card"><h3>UPTIME</h3><p id="timer">00:00:00</p></div>
             </div>
         </div>
 
         <div id="vpn-tab" class="tab-content">
-            <div class="card" style="text-align: center; padding: 50px;">
-                <h1 id="vpn-display" style="color:red; font-size: 3rem;">TUNNEL_OFF</h1>
-                <p>Traffic is currently visible to ISP and third parties.</p>
-                <button class="action-btn" style="width: 250px;" onclick="toggleVPN()">ENGAGE VPN</button>
+            <div class="card" style="text-align: center; padding: 40px;">
+                <h1 id="vpn-txt" style="color:red; font-size: 2.5rem;">VPN_DISCONNECTED</h1>
+                <p>Uplink is currently unencrypted.</p>
+                <button class="action-btn" style="width: 260px; height: 50px;" onclick="toggleVPN()">ENGAGE ENCRYPTION</button>
             </div>
         </div>
 
         <div id="arsenal" class="tab-content">
             <div class="grid">
-                <div class="card"><h3>PORT_SCAN</h3><button class="action-btn" onclick="log('Scan initiated on range 1-1024')">EXECUTE</button></div>
-                <div class="card"><h3>SQL_PROBE</h3><button class="action-btn" onclick="log('Testing target for Blind SQL...')">PROBE</button></div>
-                <div class="card"><h3>MAC_SPOOF</h3><button class="action-btn" onclick="log('New MAC: 00:E0:4C:68...')">SPOOF</button></div>
-                <div class="card"><h3>BRUTE_FORCE</h3><button class="action-btn" onclick="log('Cracking login.php...')">START</button></div>
-                <div class="card"><h3>WI-FI_SNIFF</h3><button class="action-btn" onclick="log('Collecting handshake...')">SNIFF</button></div>
-                <div class="card"><h3>LOG_WIPE</h3><button class="action-btn" style="background:red" onclick="log('Traces deleted.')">WIPE</button></div>
+                <div class="card"><h3>PORT_SCANNER</h3><button class="action-btn" onclick="runTask('Scanning ports 1-65535...')">SCAN</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
+                <div class="card"><h3>SQL_PROBE</h3><button class="action-btn" onclick="runTask('Testing SQL injection points...')">PROBE</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
+                <div class="card"><h3>MAC_SPOOF</h3><button class="action-btn" onclick="runTask('Randomizing Hardware ID...')">SPOOF</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
+                <div class="card"><h3>BRUTE_FORCE</h3><button class="action-btn" onclick="runTask('Dictionary crack initialized...')">CRACK</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
+                <div class="card"><h3>WI-FI_SNIFF</h3><button class="action-btn" onclick="runTask('Capturing WPA2 handshakes...')">SNIFF</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
+                <div class="card"><h3>LOG_WIPER</h3><button class="action-btn" style="background:red" onclick="runTask('Purging system traces...')">WIPE</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
             </div>
         </div>
 
-        <div id="utility" class="tab-content">
+        <div id="media" class="tab-content">
             <div class="grid">
-                <div class="card"><h3>YT_VIDEO_DL</h3><input type="text" placeholder="URL..."><button class="action-btn" onclick="log('Fetching MP4...')">DOWNLOAD</button></div>
-                <div class="card"><h3>YT_AUDIO_DL</h3><input type="text" placeholder="URL..."><button class="action-btn" style="background:white" onclick="log('Fetching MP3...')">CONVERT</button></div>
-                <div class="card"><h3>GEO_IP</h3><button class="action-btn" onclick="log('Locating IP source...')">LOCATE</button></div>
-                <div class="card"><h3>DB_SEARCH</h3><button class="action-btn" onclick="log('Searching breached DB...')">QUERY</button></div>
+                <div class="card"><h3>YT_DOWNLOADER</h3><input type="text" placeholder="VIDEO URL..."><button class="action-btn" onclick="typeLog('Fetching stream data from YouTube...')">GET MP4</button></div>
+                <div class="card"><h3>YT_AUDIO_EXTRACT</h3><input type="text" placeholder="VIDEO URL..."><button class="action-btn" style="background:white" onclick="typeLog('Converting stream to MP3 320kbps...')">GET MP3</button></div>
             </div>
         </div>
 
-        <div id="terminal">> SYSTEM_READY. WAITING_FOR_UPLINK...</div>
+        <div id="terminal"></div>
     </main>
 </div>
 
 <script>
-    // 1. MATRIX RAIN
+    // 1. PERSISTENT MATRIX
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -158,48 +138,74 @@
     }
     setInterval(draw, 35);
 
-    // 2. SECRET ENTRY ("root")
-    let entryBuffer = "";
+    // 2. GHOST ENTRY ("root")
+    let buffer = "";
     function handleInput(e) {
-        entryBuffer += e.key.toLowerCase();
-        if(entryBuffer.includes("root")) {
+        buffer += e.key.toLowerCase();
+        if(buffer.includes("root")) {
             document.getElementById('bios-screen').style.display = "none";
             document.getElementById('login-screen').style.display = "flex";
-            canvas.style.opacity = "0.7";
-            entryBuffer = "";
+            canvas.style.opacity = "0.7"; buffer = "";
         }
     }
 
-    // 3. LOGIN (admin@99)
-    function validate() {
+    // 3. AUTHORIZATION & REAL IP
+    async function validate() {
         if(document.getElementById('passInput').value === "admin@99") {
             document.getElementById('login-screen').style.display = "none";
             document.getElementById('dashboard').style.display = "grid";
-            log("Root access established. Encryption v14 active.");
-        } else { alert("ACCESS DENIED"); }
+            typeLog("Omni-Terminal Access Authorized. Encryption Layer: ACTIVE.");
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                document.getElementById('v-ip').innerText = data.ip;
+            } catch { document.getElementById('v-ip').innerText = "8.8.8.8"; }
+        } else { alert("HASH ERROR"); }
     }
 
-    // 4. VPN CROSS-TAB FUNCTION
+    // 4. TYPEWRITER TERMINAL
+    function typeLog(text) {
+        const t = document.getElementById('terminal');
+        const d = document.createElement('div');
+        t.appendChild(d);
+        let i = 0;
+        const msg = `[${new Date().toLocaleTimeString()}] > ${text}`;
+        function typing() {
+            if(i < msg.length) { d.innerHTML += msg.charAt(i); i++; setTimeout(typing, 25); t.scrollTop = t.scrollHeight; }
+        }
+        typing();
+    }
+
+    // 5. PROGRESS BAR TASKS
+    function runTask(name) {
+        const currentTab = document.querySelector('.tab-content.active');
+        const wrap = event.target.closest('.card').querySelector('.prog-wrap');
+        const bar = event.target.closest('.card').querySelector('.prog-bar');
+        wrap.style.display = 'block';
+        let w = 0;
+        typeLog(`Initializing: ${name}`);
+        const int = setInterval(() => {
+            if(w >= 100) { clearInterval(int); typeLog(`Success: ${name}`); setTimeout(() => wrap.style.display = 'none', 800); }
+            else { w++; bar.style.width = w + '%'; }
+        }, 40);
+    }
+
+    // 6. VPN UPLINK
     function toggleVPN() {
-        const vDisplay = document.getElementById('vpn-display'),
-              vStat = document.getElementById('v-stat'),
-              vNode = document.getElementById('v-node'),
-              vIp = document.getElementById('v-ip');
-        
-        if(vStat.innerText === "INSECURE") {
-            vDisplay.innerText = "TUNNEL_ACTIVE"; vDisplay.style.color = "var(--neon)";
-            vStat.innerText = "ENCRYPTED"; vStat.style.color = "var(--neon)";
-            vNode.innerText = "TOKYO_NODE_3"; vIp.innerText = "103.4.11.205";
-            log("VPN tunnel secured through Tokyo.");
+        const txt = document.getElementById('vpn-txt'), stat = document.getElementById('v-stat'), info = document.getElementById('vpn-info');
+        if(stat.innerText === "INSECURE") {
+            txt.innerText = "VPN_ACTIVE"; txt.style.color = "var(--neon)";
+            stat.innerText = "TUNNELED"; stat.style.color = "var(--neon)";
+            info.style.display = "block";
+            typeLog("Uplink encrypted via Stockholm-Node-4.");
         } else {
-            vDisplay.innerText = "TUNNEL_OFF"; vDisplay.style.color = "red";
-            vStat.innerText = "INSECURE"; vStat.style.color = "red";
-            vNode.innerText = "LOCAL"; vIp.innerText = "NONE";
-            log("VPN connection dropped.");
+            txt.innerText = "VPN_DISCONNECTED"; txt.style.color = "red";
+            stat.innerText = "INSECURE"; stat.style.color = "red";
+            info.style.display = "none";
+            typeLog("VPN Terminated. Reverting to public IP.");
         }
     }
 
-    // 5. TOOLS
     function showTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -207,18 +213,12 @@
         btn.classList.add('active');
     }
 
-    function log(msg) {
-        const t = document.getElementById('terminal');
-        t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] > ${msg}</div>`;
-        t.scrollTop = t.scrollHeight;
-    }
-
-    // Uptime & Stats
-    let s=0; setInterval(()=>{
+    // Global Loops
+    let s=0; setInterval(() => {
         s++; let h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60;
-        document.getElementById('timer').innerText = `${h}:${m}:${sc}`;
-        document.getElementById('cpu').innerText = Math.floor(Math.random()*15)+5+"%";
-    },1000);
+        document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sc.toString().padStart(2,'0')}`;
+        document.getElementById('cpu').innerText = Math.floor(Math.random()*20)+5+"%";
+    }, 1000);
 </script>
 </body>
 </html>
