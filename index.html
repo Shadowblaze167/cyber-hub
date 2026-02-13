@@ -3,68 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_NEON_VAPOR</title>
+    <title>OMNI_X_ULTRA_UI</title>
     <style>
-        :root { --neon: #00ff41; --cyan: #0ff; --magenta: #f0f; --bg: #000; }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; overflow: hidden; }
+        :root { --neon: #00ff41; --glass: rgba(0, 255, 65, 0.03); --border: rgba(0, 255, 65, 0.2); }
+        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Inter', 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* High-Density Data Rain */
+        /* 100-Stream High-Intensity Matrix */
         canvas { position: fixed; inset: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
-        /* --- BIOS --- */
+        /* --- STAGE 0: BIOS --- */
         #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #444; font-family: monospace; }
         .cursor { display: inline-block; width: 8px; height: 15px; background: #444; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- HIGH-END UI LOGIN --- */
-        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; background: radial-gradient(circle, #001100 0%, #000 100%); }
+        /* --- STAGE 1: CINEMATIC LOGIN --- */
+        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; background: radial-gradient(circle at center, #001a00 0%, #000 100%); }
         
         .login-card { 
-            position: relative; padding: 50px 80px; text-align: center; 
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 255, 65, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 1), inset 0 0 20px rgba(0, 255, 65, 0.1);
+            position: relative; padding: 60px 80px; text-align: center; 
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         .login-card h2 { 
-            font-weight: 200; letter-spacing: 15px; margin-bottom: 30px; color: #fff;
-            text-shadow: 0 0 10px var(--neon);
+            font-weight: 200; letter-spacing: 12px; margin-bottom: 30px; color: #fff;
+            text-transform: uppercase; font-size: 1rem;
         }
 
-        /* Input Field Styling */
         input { 
-            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 65, 0.3); 
-            color: #fff; padding: 15px; width: 300px; text-align: center; font-size: 1.2rem; 
-            border-radius: 50px; outline: none; transition: 0.4s;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border); 
+            color: #fff; padding: 18px; width: 300px; text-align: center; font-size: 1.2rem; 
+            border-radius: 12px; outline: none; transition: 0.4s; font-family: monospace;
         }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); width: 340px; }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 30px rgba(0, 255, 65, 0.2); width: 340px; }
 
-        /* Fractured Dissolve Animation */
-        .dissolve { transform: scale(1.5); filter: blur(30px) brightness(2); opacity: 0; }
+        .dissolve { transform: scale(1.2); filter: blur(40px); opacity: 0; }
 
-        /* --- MODERN DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 10px; gap: 10px; }
+        /* --- STAGE 2: MODERN GRID DASHBOARD --- */
+        #dashboard { 
+            display: none; grid-template-columns: 300px 1fr 300px; grid-template-rows: 1fr;
+            height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box;
+        }
         
-        nav, aside, main { 
-            background: rgba(0, 5, 0, 0.9); 
-            border: 1px solid rgba(0, 255, 65, 0.1); 
-            border-radius: 15px; padding: 20px; overflow-y: auto;
+        .panel { 
+            background: rgba(0, 8, 0, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 65, 0.1); border-radius: 16px; 
+            padding: 25px; display: flex; flex-direction: column;
         }
 
         .nav-btn { 
             background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.1); 
-            color: var(--neon); padding: 12px; text-align: left; cursor: pointer; 
-            font-size: 0.75rem; border-radius: 8px; margin-bottom: 8px; transition: 0.2s;
+            color: var(--neon); padding: 14px; text-align: left; cursor: pointer; 
+            font-size: 0.7rem; border-radius: 10px; margin-bottom: 10px; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .nav-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
+        .nav-btn:hover { background: var(--neon); color: #000; transform: translateX(5px); }
 
-        #terminal { font-family: monospace; font-size: 0.9rem; color: #88ff88; line-height: 1.6; }
-        .stat-line { font-size: 0.8rem; color: #555; margin-bottom: 10px; border-bottom: 1px solid #111; padding-bottom: 5px; }
-        .val { color: var(--neon); float: right; }
+        #terminal { 
+            flex-grow: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; 
+            color: #aaffaa; overflow-y: auto; white-space: pre-wrap;
+        }
+
+        .status-pill { 
+            background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; 
+            margin-bottom: 15px; font-size: 0.75rem; border-left: 3px solid var(--neon);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     </style>
 </head>
 <body onkeydown="resetIdle(); handleInput(event)">
@@ -72,36 +80,40 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>> OMNI_CORE BOOTLOADER v9.0</p>
-    <p>> MEMORY_TEST: PASS</p>
-    <p>> SECURE_VIRTUAL_ENV: ACTIVE</p>
+    <p>> OMNI_KERNEL_BOOT v10.0.4</p>
+    <p>> ENCRYPTED_VOLUMES: MOUNTED</p>
     <br>
-    <p>> SYSTEM_HALT: UNAUTHORIZED_USER_DETECTED</p>
-    <p>> AWAITING_BYPASS_COMMAND... <span class="cursor"></span></p>
+    <p>> STATUS: ACCESS_RESTRICTED_BY_ADMIN</p>
+    <p>> KEY_COMMAND_WAITING... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card" id="lCard">
-        <h2>IDENT_V4</h2>
-        <input type="password" id="passInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') validate()">
-        <p style="color: #444; font-size: 0.7rem; margin-top: 25px; letter-spacing: 2px;">ENCRYPTION ACTIVE // TRACE_BLOCK: ON</p>
+        <h2>Identity Verification</h2>
+        <input type="password" id="passInput" placeholder="ACCESS KEY" onkeypress="if(event.key==='Enter') validate()">
+        <p style="color: #444; font-size: 0.65rem; margin-top: 30px; letter-spacing: 3px;">SECURE NODE // AES-256 ACTIVE</p>
     </div>
 </div>
 
 <div id="dashboard">
-    <nav id="tool-nav">
-        <h3 style="font-size:0.8rem; opacity:0.5; margin-bottom:20px;">EXPLOIT_PAYLOADS</h3>
+    <nav class="panel">
+        <h3 style="font-size:0.7rem; opacity:0.4; margin-bottom:20px; letter-spacing:2px;">OPERATIONS</h3>
+        <div id="tool-nav" style="display:contents;"></div>
     </nav>
-    <main><div id="terminal"></div></main>
-    <aside>
-        <h3 style="font-size:0.8rem; opacity:0.5; margin-bottom:20px;">NODE_STATUS</h3>
-        <div class="stat-line">LOCAL_IP <span class="val" id="v-ip">...</span></div>
-        <div class="stat-line">CONNECTION <span class="val" id="v-stat" style="color:red">EXPOSED</span></div>
-        <div class="stat-line">AUTO_PURGE <span class="val" id="idle-txt">300s</span></div>
-        <br>
-        <button class="nav-btn" style="width:100%" onclick="toggleVPN()">SECURE_NODE</button>
-        <button class="nav-btn" style="width:100%" onclick="downloadLogs()">EXTRACT_SESSION</button>
-        <button class="nav-btn" style="width:100%; margin-top:auto; background:rgba(255,0,0,0.1); color:red; border-color:red;" onclick="location.reload()">TERMINATE</button>
+
+    <main class="panel">
+        <div id="terminal"></div>
+    </main>
+
+    <aside class="panel">
+        <h3 style="font-size:0.7rem; opacity:0.4; margin-bottom:20px; letter-spacing:2px;">SYSTEM_MONITOR</h3>
+        <div class="status-pill">NODE_IP: <span style="float:right" id="v-ip">...</span></div>
+        <div class="status-pill">SHIELD: <span style="float:right; color:red" id="v-stat">INACTIVE</span></div>
+        <div class="status-pill">SESSION: <span style="float:right" id="idle-txt">300s</span></div>
+        
+        <button class="nav-btn" style="margin-top:auto" onclick="toggleVPN()">Toggle Encryption</button>
+        <button class="nav-btn" onclick="downloadLogs()">Export Session</button>
+        <button class="nav-btn" style="background:rgba(255,0,0,0.1); color:red; border-color:red;" onclick="location.reload()">Emergency Kill</button>
     </aside>
 </div>
 
@@ -109,20 +121,20 @@
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&";
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#00ff41";
         ctx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
             const text = chars[Math.floor(Math.random() * chars.length)];
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.985) drops[i] = 0;
             drops[i]++;
         }
     }
@@ -147,7 +159,7 @@
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('dashboard').style.display = "grid";
                 loadTools();
-                log("NODE_INITIALIZED. WELCOME TO OMNI_X.");
+                log("AUTH_SUCCESS: Session authorized for UID_0.");
                 fetchIP();
             }, 800);
         }
@@ -155,12 +167,12 @@
 
     function loadTools() {
         const nav = document.getElementById('tool-nav');
-        const list = ["KERNEL_SPOOF", "SQL_PULSE", "RSA_SHATTER", "MAC_FLIP", "WIPE_TRACE", "ROOT_SHELL", "DNS_POISON", "PACKET_VAL", "REMOTE_KILL", "NET_CRAWL"];
+        const list = ["Kernel_Infect", "SQL_Tunnel", "RSA_Shatter", "Mac_Ghost", "Trace_Clean", "Shell_Inject", "DNS_Poison", "Packet_Sieve", "Node_Kill", "Net_Map"];
         list.forEach((item, idx) => {
             let btn = document.createElement('button');
             btn.className = "nav-btn";
-            btn.innerHTML = `[MOD_${idx+1}] ${item}`;
-            btn.onclick = () => log(`Executing payload: ${item}... SUCCESS.`);
+            btn.innerHTML = `[${idx+1}] ${item}`;
+            btn.onclick = () => log(`Payload executed: ${item}... [STATUS: OK]`);
             nav.appendChild(btn);
         });
     }
@@ -176,19 +188,19 @@
     function log(text) {
         const t = document.getElementById('terminal'), d = document.createElement('div');
         t.appendChild(d);
-        d.innerHTML = `<span style="color:#444">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
+        d.innerHTML = `<span style="opacity:0.3">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
         t.scrollTop = t.scrollHeight;
         logs.push(d.innerText);
     }
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "EXPOSED") {
-            vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
-            log("ENCRYPTED TUNNEL ESTABLISHED.");
+        if(vS.innerText === "INACTIVE") {
+            vS.innerText = "ACTIVE"; vS.style.color = "var(--neon)";
+            log("VPN Layer: Tunnel established via Proxy_Node_07.");
         } else {
-            vS.innerText = "EXPOSED"; vS.style.color = "red";
-            log("WARNING: CONNECTION EXPOSED.");
+            vS.innerText = "INACTIVE"; vS.style.color = "red";
+            log("VPN Layer: Connection terminated.");
         }
     }
 
@@ -203,7 +215,7 @@
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "session.txt"; a.click();
+        a.download = "session_data.txt"; a.click();
     }
 </script>
 </body>
