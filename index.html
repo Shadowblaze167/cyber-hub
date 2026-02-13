@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERNETIX // GLOBAL ACCESS</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #050505;
+            --panel-bg: #0a0a0a;
+            --text-dim: #008f11;
+            --alert-red: #ff3131;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        nav {
+            width: 240px;
+            background: #000;
+            border-right: 1px solid var(--neon-green);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            text-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .nav-link {
+            cursor: pointer;
+            padding: 12px;
+            border-left: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-left: 3px solid var(--neon-green);
+        }
+
+        /* Main Grid */
+        main {
+            flex-grow: 1;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-gap: 20px;
+        }
+
+        .header {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--text-dim);
+            padding-bottom: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Tools Table */
+        .section-title { font-weight: bold; margin: 20px 0 10px 0; border-left: 3px solid var(--neon-green); padding-left: 10px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #1a1a1a;
+        }
+
+        th { background: #111; }
+
+        /* Live Feed */
+        #intel-feed {
+            background: var(--panel-bg);
+            border: 1px solid #222;
+            padding: 15px;
+            font-size: 0.75rem;
+            height: 450px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111; }
+        .log-alert { color: var(--alert-red); }
+
+        .disclaimer {
+            grid-column: span 2;
+            border: 1px solid var(--alert-red);
