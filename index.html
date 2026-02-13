@@ -3,103 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // SECURE ACCESS</title>
+    <title>CYBERNETIX // OSINT & MEDIA</title>
     <style>
         :root {
-            --neon-green: #00ff41;
-            --dark-bg: #050505;
-            --panel-bg: rgba(20, 20, 20, 0.95);
-            --card-border: #333;
-            --yt-red: #ff0000;
+            --neon: #00ff41;
+            --bg: #050505;
+            --glass: rgba(15, 15, 15, 0.95);
+            --border: #1a1a1a;
         }
 
-        body {
-            background-color: var(--dark-bg);
-            background-image: radial-gradient(circle at 2px 2px, rgba(0, 255, 65, 0.05) 1px, transparent 0);
-            background-size: 40px 40px;
-            color: var(--neon-green);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            display: none; /* Hidden until password is correct */
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: var(--neon);
+            font-family: 'Courier New', monospace;
             height: 100vh;
+            overflow: hidden;
         }
 
-        nav { width: 280px; background: #000; border-right: 2px solid var(--neon-green); padding: 25px; display: flex; flex-direction: column; }
-        .vpn-panel { background: #111; border: 1px dashed var(--neon-green); padding: 15px; margin: 20px 0; font-size: 0.8rem; }
-        .status-on { color: var(--neon-green); font-weight: bold; }
-        .status-off { color: #555; }
-        main { flex: 1; padding: 30px; overflow-y: auto; }
-        .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--panel-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 4px; }
-        input { background: #000; border: 1px solid #444; color: var(--neon-green); padding: 10px; width: 90%; margin-bottom: 10px; }
-        .btn { background: var(--neon-green); color: #000; border: none; padding: 10px 15px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-        .btn-yt { background: var(--yt-red); color: white; }
+        /* --- LOGIN UI --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .login-box {
+            border: 1px solid var(--neon);
+            padding: 40px;
+            background: #0a0a0a;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            text-align: center;
+        }
+
+        .login-box input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #333;
+            color: var(--neon);
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            margin-top: 20px;
+            width: 250px;
+        }
+
+        .login-box input:focus { border-bottom-color: var(--neon); }
+
+        /* --- DASHBOARD UI --- */
+        #dashboard {
+            display: none; /* Revealed after login */
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+        }
+
+        nav {
+            background: #000;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        .vpn-stat {
+            background: #0a0a0a;
+            border-left: 3px solid var(--neon);
+            padding: 10px;
+            margin: 20px 0;
+            font-size: 0.8rem;
+        }
+
+        main {
+            padding: 40px;
+            overflow-y: auto;
+            background-image: radial-gradient(circle, #111 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .card:hover { border-color: var(--neon); transform: translateY(-3px); }
+
+        .btn {
+            background: var(--neon);
+            color: black;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .btn:hover { opacity: 0.8; }
+
+        input[type="text"] {
+            width: 90%;
+            background: #000;
+            border: 1px solid #333;
+            color: var(--neon);
+            padding: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <h1>CYBERNETIX_</h1>
-    <div class="vpn-panel">
-        <p>GATEWAY: <span id="vpn-ip">124.88.XX.01</span></p>
-        <p>VPN: <span id="vpn-status" class="status-off">DISCONNECTED</span></p>
-        <button class="btn" onclick="toggleVPN()" style="font-size: 0.7rem;">TOGGLE VPN</button>
-    </div>
-</nav>
-
-<main>
-    <h2 style="border-bottom: 1px solid #333; padding-bottom: 10px;">MEDIA & UTILITIES</h2>
-    <div class="tool-grid">
-        <div class="card">
-            <h3>Video Downloader</h3>
-            <input type="text" id="yt-url" placeholder="Paste YouTube Link...">
-            <button class="btn btn-yt" onclick="processMedia('MP4')">Download MP4</button>
-        </div>
-        <div class="card">
-            <h3>MP3 Converter</h3>
-            <input type="text" id="yt-audio-url" placeholder="Paste YouTube Link...">
-            <button class="btn" style="background:#fff" onclick="processMedia('MP3')">Convert to MP3</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="margin:0">SYSTEM_AUTH</h2>
+            <p style="font-size: 0.7rem; color: #555;">ENCRYPTION: SHA-256</p>
+            <input type="password" id="pass-input" placeholder="ACCESS KEY" onkeypress="handleEnter(event)">
+            <p id="err-msg" style="color:red; font-size:0.7rem; margin-top:10px; visibility:hidden;">[!] INVALID_KEY</p>
         </div>
     </div>
-</main>
 
-<script>
-    // --- SECURE HASH CHECK ---
-    async function checkAccess() {
-        const targetHash = "78b4793f71c4943f60f6120e290f670742f53488289569736fdfd5d086576d1a";
-        const password = prompt("ENTER SYSTEM KEY:");
-        
-        if (!password) {
-            document.body.innerHTML = "<h1>ACCESS DENIED</h1>";
-            document.body.style.display = "block";
-            return;
+    <div id="dashboard" style="display:none;">
+        <nav>
+            <h1 style="letter-spacing: 2px;">CYBERNETIX</h1>
+            <div class="vpn-stat">
+                <p>UPLINK: <span style="color:white">SECURE</span></p>
+                <p>VPN: <span id="v-stat" style="color:#555">OFF</span></p>
+                <button onclick="toggleVPN()" style="background:transparent; color:var(--neon); border:1px solid var(--neon); font-size:0.6rem; cursor:pointer;">ENCRYPT</button>
+            </div>
+            <p style="font-size:0.7rem; color:#444">> SESSION_ID: 8821-X</p>
+        </nav>
+
+        <main>
+            <h2 style="margin-bottom:30px;">// OPERATIONAL_MODULES</h2>
+            <div class="grid">
+                
+                <div class="card">
+                    <span style="font-size:0.7rem; color:#888;">MEDIA_EXTRACTOR</span>
+                    <h3>YouTube Video (MP4)</h3>
+                    <input type="text" id="yt-mp4" placeholder="Enter URL...">
+                    <button class="btn" onclick="simTask('MP4')">GENERATE DOWNLOAD</button>
+                </div>
+
+                <div class="card">
+                    <span style="font-size:0.7rem; color:#888;">AUDIO_EXTRACTOR</span>
+                    <h3>YouTube Audio (MP3)</h3>
+                    <input type="text" id="yt-mp3" placeholder="Enter URL...">
+                    <button class="btn" onclick="simTask('MP3')">EXTRACT AUDIO</button>
+                </div>
+
+                <div class="card">
+                    <span style="font-size:0.7rem; color:#888;">NETWORK_PROXY</span>
+                    <h3>VPN Proxy Control</h3>
+                    <select style="width:100%; padding:10px; background:#000; color:var(--neon); border:1px solid #333;">
+                        <option>Zurich, Switzerland</option>
+                        <option>Reykjavik, Iceland</option>
+                        <option>Tokyo, Japan</option>
+                    </select>
+                    <button class="btn">SWITCH NODE</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Hashed Password Check (shan13579@)
+        async function validate() {
+            const hash = "78b4793f71c4943f60f6120e290f670742f53488289569736fdfd5d086576d1a";
+            const input = document.getElementById('pass-input').value;
+            
+            const msgBuffer = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            if(hashHex === hash) {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'grid';
+            } else {
+                document.getElementById('err-msg').style.visibility = 'visible';
+                document.getElementById('pass-input').value = '';
+            }
         }
 
-        // Convert input to SHA-256
-        const msgBuffer = new TextEncoder().encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        function handleEnter(e) { if(e.key === 'Enter') validate(); }
 
-        if (hashHex === targetHash) {
-            document.body.style.display = "flex";
-        } else {
-            alert("INCORRECT KEY.");
-            window.location.reload();
+        function toggleVPN() {
+            const s = document.getElementById('v-stat');
+            s.innerText = (s.innerText === "OFF") ? "ACTIVE" : "OFF";
+            s.style.color = (s.innerText === "ACTIVE") ? "#00ff41" : "#555";
         }
-    }
-    
-    checkAccess();
 
-    function toggleVPN() {
-        let status = document.getElementById('vpn-status');
-        status.innerText = (status.innerText === "DISCONNECTED") ? "CONNECTED [AES-256]" : "DISCONNECTED";
-        status.className = (status.innerText.includes("CONNECTED")) ? "status-on" : "status-off";
-    }
-
-    function processMedia(type) {
-        alert("Extraction sequence initiated for " + type);
-    }
-</script>
+        function simTask(type) {
+            alert("Uplink established. Beginning " + type + " extraction protocol...");
+        }
+    </script>
 </body>
 </html>
