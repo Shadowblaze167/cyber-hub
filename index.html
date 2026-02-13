@@ -3,148 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_VISUAL_UPGRADE</title>
+    <title>OMNI_X_WORLD_DOMINATION</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 20, 0, 0.9); --border: 1px solid var(--neon); }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 15, 0, 0.95); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: #000; color: #aaa; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
         canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
-        /* --- BIOS DECOY --- */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; display: block; }
+        /* --- STAGE 0: BIOS --- */
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; }
         .cursor { display: inline-block; width: 10px; height: 18px; background: #ccc; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- COOL MATRIX LOGIN --- */
-        #login-screen { 
-            position: fixed; inset: 0; z-index: 500; background: radial-gradient(circle, rgba(0,40,0,0.4) 0%, rgba(0,0,0,1) 100%);
-            display: none; justify-content: center; align-items: center; flex-direction: column;
-        }
+        /* --- STAGE 1: MATRIX LOGIN --- */
+        #login-screen { position: fixed; inset: 0; z-index: 500; background: #000; display: none; justify-content: center; align-items: center; }
         .login-card { 
-            border: var(--border); padding: 60px; text-align: center; background: rgba(0,0,0,0.9); 
-            box-shadow: 0 0 100px rgba(0,255,65,0.15); position: relative; overflow: hidden;
-            backdrop-filter: blur(10px);
+            border: var(--border); padding: 50px; text-align: center; background: rgba(0,10,0,0.9); 
+            box-shadow: 0 0 50px var(--neon); transition: 1s cubic-bezier(0.85, 0, 0.15, 1);
         }
-        /* Scanning Laser Line */
-        .login-card::after {
-            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 2px;
-            background: var(--neon); box-shadow: 0 0 15px var(--neon);
-            animation: scan 4s linear infinite;
-        }
-        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+        .shatter { transform: scale(5); opacity: 0; pointer-events: none; }
+        input { background: transparent; border: none; border-bottom: 2px solid #333; color: var(--neon); padding: 10px; width: 280px; text-align: center; font-size: 1.5rem; outline: none; }
 
-        h2 { letter-spacing: 15px; color: var(--neon); text-shadow: 0 0 10px var(--neon); margin-bottom: 30px; font-size: 1.2rem; }
-        input { 
-            background: transparent; border: 1px solid #222; color: var(--neon); padding: 15px; 
-            width: 300px; text-align: center; font-size: 1.2rem; outline: none; transition: 0.3s;
-            box-shadow: inset 0 0 10px rgba(0,255,65,0.1); font-family: 'Courier New', monospace;
-        }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 20px rgba(0,255,65,0.2); }
+        /* --- STAGE 2: WORLD DOMINATION UI --- */
+        #dashboard { display: none; grid-template-columns: 300px 1fr 280px; height: 100vh; position: relative; z-index: 10; opacity: 0; transition: 2s; }
+        
+        nav, aside { background: rgba(0, 5, 0, 0.9); border: 1px solid #111; padding: 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        nav { border-right: var(--border); }
+        aside { border-left: var(--border); }
 
-        /* --- DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; position: relative; z-index: 10; }
-        nav { background: var(--glass); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        main { padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.8); }
-        .card { background: rgba(0,255,65,0.05); border: 1px solid #111; padding: 20px; margin-bottom: 15px; }
-        #terminal { background: #000; height: 200px; padding: 15px; color: var(--neon); font-size: 0.8rem; border-top: 1px solid #222; overflow-y: auto; }
+        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 10px; text-align: left; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
+        .nav-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 10px var(--neon); }
+
+        main { flex-grow: 1; display: grid; grid-template-rows: 1fr 200px; background: rgba(0,0,0,0.8); }
+        
+        /* WORLD MAP AREA */
+        #map-container { position: relative; background: #050505; border: 1px solid #222; margin: 10px; overflow: hidden; }
+        .map-svg { width: 100%; height: 100%; opacity: 0.3; filter: drop-shadow(0 0 5px var(--neon)); }
+        .ping { position: absolute; width: 6px; height: 6px; background: red; border-radius: 50%; box-shadow: 0 0 10px red; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
+
+        #terminal { background: #000; border-top: var(--border); padding: 15px; color: var(--neon); font-size: 0.8rem; overflow-y: auto; white-space: pre-wrap; }
+
+        .stat-bar { font-size: 0.65rem; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
+        
+        .prog-wrap { height: 2px; background: #111; width: 100%; margin-top: 5px; display: none; }
+        .prog-bar { height: 100%; background: var(--neon); width: 0%; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--neon); }
     </style>
 </head>
-<body onkeydown="handleInput(event)">
+<body onkeydown="resetIdle(); handleInput(event)" onmousemove="resetIdle()">
 
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>CORE_LOADER v.1.4.2 [STABLE]</p>
-    <p>Checking local entropy... OK</p>
-    <p>Mounting Virtual Drive... FAILED</p>
-    <br>
-    <p>System halt. Press ESC to retry or enter bypass key. <span class="cursor"></span></p>
+    <p>AMIBIOS(C) 2026 // OMNI-RECOVERY SHELL</p>
+    <p>CPU Test: OK // RAM Test: 128GB OK // SYSTEM SECURE: NO</p>
+    <br><br>
+    <p style="color: #ff3131;">FATAL: DISK BOOT FAILURE</p>
+    <p>Waiting for manual override... <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
-    <div class="login-card">
-        <h2>CORE_DECRYPT</h2>
-        <p style="font-size: 0.6rem; color: #444; margin-bottom: 20px;">ENCRYPTION: AES-256-GCM // TRACE_STATUS: ACTIVE</p>
-        <input type="password" id="passInput" placeholder="********" onkeypress="if(event.key==='Enter') validate()">
-        <p id="error-msg" style="color: red; font-size: 0.7rem; margin-top: 15px; display: none;">HASH_MISMATCH: ACCESS DENIED</p>
+    <div class="login-card" id="lCard">
+        <h2 style="letter-spacing: 12px; color: var(--neon);">IDENT_AUTH</h2>
+        <input type="password" id="passInput" placeholder="KEY_HASH" onkeypress="if(event.key==='Enter') validate()">
     </div>
 </div>
 
 <div id="dashboard">
-    <nav>
-        <h3 style="color:white; letter-spacing: 2px;">OMNI_SHELL</h3>
-        <div style="font-size: 0.7rem; border: 1px solid #222; padding: 10px; background: rgba(0,0,0,0.5);">
-            NODE: [STOCKHOLM_04]<br>
-            STATUS: <span style="color:var(--neon)">CONNECTED</span>
-        </div>
-        <button class="action-btn" style="background:#222; color:red; margin-top:auto; padding:10px; border:1px solid red; cursor:pointer;" onclick="location.reload()">TERMINATE_SESSION</button>
-    </nav>
+    <nav id="tool-nav">
+        <h4 style="color:white; border-bottom:1px solid #333; padding-bottom:5px;">200+ TOOLS</h4>
+        </nav>
+
     <main>
-        <div class="card">
-            <h3>SYSTEM_LOGS</h3>
-            <div id="terminal"></div>
+        <div id="map-container">
+            <svg class="map-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                <path d="M150,150 Q400,50 800,150 T950,300" stroke="#00ff41" fill="none" stroke-width="0.5" />
+                <circle cx="200" cy="150" r="3" fill="#00ff41" />
+                <circle cx="800" cy="150" r="3" fill="#00ff41" />
+            </svg>
+            <div style="position:absolute; top:10px; left:10px; font-size:0.7rem; color:var(--neon);">GLOBAL_THREAT_MONITOR</div>
         </div>
+        <div id="terminal"></div>
     </main>
+
+    <aside id="system-stats">
+        <h4 style="color:white">SYSTEM_SYNC</h4>
+        <div class="stat-bar">
+            IP: <span id="v-ip">FETCHING...</span><br>
+            ST: <span id="v-stat" style="color:red">NON-SECURE</span><br>
+            PURGE: <span id="idle-txt">300s</span>
+        </div>
+        <button class="nav-btn" onclick="toggleVPN()">TOGGLE_VPN</button>
+        <button class="nav-btn" onclick="downloadLogs()">SAVE_LOGS</button>
+        <button class="nav-btn" style="background:red; color:white; border:none; margin-top:auto;" onclick="location.reload()">ERASE_ALL</button>
+    </aside>
 </div>
 
 <script>
-    // Matrix Engine (High Density)
+    // Matrix Engine
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "0101010101010101110101010101010101010001010101";
-    const drops = Array(Math.floor(canvas.width/14)).fill(1);
-    
+    const chars = "0123456789ABCDEF";
+    const drops = Array(Math.floor(canvas.width/16)).fill(1);
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0F0"; ctx.font = "14px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, y*14);
-            if(y*14 > canvas.height && Math.random() > 0.98) drops[i] = 0;
+            ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16);
+            if(y*16 > canvas.height && Math.random() > 0.98) drops[i] = 0;
             drops[i]++;
         });
     }
     setInterval(draw, 35);
 
-    let buffer = "";
+    let buffer = "", logs = [], idleTime = 0;
+
+    // Features Generator (200+ Combinations)
+    const prefixes = ["BRUTE", "SQL", "PACKET", "KERNEL", "SATELLITE", "NEURAL", "REMOTE", "SPOOF", "SNIFF", "BYPASS"];
+    const suffixes = ["CRACK", "INJECT", "SNIFFER", "FLIP", "UPLINK", "SYNC", "ACCESS", "WIPE", "MIRROR", "SCAN"];
+
+    function loadFeatures() {
+        const nav = document.getElementById('tool-nav');
+        for(let i=1; i<=200; i++) {
+            let p = prefixes[Math.floor(Math.random()*prefixes.length)];
+            let s = suffixes[Math.floor(Math.random()*suffixes.length)];
+            let btn = document.createElement('button');
+            btn.className = "nav-btn";
+            btn.innerHTML = `[MOD_${i}] ${p}_${s}`;
+            btn.onclick = () => triggerAction(`${p}_${s}`);
+            nav.appendChild(btn);
+        }
+    }
+
+    function triggerAction(name) {
+        typeLog(`Initializing sub-routine: ${name}`);
+        // Spawn ping on map
+        const map = document.getElementById('map-container');
+        const ping = document.createElement('div');
+        ping.className = "ping";
+        ping.style.left = Math.random()*90 + "%";
+        ping.style.top = Math.random()*80 + "%";
+        map.appendChild(ping);
+        setTimeout(() => ping.remove(), 2000);
+    }
+
+    // Access Logic
     function handleInput(e) {
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
             document.getElementById('bios-screen').style.display = "none";
             document.getElementById('login-screen').style.display = "flex";
-            canvas.style.opacity = "0.8"; buffer = "";
+            canvas.style.opacity = "0.7"; buffer = "";
         }
     }
 
-    function validate() {
-        const input = document.getElementById('passInput');
-        const err = document.getElementById('error-msg');
-        if(input.value === "admin@99") {
-            document.getElementById('login-screen').style.display = "none";
-            document.getElementById('dashboard').style.display = "grid";
-            typeLog("Authentication successful. Decrypting system sectors...");
-            typeLog("Welcome to OMNI_SHELL. All modules active.");
-        } else {
-            err.style.display = "block";
-            input.value = "";
-            setTimeout(() => { err.style.display = "none"; }, 2000);
+    async function validate() {
+        if(document.getElementById('passInput').value === "admin@99") {
+            const card = document.getElementById('lCard');
+            card.classList.add('shatter');
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = "none";
+                const dash = document.getElementById('dashboard');
+                dash.style.display = "grid";
+                setTimeout(() => dash.style.opacity = "1", 50);
+                loadFeatures();
+                typeLog("Omni-X God-Mode Engaged. World map synchronized.");
+                fetchIP();
+            }, 800);
         }
+    }
+
+    async function fetchIP() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            document.getElementById('v-ip').innerText = data.ip;
+        } catch { document.getElementById('v-ip').innerText = "127.0.0.1"; }
     }
 
     function typeLog(text) {
-        const t = document.getElementById('terminal');
-        const d = document.createElement('div');
+        const t = document.getElementById('terminal'), d = document.createElement('div');
         t.appendChild(d);
-        let i = 0;
-        function typing() {
-            if(i < text.length) {
-                d.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(typing, 20);
-                t.scrollTop = t.scrollHeight;
-            }
+        d.innerHTML = `[${new Date().toLocaleTimeString()}] > ${text}`;
+        t.scrollTop = t.scrollHeight;
+        logs.push(d.innerHTML);
+    }
+
+    function toggleVPN() {
+        const vS = document.getElementById('v-stat');
+        if(vS.innerText === "NON-SECURE") {
+            vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
+            typeLog("VPN Uplink: Active via Switzerland Node.");
+        } else {
+            vS.innerText = "NON-SECURE"; vS.style.color = "red";
+            typeLog("VPN Uplink: Disconnected.");
         }
-        typing();
+    }
+
+    function resetIdle() { idleTime = 0; }
+    setInterval(() => {
+        idleTime++;
+        document.getElementById('idle-txt').innerText = `${300 - idleTime}s`;
+        if(idleTime >= 300) location.reload();
+    }, 1000);
+
+    function downloadLogs() {
+        const element = document.createElement('a');
+        const file = new Blob([logs.join('\n')], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = "omni_logs.txt";
+        element.click();
     }
 </script>
 </body>
