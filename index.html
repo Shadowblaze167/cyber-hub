@@ -3,56 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_ULTIMATE_RAIN</title>
+    <title>OMNI_X_SINGULARITY_FINAL</title>
     <style>
-        :root { --neon: #00ff41; --dim: #002200; --glass: rgba(0, 15, 0, 0.8); }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
+        :root { 
+            --neon: #00ff41; 
+            --dim: #002200; 
+            --glass: rgba(0, 10, 0, 0.85); 
+            --border: rgba(0, 255, 65, 0.3); 
+        }
         
-        /* THE MATRIX RAIN - GLOBAL LAYER */
-        canvas { position: fixed; inset: 0; z-index: 0; }
+        body, html { 
+            margin: 0; padding: 0; 
+            background: #000; color: var(--neon); 
+            font-family: 'JetBrains Mono', 'Courier New', monospace; 
+            height: 100vh; overflow: hidden; 
+        }
+        
+        /* 1. GLOBAL MATRIX RAIN LAYER (Background) */
+        canvas { 
+            position: fixed; inset: 0; z-index: 0; 
+            opacity: 0.8; pointer-events: none;
+        }
 
-        /* --- STAGE 0: BIOS --- */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #444; }
-        .cursor { display: inline-block; width: 8px; height: 15px; background: #444; animation: blink 1s infinite; }
+        /* 2. STEALTH BIOS LAYER */
+        #bios-screen { 
+            position: fixed; inset: 0; z-index: 1000; 
+            background: #000; padding: 40px; color: #444; 
+        }
+        .cursor { 
+            display: inline-block; width: 8px; height: 18px; 
+            background: #444; animation: blink 1s infinite; 
+        }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- STAGE 1: LOGIN --- */
-        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; }
+        /* 3. LIQUID GLASS LOGIN LAYER */
+        #login-screen { 
+            position: fixed; inset: 0; z-index: 500; 
+            display: none; justify-content: center; align-items: center; 
+        }
         .login-card { 
             position: relative; padding: 60px; text-align: center; 
-            background: var(--glass); border: 1px solid var(--neon);
-            backdrop-filter: blur(12px); box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            border-radius: 4px;
+            background: var(--glass); 
+            border: 1px solid var(--neon);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 0 60px rgba(0, 255, 65, 0.15); 
+            border-radius: 8px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .login-card h2 { 
+            letter-spacing: 8px; font-size: 0.9rem; 
+            margin-bottom: 30px; opacity: 0.8; color: #fff; text-shadow: 0 0 10px var(--neon);
         }
         input { 
-            background: transparent; border: none; border-bottom: 2px solid var(--dim); 
-            color: #fff; padding: 10px; width: 280px; text-align: center; font-size: 1.5rem; 
-            outline: none; transition: 0.3s; letter-spacing: 5px; margin-top: 20px;
+            background: rgba(0, 20, 0, 0.6); border: 1px solid var(--dim); color: #fff; 
+            padding: 15px; width: 260px; text-align: center; font-size: 1.2rem; 
+            outline: none; transition: 0.3s; letter-spacing: 6px; border-radius: 4px;
+            font-family: inherit;
         }
-        input:focus { border-color: var(--neon); }
-
-        /* --- STAGE 2: DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box; }
+        input:focus { 
+            border-color: var(--neon); 
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.3); 
+        }
         
+        /* Animation for successful login */
+        .implode { 
+            transform: scale(0.9); opacity: 0; filter: blur(20px); 
+        }
+
+        /* 4. MAIN DASHBOARD GRID */
+        #dashboard { 
+            display: none; 
+            grid-template-columns: 260px 1fr 260px; 
+            height: 100vh; position: relative; z-index: 10; 
+            padding: 20px; gap: 20px; box-sizing: border-box; 
+        }
         .panel { 
             background: var(--glass); backdrop-filter: blur(10px); 
-            border: 1px solid rgba(0, 255, 65, 0.2); display: flex; flex-direction: column;
-            border-radius: 2px;
+            border: 1px solid var(--border); display: flex; flex-direction: column; 
+            overflow: hidden; border-radius: 6px; 
         }
-
-        .panel-hdr { background: rgba(0, 255, 65, 0.1); padding: 10px; font-size: 0.65rem; text-align: center; border-bottom: 1px solid rgba(0, 255, 65, 0.2); letter-spacing: 4px; }
+        .p-hdr { 
+            background: rgba(0, 255, 65, 0.15); padding: 12px; 
+            font-size: 0.7rem; letter-spacing: 3px; text-align: center; 
+            border-bottom: 1px solid var(--border); 
+            color: #fff; font-weight: bold;
+        }
         
         .nav-btn { 
-            background: transparent; border: none; color: #008822; padding: 12px 20px; 
-            text-align: left; cursor: pointer; font-size: 0.75rem; transition: 0.2s;
-            text-transform: uppercase;
+            background: transparent; border: none; color: #009922; 
+            padding: 12px 15px; text-align: left; cursor: pointer; 
+            font-size: 0.75rem; transition: 0.2s; text-transform: uppercase; 
+            border-left: 2px solid transparent; font-family: inherit;
         }
-        .nav-btn:hover { color: var(--neon); background: rgba(0, 255, 65, 0.1); border-left: 3px solid var(--neon); }
+        .nav-btn:hover { 
+            color: var(--neon); background: rgba(0, 255, 65, 0.1); 
+            border-left: 2px solid var(--neon); padding-left: 20px;
+        }
 
-        #terminal { flex-grow: 1; padding: 20px; font-size: 0.85rem; overflow-y: auto; color: #aaffaa; line-height: 1.6; scrollbar-width: none; }
-        
-        .stat-row { padding: 15px 20px; font-size: 0.75rem; border-bottom: 1px solid rgba(0, 255, 65, 0.05); display: flex; justify-content: space-between; }
-        .val { color: var(--neon); font-weight: bold; }
+        #terminal { 
+            flex-grow: 1; padding: 20px; font-size: 0.85rem; 
+            overflow-y: auto; color: #aaffaa; line-height: 1.6; 
+            text-shadow: 0 0 2px rgba(0,255,65,0.3);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #004411; border-radius: 3px; }
+
+        .stat-row { 
+            padding: 15px; font-size: 0.75rem; 
+            border-bottom: 1px solid rgba(0, 255, 65, 0.1); 
+            display: flex; justify-content: space-between; 
+        }
+        .val { color: var(--neon); font-weight: bold; text-shadow: 0 0 5px var(--neon); }
     </style>
 </head>
 <body onkeydown="resetIdle(); handleInput(event)">
@@ -60,53 +122,57 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>> OMNI_CORE_INIT_V.10.4</p>
-    <p>> CHECKING_KERNEL_STABILITY... OK</p>
-    <p>> NETWORK_INTERFACE... [REDACTED]</p>
+    <p>> OMNI_BOOTLOADER_V9.0</p>
+    <p>> INTEGRITY_CHECK... [PASS]</p>
+    <p>> SECURE_CONNECTION... [FAILED]</p>
     <br>
-    <p>> SYSTEM HALTED. ACCESS RESTRICTED. <span class="cursor"></span></p>
+    <p style="color: #666">> SYSTEM_LOCKED. TERMINAL_IDLE. <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
-    <div class="login-card">
-        <div style="font-size: 0.7rem; letter-spacing: 8px; opacity: 0.5;">ENCRYPTED_AUTH</div>
-        <input type="password" id="passInput" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') validate()">
+    <div class="login-card" id="lCard">
+        <h2>IDENTITY_VERIFICATION</h2>
+        <input type="password" id="passInput" placeholder="●●●●●●●●" onkeypress="if(event.key==='Enter') validate()">
+        <p style="font-size: 9px; color: #555; margin-top: 25px; letter-spacing: 3px;">ENCRYPTION: AES-256 // NODE: SECURE</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav class="panel">
-        <div class="panel-hdr">OPERATIONS</div>
+        <div class="p-hdr">MODULES</div>
         <div id="tool-nav" style="display:flex; flex-direction:column; padding: 10px 0;"></div>
     </nav>
     <main class="panel">
-        <div class="panel-hdr">COMMAND_LOG</div>
+        <div class="p-hdr">CONSOLE_OUTPUT</div>
         <div id="terminal"></div>
     </main>
     <aside class="panel">
-        <div class="panel-hdr">TELEMETRY</div>
-        <div class="stat-row">PUBLIC_IP <span class="val" id="v-ip">...</span></div>
-        <div class="stat-row">PROXY <span class="val" id="v-stat" style="color:red">INACTIVE</span></div>
-        <div class="stat-row">AUTO_PURGE <span class="val" id="idle-txt">300s</span></div>
-        <button class="nav-btn" style="margin-top:auto;" onclick="toggleVPN()">SECURE_BRIDGE</button>
-        <button class="nav-btn" onclick="downloadLogs()">EXTRACT_LOGS</button>
-        <button class="nav-btn" style="color:red; border-top: 1px solid rgba(255,0,0,0.2);" onclick="location.reload()">KILL_SESSION</button>
+        <div class="p-hdr">NETWORK_STATUS</div>
+        <div class="stat-row">IP_ADDR <span class="val" id="v-ip">FETCHING...</span></div>
+        <div class="stat-row">VPN_TUNNEL <span class="val" id="v-stat" style="color:#ff3333; text-shadow:none;">OFFLINE</span></div>
+        <div class="stat-row">SESSION_TTL <span class="val" id="idle-txt">300s</span></div>
+        
+        <button class="nav-btn" style="margin-top:auto;" onclick="toggleVPN()">[ TOGGLE_PROXY ]</button>
+        <button class="nav-btn" onclick="downloadLogs()">[ DOWNLOAD_LOGS ]</button>
+        <button class="nav-btn" style="color:#ff3333; border-top:1px solid rgba(255,0,0,0.2);" onclick="location.reload()">[ KILL_SWITCH ]</button>
     </aside>
 </div>
 
 <script>
-    // THE MATRIX RAIN ENGINE
+    // --- 1. MATRIX RAIN ENGINE (60FPS) ---
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; 
+    canvas.height = window.innerHeight;
     
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%*";
-    const fontSize = 16;
+    // Katakana + Latin characters for authentic look
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%*ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ";
+    const fontSize = 14;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // Lower opacity trail for longer rain
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0F0";
         ctx.font = fontSize + "px monospace";
@@ -118,78 +184,102 @@
             drops[i]++;
         }
     }
-    setInterval(draw, 35);
+    setInterval(draw, 33);
 
-    let buffer = "", logs = [], idleTime = 0;
-
-    // STEALTH TRIGGER
+    // --- 2. SECURITY LOGIC ---
+    let buffer = "";
+    
     function handleInput(e) {
-        buffer += e.key.toLowerCase();
-        if(buffer.includes("root")) {
-            document.getElementById('bios-screen').style.display = "none";
-            document.getElementById('login-screen').style.display = "flex";
-            buffer = "";
+        // Only track input if we are on the BIOS screen
+        if(document.getElementById('bios-screen').style.display !== "none") {
+            buffer += e.key.toLowerCase();
+            // Keep buffer short to prevent memory leak
+            if (buffer.length > 10) buffer = buffer.slice(-10);
+            
+            if(buffer.includes("root")) {
+                document.getElementById('bios-screen').style.display = "none";
+                document.getElementById('login-screen').style.display = "flex";
+                // UX FIX: Auto-focus the input field
+                setTimeout(() => document.getElementById('passInput').focus(), 100);
+                buffer = "";
+            }
         }
     }
 
-    // VALIDATION
     function validate() {
-        if(document.getElementById('passInput').value === "admin@99") {
-            document.getElementById('login-screen').style.display = "none";
-            document.getElementById('dashboard').style.display = "grid";
-            loadTools();
-            log("AUTHORIZATION GRANTED. SYSTEM_ROOT ACCESSED.");
-            fetchIP();
+        const input = document.getElementById('passInput').value;
+        // BASE64 CHECK for "admin@99" -> "YWRtaW5AOTk="
+        if(btoa(input) === "YWRtaW5AOTk=") { 
+            const card = document.getElementById('lCard');
+            card.classList.add('implode'); // Trigger Animation
+            
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = "none";
+                document.getElementById('dashboard').style.display = "grid";
+                loadTools();
+                log("ACCESS_GRANTED: Root privileges assigned to session.");
+                fetchIP();
+            }, 500);
+        } else {
+            log("AUTH_ERR: Invalid handshake protocol.");
+            document.getElementById('passInput').value = "";
+            document.getElementById('passInput').style.borderColor = "red";
+            setTimeout(() => document.getElementById('passInput').style.borderColor = "var(--dim)", 500);
         }
     }
 
-    // 20 CORE MODULES
+    // --- 3. SYSTEM FUNCTIONS ---
+    let logs = [], idleTime = 0;
+
     function loadTools() {
         const nav = document.getElementById('tool-nav');
         const list = [
-            "KERNEL_SPOOF", "SQL_INJECT", "RSA_DECRYPT", "MAC_GHOST", "TRACE_CLEAN", 
-            "ROOT_SHELL", "DNS_POISON", "PACKET_SIFT", "NODE_KILL", "NET_CRAWL",
-            "BASH_BRUTE", "XSS_BYPASS", "SAML_FORGE", "PROXY_HOP", "SALT_CRACK",
-            "DATA_EXFIL", "LOG_PURGE", "CPU_STRESS", "REMOTE_WIPE", "NET_MAP"
+            "KERNEL_PANIC", "SQL_INJECTION", "RSA_CRACK", "MAC_SPOOF", "TRACE_WIPE", 
+            "ROOT_SHELL", "DNS_POISON", "PACKET_SNIFF", "NODE_KILL", "NET_CRAWL", 
+            "BASH_BRUTE", "XSS_VECTOR", "SAML_FORGE", "PROXY_CHAIN", "SALT_HASH", 
+            "DATA_EXFIL", "LOG_CLEAN", "CPU_OVERCLK", "REMOTE_WIPE", "GRID_MAP"
         ];
-        list.forEach(item => {
+        list.forEach((item, idx) => {
             let btn = document.createElement('button');
             btn.className = "nav-btn";
             btn.innerHTML = `> ${item}`;
-            btn.onclick = () => log(`Executing: ${item}... OK.`);
+            btn.onclick = () => log(`Executing Payload [${item}]... SUCCESS.`);
             nav.appendChild(btn);
         });
     }
 
-    // UTILITIES
     async function fetchIP() {
         try {
             const res = await fetch('https://api.ipify.org?format=json');
             const data = await res.json();
             document.getElementById('v-ip').innerText = data.ip;
-        } catch { document.getElementById('v-ip').innerText = "127.0.0.1"; }
+        } catch { document.getElementById('v-ip').innerText = "127.0.0.1 (LOCAL)"; }
     }
 
     function log(text) {
         const t = document.getElementById('terminal'), d = document.createElement('div');
         t.appendChild(d);
-        d.innerHTML = `<span style="opacity:0.3">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
+        d.innerHTML = `<span style="opacity:0.5; font-size:10px;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
         t.scrollTop = t.scrollHeight;
         logs.push(d.innerText);
     }
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "INACTIVE") {
-            vS.innerText = "ACTIVE"; vS.style.color = "var(--neon)";
-            log("VPN TUNNEL ESTABLISHED VIA OMNI_PROXY.");
+        if(vS.innerText === "OFFLINE") {
+            vS.innerText = "ENCRYPTED"; 
+            vS.style.color = "var(--neon)"; vS.style.textShadow = "0 0 10px var(--neon)";
+            log("VPN_TUNNEL: Rerouting traffic via Node_Zero...");
         } else {
-            vS.innerText = "INACTIVE"; vS.style.color = "red";
-            log("CONNECTION EXPOSED: VPN TERMINATED.");
+            vS.innerText = "OFFLINE"; 
+            vS.style.color = "#ff3333"; vS.style.textShadow = "none";
+            log("WARNING: Secure tunnel collapsed.");
         }
     }
 
     function resetIdle() { idleTime = 0; }
+    
+    // Auto-Purge Timer
     setInterval(() => {
         idleTime++;
         document.getElementById('idle-txt').innerText = `${300 - idleTime}s`;
@@ -200,7 +290,7 @@
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "session_log.txt"; a.click();
+        a.download = "omni_session_log.txt"; a.click();
     }
 </script>
 </body>
