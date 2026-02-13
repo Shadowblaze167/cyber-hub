@@ -3,78 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // NEXUS_ZERO</title>
+    <title>CYBERNETIX // RECOVERY_CORE</title>
     <style>
-        :root { --neon: #00ff41; --glass: rgba(0, 15, 0, 0.95); --border: 1px solid var(--neon); }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
+        :root { --neon: #00ff41; --bg: #000; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
-        /* Matrix Rain */
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.6; }
-        #wrapper { position: relative; z-index: 10; height: 100vh; width: 100vw; }
+        /* High-Performance Matrix Background */
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
 
-        /* Login UI */
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: rgba(0,0,0,0.8); }
-        .login-card { background: #000; border: var(--border); padding: 40px; text-align: center; box-shadow: 0 0 20px rgba(0,255,65,0.2); }
-        input { background: #111; border: 1px solid #333; color: var(--neon); padding: 15px; width: 250px; text-align: center; font-size: 1.2rem; margin-bottom: 20px; outline: none; }
-        .btn { background: var(--neon); color: #000; font-weight: bold; border: none; padding: 12px 30px; cursor: pointer; text-transform: uppercase; width: 100%; }
+        /* UI Containers */
+        #main-wrapper { position: relative; z-index: 10; height: 100vh; width: 100vw; }
 
-        /* Dashboard UI */
-        #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; }
-        nav { background: #000; border-right: var(--border); padding: 20px; }
-        main { padding: 30px; overflow-y: auto; }
-        .card { background: var(--glass); border: 1px solid #222; padding: 20px; margin-bottom: 20px; }
-        .status-on { color: var(--neon); text-shadow: 0 0 5px var(--neon); }
+        /* Login Interface */
+        #login-screen { 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; background: rgba(0,0,0,0.85); 
+        }
+        .login-box { 
+            border: 1px solid var(--neon); padding: 40px; text-align: center; 
+            background: #000; box-shadow: 0 0 20px rgba(0,255,65,0.3); 
+        }
+        input { 
+            background: #111; border: 1px solid #444; color: var(--neon); 
+            padding: 12px; width: 250px; text-align: center; font-size: 1.2rem; 
+            margin-bottom: 20px; outline: none; 
+        }
+        .btn { 
+            background: var(--neon); color: #000; font-weight: bold; border: none; 
+            padding: 12px 20px; cursor: pointer; width: 100%; text-transform: uppercase;
+        }
+
+        /* Dashboard Interface */
+        #dashboard { display: none; grid-template-columns: 260px 1fr; height: 100vh; }
+        nav { background: rgba(0,0,0,0.9); border-right: 1px solid #222; padding: 20px; }
+        main { padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.4); }
+        
+        .card { background: rgba(0,15,0,0.9); border: 1px solid var(--neon); padding: 20px; margin-bottom: 20px; }
+        .term { background: #000; border: 1px solid #222; height: 200px; padding: 10px; font-size: 0.8rem; overflow-y: auto; color: var(--neon); }
+        
+        .status-on { color: var(--neon); font-weight: bold; }
         .status-off { color: #f00; }
-        #terminal { background: #000; border: 1px solid #222; height: 150px; padding: 10px; font-size: 0.8rem; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <canvas id="matrix"></canvas>
+    <canvas id="matrixCanvas"></canvas>
 
-    <div id="wrapper">
+    <div id="main-wrapper">
         <div id="login-screen">
-            <div class="login-card">
-                <h1 style="letter-spacing: 5px;">ACCESS_REQUIRED</h1>
-                <input type="password" id="passInput" placeholder="ENTER KEY">
-                <button class="btn" id="loginBtn">AUTHORIZE</button>
-                <p id="error" style="color:red; display:none; margin-top:10px;">[!] INVALID_KEY</p>
+            <div class="login-box">
+                <h2 style="letter-spacing: 5px;">SYSTEM LOCK</h2>
+                <input type="password" id="passInput" placeholder="KEY_ID">
+                <button class="btn" onclick="checkPass()">ACCESS</button>
             </div>
         </div>
 
         <div id="dashboard">
             <nav>
-                <h2>CNX_OS</h2>
-                <hr style="border:0; border-top:1px solid #222;">
-                <p>VPN: <span id="vpn-status" class="status-off">OFFLINE</span></p>
-                <p>IP: <span id="ip-addr">127.0.0.1</span></p>
-                <button class="btn" id="vpnBtn" style="font-size: 0.7rem; margin-top: 10px;">TOGGLE VPN</button>
-                <button class="btn" onclick="location.reload()" style="font-size: 0.7rem; margin-top: 10px; background: #333; color: #fff;">EXIT</button>
+                <h3>CNX_OS v7</h3>
+                <hr style="border:0; border-top:1px solid #222; margin: 20px 0;">
+                <p>UPLINK: <span id="vpn-status" class="status-off">INSECURE</span></p>
+                <p>NODE: <span id="node-id">LOCAL</span></p>
+                <button class="btn" style="font-size: 0.7rem;" onclick="toggleVPN()">BOOT VPN</button>
+                <button class="btn" style="margin-top: 10px; background: #222; color: #fff; font-size: 0.7rem;" onclick="location.reload()">LOGOUT</button>
             </nav>
             <main>
                 <div class="card">
-                    <h3>SYSTEM_TOOLS</h3>
-                    <button class="btn" style="width: auto;" onclick="addLog('Scanning local network...')">Port Scan</button>
-                    <button class="btn" style="width: auto; background: white;" onclick="addLog('Cleaning system logs...')">Deep Clean</button>
+                    <h3>HACKER_TOOLS</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" style="width: auto; font-size: 0.7rem;" onclick="addLog('Scanning ports...')">PORT_SCAN</button>
+                        <button class="btn" style="width: auto; font-size: 0.7rem;" onclick="addLog('Brute force initialized...')">BRUTE_FORCE</button>
+                        <button class="btn" style="width: auto; font-size: 0.7rem; background: white;" onclick="addLog('Wiping server logs...')">LOG_WIPE</button>
+                    </div>
                 </div>
-                <div id="terminal">
-                    <div>> BOOT_SEQUENCE_COMPLETE...</div>
+                <div class="term" id="terminal">
+                    <div>> INITIALIZING KERNEL... SUCCESS.</div>
+                    <div>> WAITING FOR COMMANDS...</div>
                 </div>
             </main>
         </div>
     </div>
 
     <script>
-        // --- 1. MATRIX RAIN ---
-        const canvas = document.getElementById('matrix');
+        // --- MATRIX RAIN ENGINE ---
+        const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const alphabet = "01";
+
+        const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const fontSize = 16;
         const columns = canvas.width / fontSize;
         const drops = Array(Math.floor(columns)).fill(1);
-        function drawMatrix() {
+
+        function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#0F0";
@@ -86,39 +108,42 @@
                 drops[i]++;
             }
         }
-        setInterval(drawMatrix, 40);
+        setInterval(draw, 35);
 
-        // --- 2. LOGIN LOGIC ---
-        const loginBtn = document.getElementById('loginBtn');
-        const passInput = document.getElementById('passInput');
-        const loginScreen = document.getElementById('login-screen');
-        const dashboard = document.getElementById('dashboard');
-
-        loginBtn.addEventListener('click', function() {
-            // DIRECT CHECK - NO ENCRYPTION ERRORS
-            if (passInput.value === "admin@99") {
-                loginScreen.style.display = "none";
-                dashboard.style.display = "grid";
-                addLog("User: admin@99 authorized successfully.");
+        // --- PASSWORD SYSTEM ---
+        function checkPass() {
+            const input = document.getElementById('passInput').value;
+            if (input === "admin@99") {
+                document.getElementById('login-screen').style.display = "none";
+                document.getElementById('dashboard').style.display = "grid";
+                addLog("Root access granted. Welcome, Admin.");
             } else {
-                document.getElementById('error').style.display = "block";
-                passInput.value = "";
+                alert("INVALID KEY");
             }
-        });
+        }
 
-        // --- 3. VPN & TOOLS ---
-        const vpnBtn = document.getElementById('vpnBtn');
-        const vpnStatus = document.getElementById('vpn-status');
-        const ipAddr = document.getElementById('ip-addr');
-
-        vpnBtn.addEventListener('click', function() {
-            if (vpnStatus.innerText === "OFFLINE") {
-                vpnStatus.innerText = "TUNNELED";
-                vpnStatus.className = "status-on";
-                ipAddr.innerText = "45.12.98.201";
-                addLog("VPN Connected: Zurich_Node_01 (AES-256)");
+        // --- VPN & LOGS ---
+        function toggleVPN() {
+            const status = document.getElementById('vpn-status');
+            const node = document.getElementById('node-id');
+            if (status.innerText === "INSECURE") {
+                status.innerText = "TUNNELED";
+                status.className = "status-on";
+                node.innerText = "SWEDEN_4";
+                addLog("VPN Active: Encrypting traffic via Sweden-Node-4.");
             } else {
-                vpnStatus.innerText = "OFFLINE";
-                vpnStatus.className = "status-off";
-                ipAddr.innerText = "127.0.0.1";
-                addLog("VPN Disconnected.");
+                status.innerText = "INSECURE";
+                status.className = "status-off";
+                node.innerText = "LOCAL";
+                addLog("VPN Disabled: Connection is now public.");
+            }
+        }
+
+        function addLog(msg) {
+            const term = document.getElementById('terminal');
+            term.innerHTML += `<div>[${new Date().toLocaleTimeString()}] > ${msg}</div>`;
+            term.scrollTop = term.scrollHeight;
+        }
+    </script>
+</body>
+</html>
