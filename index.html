@@ -3,128 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // NEXUS_OVERLORD_v9</title>
+    <title>CYBERNETIX // NEXUS_OVERLORD_v10</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 20, 0, 0.95); --border: 1px solid var(--neon); }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 15, 0, 0.95); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.8; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.7; }
         #ui-wrapper { position: relative; z-index: 10; height: 100vh; width: 100vw; }
 
         /* --- LOGIN --- */
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: rgba(0,0,0,0.9); }
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: rgba(0,0,0,0.95); }
         .login-box { border: var(--border); padding: 50px; text-align: center; background: #000; box-shadow: 0 0 30px var(--neon); }
         input { background: #111; border: 1px solid #444; color: var(--neon); padding: 15px; width: 280px; text-align: center; font-size: 1.2rem; margin-bottom: 20px; outline: none; letter-spacing: 5px; }
-        .btn { background: var(--neon); color: #000; font-weight: bold; border: none; padding: 12px 25px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        .btn { background: var(--neon); color: #000; font-weight: bold; border: none; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.2s; border-radius: 2px; }
+        .btn:hover { background: #fff; box-shadow: 0 0 15px #fff; }
 
         /* --- DASHBOARD --- */
-        #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; }
-        nav { background: rgba(0,0,0,0.95); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-        main { padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: rgba(0,0,0,0.4); }
+        #dashboard { display: none; grid-template-columns: 260px 1fr; height: 100vh; }
         
+        /* Sidebar Navigation */
+        nav { background: rgba(0, 5, 0, 0.98); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn { background: none; border: 1px solid #222; color: var(--neon); padding: 12px; text-align: left; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        .nav-btn:hover, .nav-btn.active { background: var(--neon); color: #000; border-color: var(--neon); }
+
+        /* Main Content & Tabs */
+        main { padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.4); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Grid & Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .card { background: var(--glass); border: 1px solid #222; padding: 15px; border-radius: 4px; position: relative; }
-        .card:hover { border-color: var(--neon); }
-        .card h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #fff; border-bottom: 1px solid #333; }
+        .card { background: var(--glass); border: 1px solid #333; padding: 20px; position: relative; }
+        .card h3 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 1px solid #222; padding-bottom: 5px; }
+
+        /* Terminal */
+        #terminal { background: #000; border: 1px solid #222; height: 150px; padding: 10px; font-size: 0.75rem; overflow-y: auto; margin-top: 20px; color: var(--neon); }
         
-        .term { background: #000; border: 1px solid #222; height: 150px; padding: 10px; font-size: 0.75rem; overflow-y: auto; color: var(--neon); }
-        .status-on { color: var(--neon); } .status-off { color: #f00; }
-        .tag { font-size: 0.6rem; background: var(--neon); color: #000; padding: 2px 5px; float: right; }
+        /* Status Elements */
+        .status-box { font-size: 0.7rem; border: 1px solid #333; padding: 10px; margin-bottom: 20px; }
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; background: #f00; }
+        .dot.on { background: var(--neon); box-shadow: 0 0 8px var(--neon); }
     </style>
 </head>
 <body>
 
-    <canvas id="matrixCanvas"></canvas>
+    <canvas id="matrix"></canvas>
 
     <div id="ui-wrapper">
         <div id="login-screen">
             <div class="login-box">
-                <h1 style="letter-spacing: 10px;">CNX_OVERLORD</h1>
-                <input type="password" id="passInput" placeholder="PASSKEY">
-                <button class="btn" onclick="checkAuth()">INITIALIZE</button>
+                <h1 style="letter-spacing: 10px;">CNX_v10</h1>
+                <input type="password" id="passInput" placeholder="KEY_ID" onkeypress="if(event.key==='Enter') login()">
+                <button class="btn" onclick="login()">AUTHORIZE</button>
             </div>
         </div>
 
         <div id="dashboard">
             <nav>
-                <h3>SYSTEM_V9</h3>
-                <div style="font-size: 0.7rem; border: 1px solid #333; padding: 10px;">
-                    <p>VPN: <span id="v-stat" class="status-off">DISCONNECTED</span></p>
-                    <p>NODE: <span id="v-node">NONE</span></p>
-                    <p>IP: <span id="v-ip">127.0.0.1</span></p>
-                    <p>FIREWALL: <span class="status-on">ACTIVE</span></p>
+                <h2 style="letter-spacing: 3px;">TERMINAL</h2>
+                <div class="status-box">
+                    <div><span id="vpn-dot" class="dot"></span>VPN: <span id="vpn-txt" style="color:red">OFF</span></div>
+                    <div>IP: <span id="ip-txt">127.0.0.1</span></div>
                 </div>
-                <button class="btn" style="font-size: 0.7rem;" onclick="toggleVPN()">1. TOGGLE VPN</button>
-                <button class="btn" style="font-size: 0.7rem;" onclick="addLog('Scanning local Wi-Fi...')">2. WI-FI SNIFFER</button>
-                <button class="btn" style="font-size: 0.7rem;" onclick="addLog('Packet injection started...')">3. INJECTOR</button>
-                <button class="btn" style="font-size: 0.7rem;" onclick="addLog('DNS cache poisoned.')">4. DNS POISON</button>
-                <button class="btn" style="font-size: 0.7rem; background: #222; color:#fff;" onclick="location.reload()">5. EMERGENCY EXIT</button>
+                <button class="nav-btn active" onclick="showTab('arsenal', this)">01. MAIN_ARSENAL</button>
+                <button class="nav-btn" onclick="showTab('network', this)">02. NETWORK_GATE</button>
+                <button class="nav-btn" onclick="showTab('security', this)">03. SECURITY_LAB</button>
+                <button class="nav-btn" onclick="showTab('media', this)">04. MEDIA_SERVER</button>
+                <button class="btn" style="margin-top:auto; background:#222; color:#fff;" onclick="location.reload()">LOCK_SYSTEM</button>
             </nav>
 
             <main>
-                <div class="grid">
-                    <div class="card"><h3>6. YT_VIDEO_DL</h3><input type="text" placeholder="URL..." style="width:80%"><button class="btn" style="font-size:0.6rem;" onclick="addLog('Fetching Video...')">GET MP4</button></div>
-                    <div class="card"><h3>7. YT_AUDIO_DL</h3><input type="text" placeholder="URL..." style="width:80%"><button class="btn" style="font-size:0.6rem; background:white" onclick="addLog('Extracting Audio...')">GET MP3</button></div>
-                    <div class="card"><h3>8. PORT_SCAN</h3><input type="text" placeholder="IP..." style="width:80%"><button class="btn" style="font-size:0.6rem" onclick="addLog('Scanning Ports...')">SCAN</button></div>
-                    <div class="card"><h3>9. SQL_INJECT</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Testing SQL vulnerability...')">TEST</button></div>
-                    <div class="card"><h3>10. MAC_SPOOF</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('New MAC: 0A:14:62:...')">GENERATE</button></div>
-                    <div class="card"><h3>11. BRUTE_FORCE</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Cracking MD5 hash...')">CRACK</button></div>
-                    <div class="card"><h3>12. DARK_WEB</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Routing to .onion node...')">CONNECT</button></div>
-                    <div class="card"><h3>13. PROXY_LIST</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Loading 4,500 proxies...')">LOAD</button></div>
-                    <div class="card"><h3>14. CCTV_SIM</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Accessing camera feed...')">OPEN</button></div>
-                    <div class="card"><h3>15. DB_LEAK</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Searching breached databases...')">SEARCH</button></div>
-                    <div class="card"><h3>16. SMS_BOMBER</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('SMS simulation running...')">START</button></div>
-                    <div class="card"><h3>17. D-DOS_GEN</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Flooding UDP packets...')">ATTACK</button></div>
-                    <div class="card"><h3>18. RAT_BUILDER</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Payload.exe generated.')">BUILD</button></div>
-                    <div class="card"><h3>19. GEO_LOCATE</h3><button class="btn" style="font-size:0.6rem" onclick="addLog('Locating IP source...')">FIND</button></div>
-                    <div class="card"><h3>20. LOG_WIPER</h3><button class="btn" style="font-size:0.6rem; background:red; color:white;" onclick="addLog('Cleaning all traces...')">WIPE</button></div>
+                <div id="arsenal" class="tab-content active">
+                    <div class="grid">
+                        <div class="card"><h3>PORT_SCANNER</h3><input type="text" placeholder="Target IP..." style="width:90%"><button class="btn" style="width:100%; margin-top:10px" onclick="log('Scanning ports...')">SCAN</button></div>
+                        <div class="card"><h3>MAC_SPOOFER</h3><p style="font-size:0.7rem">Generate virtual hardware ID.</p><button class="btn" style="width:100%" onclick="log('MAC Address changed to 00:1A:2B:3C:4D:5E')">SPOOF</button></div>
+                        <div class="card"><h3>SQL_PROBE</h3><button class="btn" style="width:100%" onclick="log('Checking database vulnerabilities...')">TEST INJECTION</button></div>
+                        <div class="card"><h3>HASH_CRACKER</h3><input type="text" placeholder="MD5/SHA..." style="width:90%"><button class="btn" style="width:100%; margin-top:10px" onclick="log('Decryption sequence started...')">BRUTE FORCE</button></div>
+                    </div>
                 </div>
-                <div class="term" id="terminal"><div>> KERNEL_READY. WAITING FOR COMMAND...</div></div>
+
+                <div id="network" class="tab-content">
+                    <div class="card">
+                        <h3>VPN_GATEWAY_v2</h3>
+                        <p>Current Node: <span id="node-txt">LOCAL_HOST</span></p>
+                        <button class="btn" style="width:200px" onclick="toggleVPN()">TOGGLE TUNNEL</button>
+                    </div>
+                    <div class="grid" style="margin-top:20px">
+                        <div class="card"><h3>DNS_POISON</h3><button class="btn" style="width:100%" onclick="log('DNS cache redirecting...')">POISON</button></div>
+                        <div class="card"><h3>PACKET_SNIFFER</h3><button class="btn" style="width:100%" onclick="log('Listening on Eth0...')">LISTEN</button></div>
+                    </div>
+                </div>
+
+                <div id="security" class="tab-content">
+                    <div class="grid">
+                        <div class="card"><h3>BRUTE_FORCE</h3><button class="btn" style="width:100%" onclick="log('Hydra module initialized...')">START</button></div>
+                        <div class="card"><h3>SMS_VERIFY_SIM</h3><button class="btn" style="width:100%" onclick="log('Bypassing 2FA simulation...')">BYPASS</button></div>
+                        <div class="card"><h3>LOG_WIPER</h3><button class="btn" style="width:100%; background:red; color:white;" onclick="log('Clearing bash_history...')">WIPE ALL</button></div>
+                        <div class="card"><h3>CCTV_ACCESS</h3><button class="btn" style="width:100%" onclick="log('Locating vulnerable DVRs...')">SCAN FEED</button></div>
+                    </div>
+                </div>
+
+                <div id="media" class="tab-content">
+                    <div class="grid">
+                        <div class="card"><h3>VIDEO_EXTRACT</h3><input type="text" placeholder="YT URL..." style="width:90%"><button class="btn" style="width:100%; margin-top:10px" onclick="log('Downloading MP4...')">DOWNLOAD</button></div>
+                        <div class="card"><h3>AUDIO_EXTRACT</h3><input type="text" placeholder="YT URL..." style="width:90%"><button class="btn" style="width:100%; margin-top:10px; background:white;" onclick="log('Downloading MP3...')">CONVERT</button></div>
+                    </div>
+                </div>
+
+                <div id="terminal"><div>> KERNEL_LOADED... READY.</div></div>
             </main>
         </div>
     </div>
 
     <script>
-        // MATRIX ENGINE
-        const canvas = document.getElementById('matrixCanvas');
+        // Matrix Rain
+        const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*";
-        const fontSize = 16; const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
+        const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*";
+        const drops = Array(Math.floor(canvas.width/16)).fill(1);
         function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
-            for (let i = 0; i < drops.length; i++) {
-                ctx.fillText(alphabet.charAt(Math.floor(Math.random() * alphabet.length)), i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            ctx.fillStyle = "#0F0"; ctx.font = "16px monospace";
+            drops.forEach((y, i) => {
+                ctx.fillText(alphabet[Math.floor(Math.random()*alphabet.length)], i*16, y*16);
+                if(y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
-            }
+            });
         }
         setInterval(draw, 35);
 
-        // LOGIN (Direct String Check)
-        function checkAuth() {
-            if (document.getElementById('passInput').value === "admin@99") {
+        // Tabs Logic
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            log(`Navigating to ${tabId.toUpperCase()} segment.`);
+        }
+
+        // Auth Logic
+        function login() {
+            if(document.getElementById('passInput').value === "admin@99") {
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('dashboard').style.display = "grid";
-                addLog("Root access granted. System online.");
+                log("Authorization granted. Root access active.");
             } else { alert("ACCESS_DENIED"); }
         }
 
-        // VPN & LOGS
+        // VPN Logic
         function toggleVPN() {
-            const s = document.getElementById('v-stat'), n = document.getElementById('v-node'), i = document.getElementById('v-ip');
-            if (s.innerText === "DISCONNECTED") {
-                s.innerText = "TUNNELED"; s.className = "status-on"; n.innerText = "FINLAND_7"; i.innerText = "82.103.1.44";
-                addLog("VPN Secure Tunnel Established.");
+            const dot = document.getElementById('vpn-dot'), txt = document.getElementById('vpn-txt'), node = document.getElementById('node-txt'), ip = document.getElementById('ip-txt');
+            if(txt.innerText === "OFF") {
+                dot.classList.add('on'); txt.innerText = "ACTIVE"; txt.style.color = "#00ff41";
+                node.innerText = "HELSINKI_GATE_5"; ip.innerText = "95.216.14.22";
+                log("VPN Tunnel Active: Helsinki_Proxy.");
             } else {
-                s.innerText = "DISCONNECTED"; s.className = "status-off"; n.innerText = "NONE"; i.innerText = "127.0.0.1";
-                addLog("VPN connection severed.");
+                dot.classList.remove('on'); txt.innerText = "OFF"; txt.style.color = "red";
+                node.innerText = "LOCAL_HOST"; ip.innerText = "127.0.0.1";
+                log("VPN Disconnected. IP now public.");
             }
         }
 
-        function addLog(msg) {
+        function log(msg) {
             const t = document.getElementById('terminal');
             t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] > ${msg}</div>`;
             t.scrollTop = t.scrollHeight;
