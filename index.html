@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // GLOBAL ACCESS</title>
+    <title>CYBERNETIX // THE NEXUS</title>
     <style>
         :root {
             --neon-green: #00ff41;
@@ -23,9 +23,9 @@
             overflow: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar Navigation */
         nav {
-            width: 240px;
+            width: 220px;
             background: #000;
             border-right: 1px solid var(--neon-green);
             padding: 20px;
@@ -53,13 +53,14 @@
             border-left: 3px solid var(--neon-green);
         }
 
-        /* Main Grid */
+        /* Main Dashboard */
         main {
             flex-grow: 1;
             padding: 25px;
             display: grid;
             grid-template-columns: 2fr 1fr;
             grid-gap: 20px;
+            overflow-y: auto;
         }
 
         .header {
@@ -71,8 +72,8 @@
             font-size: 0.8rem;
         }
 
-        /* Tools Table */
-        .section-title { font-weight: bold; margin: 20px 0 10px 0; border-left: 3px solid var(--neon-green); padding-left: 10px; }
+        /* Tool Database */
+        .section-title { font-weight: bold; margin-bottom: 15px; border-left: 3px solid var(--neon-green); padding-left: 10px; }
         
         table {
             width: 100%;
@@ -86,22 +87,111 @@
             border: 1px solid #1a1a1a;
         }
 
-        th { background: #111; }
+        th { background: #111; color: #fff; }
 
-        /* Live Feed */
+        /* Intelligence Feed */
         #intel-feed {
             background: var(--panel-bg);
             border: 1px solid #222;
             padding: 15px;
             font-size: 0.75rem;
-            height: 450px;
-            overflow: hidden;
+            height: 400px;
+            overflow-y: hidden;
             position: relative;
         }
 
-        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111; }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111; padding-bottom: 4px; }
         .log-alert { color: var(--alert-red); }
 
         .disclaimer {
             grid-column: span 2;
             border: 1px solid var(--alert-red);
+            color: var(--alert-red);
+            padding: 15px;
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">CYBERNETIX_</div>
+        <div class="nav-link"> > THE_ARSENAL</div>
+        <div class="nav-link"> > EXPLOIT_DB</div>
+        <div class="nav-link"> > NETWORK_SCAN</div>
+        <div class="nav-link"> > DECRYPTION</div>
+        <div style="margin-top: auto; color: var(--text-dim); font-size: 0.65rem;">
+            SYSTEM: ONLINE<br>
+            ENCRYPTION: AES-256
+        </div>
+    </nav>
+
+    <main>
+        <div class="header">
+            <div>ROOT@THE_NEXUS:~/DATABASE</div>
+            <div id="clock">00:00:00</div>
+        </div>
+
+        <div>
+            <div class="section-title">ACTIVE_TOOLSET</div>
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>TOOL</th><th>TYPE</th><th>STATUS</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>001</td><td>Nmap</td><td>Scanner</td><td>READY</td></tr>
+                    <tr><td>002</td><td>SQLmap</td><td>Injected</td><td>READY</td></tr>
+                    <tr><td>003</td><td>Hydra</td><td>Brute</td><td>STANDBY</td></tr>
+                    <tr><td>004</td><td>Wireshark</td><td>Sniff</td><td>ACTIVE</td></tr>
+                    <tr><td>005</td><td>Metasploit</td><td>Exploit</td><td>READY</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <div class="section-title">LIVE_INTEL_FEED</div>
+            <div id="intel-feed">
+                <div id="log-container"></div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            [!] SYSTEM NOTICE: FOR AUTHORIZED SECURITY RESEARCH ONLY. MISUSE IS PROHIBITED.
+        </div>
+    </main>
+
+    <script>
+        // Clock Function
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+
+        // Simulation Logs
+        const logs = [
+            "Handshake with node 192.168.1.1...",
+            "Checking CVE-2024-001 vulnerability...",
+            "ALERT: Unauthorized access attempt blocked.",
+            "Fetching exploit data from DB...",
+            "Uplink established via secure tunnel.",
+            "Bypassing internal firewall...",
+            "Decrypting RSA-4096 data packet..."
+        ];
+
+        const logContainer = document.getElementById('log-container');
+        function addLog() {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const msg = logs[Math.floor(Math.random() * logs.length)];
+            if(msg.includes("ALERT")) entry.classList.add('log-alert');
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logContainer.prepend(entry);
+            if(logContainer.childElementCount > 15) logContainer.lastChild.remove();
+        }
+        setInterval(addLog, 2000);
+        addLog();
+    </script>
+</body>
+</html>
