@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // OSINT & MEDIA</title>
+    <title>CYBERNETIX // SECURE ACCESS</title>
     <style>
         :root {
             --neon: #00ff41;
@@ -50,77 +50,22 @@
             text-align: center;
             outline: none;
             margin-top: 20px;
-            width: 250px;
+            width: 280px;
         }
 
         .login-box input:focus { border-bottom-color: var(--neon); }
 
-        /* --- DASHBOARD UI --- */
         #dashboard {
-            display: none; /* Revealed after login */
+            display: none;
             height: 100vh;
-            display: grid;
             grid-template-columns: 280px 1fr;
         }
 
-        nav {
-            background: #000;
-            border-right: 1px solid var(--border);
-            padding: 20px;
-        }
-
-        .vpn-stat {
-            background: #0a0a0a;
-            border-left: 3px solid var(--neon);
-            padding: 10px;
-            margin: 20px 0;
-            font-size: 0.8rem;
-        }
-
-        main {
-            padding: 40px;
-            overflow-y: auto;
-            background-image: radial-gradient(circle, #111 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 4px;
-            transition: 0.3s;
-        }
-
-        .card:hover { border-color: var(--neon); transform: translateY(-3px); }
-
-        .btn {
-            background: var(--neon);
-            color: black;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        .btn:hover { opacity: 0.8; }
-
-        input[type="text"] {
-            width: 90%;
-            background: #000;
-            border: 1px solid #333;
-            color: var(--neon);
-            padding: 10px;
-            margin-top: 10px;
-        }
+        nav { background: #000; border-right: 1px solid var(--border); padding: 20px; }
+        main { padding: 40px; overflow-y: auto; background-image: radial-gradient(circle, #111 1px, transparent 1px); background-size: 30px 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 4px; }
+        .btn { background: var(--neon); color: black; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -128,87 +73,56 @@
     <div id="login-overlay">
         <div class="login-box">
             <h2 style="margin:0">SYSTEM_AUTH</h2>
-            <p style="font-size: 0.7rem; color: #555;">ENCRYPTION: SHA-256</p>
-            <input type="password" id="pass-input" placeholder="ACCESS KEY" onkeypress="handleEnter(event)">
-            <p id="err-msg" style="color:red; font-size:0.7rem; margin-top:10px; visibility:hidden;">[!] INVALID_KEY</p>
+            <p style="font-size: 0.7rem; color: #555;">CREDENTIALS REQUIRED</p>
+            <input type="password" id="pass-input" placeholder="ACCESS KEY" autocomplete="off" onkeypress="handleEnter(event)">
+            <p id="err-msg" style="color:red; font-size:0.7rem; margin-top:15px; display:none;">[!] HASH_MISMATCH: ACCESS_DENIED</p>
+            <button onclick="validate()" style="margin-top:20px; background:none; border:1px solid var(--neon); color:var(--neon); padding:5px 15px; cursor:pointer;">SUBMIT</button>
         </div>
     </div>
 
-    <div id="dashboard" style="display:none;">
+    <div id="dashboard">
         <nav>
             <h1 style="letter-spacing: 2px;">CYBERNETIX</h1>
-            <div class="vpn-stat">
-                <p>UPLINK: <span style="color:white">SECURE</span></p>
-                <p>VPN: <span id="v-stat" style="color:#555">OFF</span></p>
-                <button onclick="toggleVPN()" style="background:transparent; color:var(--neon); border:1px solid var(--neon); font-size:0.6rem; cursor:pointer;">ENCRYPT</button>
-            </div>
-            <p style="font-size:0.7rem; color:#444">> SESSION_ID: 8821-X</p>
+            <p style="font-size:0.7rem; color:#444">> ROOT_ACCESS_GRANTED</p>
         </nav>
-
         <main>
-            <h2 style="margin-bottom:30px;">// OPERATIONAL_MODULES</h2>
+            <h2>// OPERATIONAL_MODULES</h2>
             <div class="grid">
-                
                 <div class="card">
-                    <span style="font-size:0.7rem; color:#888;">MEDIA_EXTRACTOR</span>
                     <h3>YouTube Video (MP4)</h3>
-                    <input type="text" id="yt-mp4" placeholder="Enter URL...">
-                    <button class="btn" onclick="simTask('MP4')">GENERATE DOWNLOAD</button>
+                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
+                    <button class="btn">GENERATE DOWNLOAD</button>
                 </div>
-
                 <div class="card">
-                    <span style="font-size:0.7rem; color:#888;">AUDIO_EXTRACTOR</span>
                     <h3>YouTube Audio (MP3)</h3>
-                    <input type="text" id="yt-mp3" placeholder="Enter URL...">
-                    <button class="btn" onclick="simTask('MP3')">EXTRACT AUDIO</button>
+                    <input type="text" style="width:90%; background:#000; border:1px solid #333; color:var(--neon); padding:10px;" placeholder="URL...">
+                    <button class="btn" style="background:white">EXTRACT AUDIO</button>
                 </div>
-
-                <div class="card">
-                    <span style="font-size:0.7rem; color:#888;">NETWORK_PROXY</span>
-                    <h3>VPN Proxy Control</h3>
-                    <select style="width:100%; padding:10px; background:#000; color:var(--neon); border:1px solid #333;">
-                        <option>Zurich, Switzerland</option>
-                        <option>Reykjavik, Iceland</option>
-                        <option>Tokyo, Japan</option>
-                    </select>
-                    <button class="btn">SWITCH NODE</button>
-                </div>
-
             </div>
         </main>
     </div>
 
     <script>
-        // Hashed Password Check (shan13579@)
+        // Target hash for "shan13579@"
+        const TARGET_HASH = "78b4793f71c4943f60f6120e290f670742f53488289569736fdfd5d086576d1a";
+
         async function validate() {
-            const hash = "78b4793f71c4943f60f6120e290f670742f53488289569736fdfd5d086576d1a";
-            const input = document.getElementById('pass-input').value;
+            const input = document.getElementById('pass-input').value.trim();
+            const errMsg = document.getElementById('err-msg');
+
+            if (!input) return;
+
+            // Generate SHA-256 hash
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             
-            const msgBuffer = new TextEncoder().encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            // Convert buffer to hex string
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-            if(hashHex === hash) {
+            console.log("Current Hash:", hashHex); // Debug: Check console if it fails
+
+            if(hashHex === TARGET_HASH) {
                 document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'grid';
-            } else {
-                document.getElementById('err-msg').style.visibility = 'visible';
-                document.getElementById('pass-input').value = '';
-            }
-        }
-
-        function handleEnter(e) { if(e.key === 'Enter') validate(); }
-
-        function toggleVPN() {
-            const s = document.getElementById('v-stat');
-            s.innerText = (s.innerText === "OFF") ? "ACTIVE" : "OFF";
-            s.style.color = (s.innerText === "ACTIVE") ? "#00ff41" : "#555";
-        }
-
-        function simTask(type) {
-            alert("Uplink established. Beginning " + type + " extraction protocol...");
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('dashboard').style.display
