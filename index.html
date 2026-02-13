@@ -3,252 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_ULTIMATE_100</title>
+    <title>OMNI_X_VISUAL_UPGRADE</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 10, 0, 0.95); --border: 1px solid var(--neon); --dim: #003300; }
+        :root { --neon: #00ff41; --bg: #000; --glass: rgba(0, 20, 0, 0.9); --border: 1px solid var(--neon); }
         body, html { margin: 0; padding: 0; background: #000; color: #aaa; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
+        
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
 
-        /* BIOS */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; }
+        /* --- BIOS DECOY --- */
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #ccc; display: block; }
         .cursor { display: inline-block; width: 10px; height: 18px; background: #ccc; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* LOGIN */
-        #login-screen { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; }
-        .login-card { border: var(--border); padding: 50px; text-align: center; background: #000; box-shadow: 0 0 40px rgba(0,255,65,0.2); }
-        input { background: transparent; border: none; border-bottom: 2px solid #333; color: var(--neon); padding: 10px; width: 250px; text-align: center; font-size: 1.5rem; outline: none; }
+        /* --- COOL MATRIX LOGIN --- */
+        #login-screen { 
+            position: fixed; inset: 0; z-index: 500; background: radial-gradient(circle, rgba(0,40,0,0.4) 0%, rgba(0,0,0,1) 100%);
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .login-card { 
+            border: var(--border); padding: 60px; text-align: center; background: rgba(0,0,0,0.9); 
+            box-shadow: 0 0 100px rgba(0,255,65,0.15); position: relative; overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        /* Scanning Laser Line */
+        .login-card::after {
+            content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 2px;
+            background: var(--neon); box-shadow: 0 0 15px var(--neon);
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
 
-        /* DASHBOARD */
-        #dashboard { display: none; grid-template-columns: 260px 1fr; height: 100vh; position: relative; z-index: 10; }
-        nav { background: rgba(0, 5, 0, 0.98); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
-        .nav-btn { background: none; border: 1px solid #111; color: var(--neon); padding: 10px; text-align: left; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
-        .nav-btn:hover, .nav-btn.active { background: var(--neon); color: #000; }
+        h2 { letter-spacing: 15px; color: var(--neon); text-shadow: 0 0 10px var(--neon); margin-bottom: 30px; font-size: 1.2rem; }
+        input { 
+            background: transparent; border: 1px solid #222; color: var(--neon); padding: 15px; 
+            width: 300px; text-align: center; font-size: 1.2rem; outline: none; transition: 0.3s;
+            box-shadow: inset 0 0 10px rgba(0,255,65,0.1); font-family: 'Courier New', monospace;
+        }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 20px rgba(0,255,65,0.2); }
 
-        main { flex-grow: 1; padding: 25px; overflow-y: auto; background: rgba(0,0,0,0.8); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* WIDGETS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-        .card { background: var(--glass); border: 1px solid #222; padding: 15px; border-radius: 2px; transition: 0.3s; }
-        .card:hover { border-color: var(--neon); }
-        .prog-wrap { height: 2px; background: #111; width: 100%; margin-top: 10px; display: none; }
-        .prog-bar { height: 100%; background: var(--neon); width: 0%; }
-        .action-btn { background: var(--neon); color: #000; border: none; padding: 8px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 8px; font-size: 0.65rem; }
-
-        #terminal { background: rgba(0,0,0,0.9); border: 1px solid #222; height: 120px; padding: 10px; margin-top: 20px; font-size: 0.75rem; overflow-y: auto; color: var(--neon); border-left: 3px solid var(--neon); white-space: pre-wrap; }
-        
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon); }
+        /* --- DASHBOARD --- */
+        #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; position: relative; z-index: 10; }
+        nav { background: var(--glass); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        main { padding: 30px; overflow-y: auto; background: rgba(0,0,0,0.8); }
+        .card { background: rgba(0,255,65,0.05); border: 1px solid #111; padding: 20px; margin-bottom: 15px; }
+        #terminal { background: #000; height: 200px; padding: 15px; color: var(--neon); font-size: 0.8rem; border-top: 1px solid #222; overflow-y: auto; }
     </style>
 </head>
-<body onkeydown="resetIdle(); handleInput(event)" onmousemove="resetIdle()">
+<body onkeydown="handleInput(event)">
 
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>AMIBIOS(C) 2026 OMNI_CORE_SYS</p>
-    <p>CPU Test... PASS // RAM Test... 64GB PASS // SSD Test... PASS</p>
-    <br><br>
-    <p style="color: #ff3131;">FATAL_ERROR: BOOT_SECTOR_CORRUPT</p>
-    <p>Enter override sequence... <span class="cursor"></span></p>
+    <p>CORE_LOADER v.1.4.2 [STABLE]</p>
+    <p>Checking local entropy... OK</p>
+    <p>Mounting Virtual Drive... FAILED</p>
+    <br>
+    <p>System halt. Press ESC to retry or enter bypass key. <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
     <div class="login-card">
-        <h2 style="letter-spacing: 10px; color: var(--neon);">ENCRYPTED_AUTH</h2>
-        <input type="password" id="passInput" placeholder="KEY_HASH" onkeypress="if(event.key==='Enter') validate()">
+        <h2>CORE_DECRYPT</h2>
+        <p style="font-size: 0.6rem; color: #444; margin-bottom: 20px;">ENCRYPTION: AES-256-GCM // TRACE_STATUS: ACTIVE</p>
+        <input type="password" id="passInput" placeholder="********" onkeypress="if(event.key==='Enter') validate()">
+        <p id="error-msg" style="color: red; font-size: 0.7rem; margin-top: 15px; display: none;">HASH_MISMATCH: ACCESS DENIED</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav>
-        <h3 style="color:white; margin-bottom:10px;">OMNI_X v.100</h3>
-        <div style="font-size:0.6rem; border:1px solid #333; padding:8px; margin-bottom:10px;">
-            IP: <span id="v-ip">FETCHING...</span><br>
-            ST: <span id="v-stat" style="color:red">NON-SECURE</span><br>
-            IDLE: <span id="idle-txt">300s</span>
+        <h3 style="color:white; letter-spacing: 2px;">OMNI_SHELL</h3>
+        <div style="font-size: 0.7rem; border: 1px solid #222; padding: 10px; background: rgba(0,0,0,0.5);">
+            NODE: [STOCKHOLM_04]<br>
+            STATUS: <span style="color:var(--neon)">CONNECTED</span>
         </div>
-        <button class="nav-btn active" onclick="showTab('core', this)">01. SYSTEM_CORE</button>
-        <button class="nav-btn" onclick="showTab('net', this)">02. NETWORK_GATE</button>
-        <button class="nav-btn" onclick="showTab('hack', this)">03. EXPLOIT_DATABASE</button>
-        <button class="nav-btn" onclick="showTab('sat', this)">04. SAT_UPLINK</button>
-        <button class="nav-btn" onclick="showTab('crypto', this)">05. CRYPTO_MINER</button>
-        <button class="nav-btn" onclick="showTab('ai', this)">06. NEURAL_NET</button>
-        <button class="nav-btn" onclick="showTab('stealth', this)">07. STEALTH_OPS</button>
-        <button class="action-btn" onclick="downloadLogs()">SAVE_LOGS</button>
-        <button class="action-btn" style="background:red; margin-top:auto;" onclick="location.reload()">ERASE</button>
+        <button class="action-btn" style="background:#222; color:red; margin-top:auto; padding:10px; border:1px solid red; cursor:pointer;" onclick="location.reload()">TERMINATE_SESSION</button>
     </nav>
-
     <main>
-        <div id="core" class="tab-content active">
-            <div class="grid">
-                <div class="card"><h3>CPU_LOAD</h3><p id="cpu">0%</p></div>
-                <div class="card"><h3>TEMP</h3><p id="temp">42°C</p></div>
-                <div class="card"><h3>MEMORY</h3><p>12.4GB / 64GB</p></div>
-                <div class="card"><h3>SESSION</h3><p id="timer">00:00:00</p></div>
-            </div>
+        <div class="card">
+            <h3>SYSTEM_LOGS</h3>
+            <div id="terminal"></div>
         </div>
-
-        <div id="net" class="tab-content">
-            <div class="card" style="text-align:center;">
-                <h2 id="vpn-txt" style="color:red;">VPN: INACTIVE</h2>
-                <button class="action-btn" onclick="toggleVPN()">TOGGLE_TUNNEL</button>
-            </div>
-        </div>
-
-        <div id="hack" class="tab-content">
-            <div class="grid">
-                <div class="card"><h3>SQL_INJECT</h3><button class="action-btn" onclick="runTask('SQLmap init...')">INJECT</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
-                <div class="card"><h3>BRUTE_FORCE</h3><button class="action-btn" onclick="runTask('Dictionary crack...')">START</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
-                <div class="card"><h3>XSS_PROBE</h3><button class="action-btn" onclick="runTask('Cross-site testing...')">SCAN</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
-                <div class="card"><h3>DOS_ATTACK</h3><button class="action-btn" style="background:red" onclick="runTask('TCP Flood...')">FLOOD</button><div class="prog-wrap"><div class="prog-bar"></div></div></div>
-            </div>
-        </div>
-
-        <div id="crypto" class="tab-content">
-            <div class="card">
-                <h3>XMR_MINER</h3>
-                <p>Hashrate: <span id="hash">0.00</span> H/s</p>
-                <button class="action-btn" onclick="startMining()">START_MINING</button>
-            </div>
-        </div>
-
-        <div id="ai" class="tab-content">
-            <div class="card">
-                <h3>PATTERN_RECOGNITION</h3>
-                <canvas id="ai-viz" style="width:100%; height:100px; background:#000; border:1px solid #111;"></canvas>
-                <button class="action-btn" onclick="runTask('Training model...')">TRAIN_AI</button>
-            </div>
-        </div>
-
-        <div id="terminal"></div>
     </main>
 </div>
 
 <script>
-    // Matrix
+    // Matrix Engine (High Density)
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%";
-    const drops = Array(Math.floor(canvas.width/16)).fill(1);
+    const chars = "0101010101010101110101010101010101010001010101";
+    const drops = Array(Math.floor(canvas.width/14)).fill(1);
+    
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0"; ctx.font = "16px monospace";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0F0"; ctx.font = "14px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16);
-            if(y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, y*14);
+            if(y*14 > canvas.height && Math.random() > 0.98) drops[i] = 0;
             drops[i]++;
         });
     }
     setInterval(draw, 35);
 
-    // 100-Feature Logic Core
-    let buffer = "", logs = [], idleTime = 0, mining = false;
-
+    let buffer = "";
     function handleInput(e) {
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
             document.getElementById('bios-screen').style.display = "none";
             document.getElementById('login-screen').style.display = "flex";
-            canvas.style.opacity = "0.7"; buffer = "";
+            canvas.style.opacity = "0.8"; buffer = "";
         }
     }
 
-    async function validate() {
-        if(document.getElementById('passInput').value === "admin@99") {
+    function validate() {
+        const input = document.getElementById('passInput');
+        const err = document.getElementById('error-msg');
+        if(input.value === "admin@99") {
             document.getElementById('login-screen').style.display = "none";
             document.getElementById('dashboard').style.display = "grid";
-            typeLog("Omni-X Godmode Initialized. 100/100 modules loaded.");
-            fetchIP();
+            typeLog("Authentication successful. Decrypting system sectors...");
+            typeLog("Welcome to OMNI_SHELL. All modules active.");
+        } else {
+            err.style.display = "block";
+            input.value = "";
+            setTimeout(() => { err.style.display = "none"; }, 2000);
         }
-    }
-
-    async function fetchIP() {
-        try {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            document.getElementById('v-ip').innerText = data.ip;
-        } catch { document.getElementById('v-ip').innerText = "127.0.0.1"; }
     }
 
     function typeLog(text) {
-        logs.push(`[${new Date().toLocaleTimeString()}] ${text}`);
-        const t = document.getElementById('terminal'), d = document.createElement('div');
+        const t = document.getElementById('terminal');
+        const d = document.createElement('div');
         t.appendChild(d);
         let i = 0;
         function typing() {
-            if(i < text.length) { d.innerHTML += text.charAt(i); i++; setTimeout(typing, 15); t.scrollTop = t.scrollHeight; }
+            if(i < text.length) {
+                d.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typing, 20);
+                t.scrollTop = t.scrollHeight;
+            }
         }
         typing();
     }
-
-    function runTask(name) {
-        const card = event.target.closest('.card');
-        const wrap = card.querySelector('.prog-wrap');
-        const bar = card.querySelector('.prog-bar');
-        wrap.style.display = 'block';
-        let w = 0;
-        typeLog(`Exec: ${name}`);
-        const int = setInterval(() => {
-            if(w >= 100) { clearInterval(int); typeLog(`Done: ${name}`); setTimeout(() => wrap.style.display = 'none', 800); }
-            else { w += Math.random()*5; bar.style.width = w + '%'; }
-        }, 50);
-    }
-
-    function toggleVPN() {
-        const vS = document.getElementById('v-stat'), vT = document.getElementById('vpn-txt');
-        if(vS.innerText === "NON-SECURE") {
-            vS.innerText = "TUNNELED"; vS.style.color = "var(--neon)";
-            vT.innerText = "VPN: ACTIVE"; vT.style.color = "var(--neon)";
-            typeLog("Proxy-Chains re-routed through Switzerland.");
-        } else {
-            vS.innerText = "NON-SECURE"; vS.style.color = "red";
-            vT.innerText = "VPN: INACTIVE"; vT.style.color = "red";
-            typeLog("Encryption disabled.");
-        }
-    }
-
-    function startMining() {
-        mining = !mining;
-        typeLog(mining ? "Miner started." : "Miner stopped.");
-    }
-
-    function resetIdle() { idleTime = 0; }
-    setInterval(() => {
-        idleTime++;
-        document.getElementById('idle-txt').innerText = `${300 - idleTime}s`;
-        if(idleTime >= 300) location.reload();
-        
-        // Dynamic Stats
-        document.getElementById('cpu').innerText = Math.floor(Math.random()*25)+10+"%";
-        document.getElementById('temp').innerText = Math.floor(Math.random()*10)+40+"°C";
-        if(mining) document.getElementById('hash').innerText = (Math.random()*100).toFixed(2);
-    }, 1000);
-
-    function showTab(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    function downloadLogs() {
-        const element = document.createElement('a');
-        const file = new Blob([logs.join('\n')], {type: 'text/plain'});
-        element.href = URL.createObjectURL(file);
-        element.download = "session.txt";
-        element.click();
-    }
-
-    // Timer loop
-    let s=0; setInterval(() => {
-        s++; let h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60;
-        document.getElementById('timer').innerText = `${h}:${m}:${sc}`;
-    }, 1000);
 </script>
 </body>
 </html>
