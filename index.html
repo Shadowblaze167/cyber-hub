@@ -3,76 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_ULTRA_UI</title>
+    <title>OMNI_X_PRIME</title>
     <style>
-        :root { --neon: #00ff41; --glass: rgba(0, 255, 65, 0.03); --border: rgba(0, 255, 65, 0.2); }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Inter', 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
+        :root { --neon: #00ff41; --dim: #002200; --accent: #008822; }
+        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'JetBrains Mono', 'Courier New', monospace; height: 100vh; overflow: hidden; }
         
-        /* 100-Stream High-Intensity Matrix */
-        canvas { position: fixed; inset: 0; z-index: 1; opacity: 0; transition: opacity 2s; pointer-events: none; }
+        /* Persistent Matrix Rain */
+        canvas { position: fixed; inset: 0; z-index: -1; opacity: 0.6; }
 
-        /* --- STAGE 0: BIOS --- */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #444; font-family: monospace; }
-        .cursor { display: inline-block; width: 8px; height: 15px; background: #444; animation: blink 1s infinite; }
+        /* --- STAGE 0: STEALH BIOS --- */
+        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #333; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: #333; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- STAGE 1: CINEMATIC LOGIN --- */
-        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; background: radial-gradient(circle at center, #001a00 0%, #000 100%); }
+        /* --- STAGE 1: COOL LOGIN --- */
+        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; }
+        .login-frame { 
+            position: relative; padding: 60px; text-align: center; 
+            background: rgba(0, 5, 0, 0.85); border-top: 1px solid var(--neon); border-bottom: 1px solid var(--neon);
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.1); width: 400px;
+        }
+        .login-frame::before { content: "[ SECURITY GATE ]"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #000; padding: 0 10px; font-size: 0.7rem; letter-spacing: 5px; }
         
-        .login-card { 
-            position: relative; padding: 60px 80px; text-align: center; 
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .login-card h2 { 
-            font-weight: 200; letter-spacing: 12px; margin-bottom: 30px; color: #fff;
-            text-transform: uppercase; font-size: 1rem;
-        }
-
         input { 
-            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border); 
-            color: #fff; padding: 18px; width: 300px; text-align: center; font-size: 1.2rem; 
-            border-radius: 12px; outline: none; transition: 0.4s; font-family: monospace;
+            background: transparent; border: 1px solid var(--dim); color: #fff; padding: 15px; width: 100%; 
+            text-align: center; font-size: 1.2rem; outline: none; transition: 0.4s; letter-spacing: 5px;
         }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 30px rgba(0, 255, 65, 0.2); width: 340px; }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 15px var(--dim); }
 
-        .dissolve { transform: scale(1.2); filter: blur(40px); opacity: 0; }
-
-        /* --- STAGE 2: MODERN GRID DASHBOARD --- */
-        #dashboard { 
-            display: none; grid-template-columns: 300px 1fr 300px; grid-template-rows: 1fr;
-            height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box;
-        }
+        /* --- STAGE 2: HIGH-END DASHBOARD --- */
+        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box; }
         
         .panel { 
-            background: rgba(0, 8, 0, 0.85); backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 65, 0.1); border-radius: 16px; 
-            padding: 25px; display: flex; flex-direction: column;
+            background: rgba(0, 10, 0, 0.7); backdrop-filter: blur(5px); 
+            border: 1px solid rgba(0, 255, 65, 0.2); display: flex; flex-direction: column; overflow: hidden;
         }
 
+        .panel-header { background: rgba(0, 255, 65, 0.1); padding: 10px; font-size: 0.65rem; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(0, 255, 65, 0.2); }
+        
         .nav-btn { 
-            background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.1); 
-            color: var(--neon); padding: 14px; text-align: left; cursor: pointer; 
-            font-size: 0.7rem; border-radius: 10px; margin-bottom: 10px; transition: 0.3s;
-            text-transform: uppercase; letter-spacing: 1px;
+            background: transparent; border: none; color: var(--accent); padding: 12px 20px; 
+            text-align: left; cursor: pointer; font-size: 0.75rem; transition: 0.2s; border-left: 2px solid transparent;
         }
-        .nav-btn:hover { background: var(--neon); color: #000; transform: translateX(5px); }
+        .nav-btn:hover { color: var(--neon); background: rgba(0, 255, 65, 0.05); border-left: 2px solid var(--neon); }
 
-        #terminal { 
-            flex-grow: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; 
-            color: #aaffaa; overflow-y: auto; white-space: pre-wrap;
-        }
+        main { flex-grow: 1; display: flex; flex-direction: column; }
+        #terminal { flex-grow: 1; padding: 20px; font-size: 0.85rem; overflow-y: auto; color: #aaffaa; line-height: 1.5; scrollbar-width: none; }
 
-        .status-pill { 
-            background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; 
-            margin-bottom: 15px; font-size: 0.75rem; border-left: 3px solid var(--neon);
-        }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .stat-row { padding: 15px 20px; font-size: 0.75rem; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 255, 65, 0.05); }
+        .val { color: var(--neon); font-weight: bold; }
+        
+        .kill-btn { color: #ff3333; margin-top: auto; border-top: 1px solid rgba(255, 0, 0, 0.2); }
+        .kill-btn:hover { background: rgba(255, 0, 0, 0.1); }
     </style>
 </head>
 <body onkeydown="resetIdle(); handleInput(event)">
@@ -80,40 +62,40 @@
 <canvas id="matrix"></canvas>
 
 <div id="bios-screen">
-    <p>> OMNI_KERNEL_BOOT v10.0.4</p>
-    <p>> ENCRYPTED_VOLUMES: MOUNTED</p>
+    <p>OMNI_SYSTEM_V.9.4.2_STABLE</p>
+    <p>SECURE_ROOT_ENV... MOUNTED</p>
+    <p>ENCRYPTION_LAYER... ACTIVE</p>
     <br>
-    <p>> STATUS: ACCESS_RESTRICTED_BY_ADMIN</p>
-    <p>> KEY_COMMAND_WAITING... <span class="cursor"></span></p>
+    <p>NO_USER_FOUND. AWAITING_CMD <span class="cursor"></span></p>
 </div>
 
 <div id="login-screen">
-    <div class="login-card" id="lCard">
-        <h2>Identity Verification</h2>
-        <input type="password" id="passInput" placeholder="ACCESS KEY" onkeypress="if(event.key==='Enter') validate()">
-        <p style="color: #444; font-size: 0.65rem; margin-top: 30px; letter-spacing: 3px;">SECURE NODE // AES-256 ACTIVE</p>
+    <div class="login-frame" id="lFrame">
+        <input type="password" id="passInput" placeholder="●●●●●●●●" onkeypress="if(event.key==='Enter') validate()">
+        <p style="font-size: 0.55rem; color: #444; margin-top: 25px; letter-spacing: 2px;">SECURE_PROTOCOL_BETA_9</p>
     </div>
 </div>
 
 <div id="dashboard">
     <nav class="panel">
-        <h3 style="font-size:0.7rem; opacity:0.4; margin-bottom:20px; letter-spacing:2px;">OPERATIONS</h3>
-        <div id="tool-nav" style="display:contents;"></div>
+        <div class="panel-header">EXPLOIT_PAYLOADS</div>
+        <div id="tool-nav" style="display: flex; flex-direction: column; padding: 10px 0;"></div>
     </nav>
 
     <main class="panel">
+        <div class="panel-header">COMM_LINK_BUFFER</div>
         <div id="terminal"></div>
     </main>
 
     <aside class="panel">
-        <h3 style="font-size:0.7rem; opacity:0.4; margin-bottom:20px; letter-spacing:2px;">SYSTEM_MONITOR</h3>
-        <div class="status-pill">NODE_IP: <span style="float:right" id="v-ip">...</span></div>
-        <div class="status-pill">SHIELD: <span style="float:right; color:red" id="v-stat">INACTIVE</span></div>
-        <div class="status-pill">SESSION: <span style="float:right" id="idle-txt">300s</span></div>
+        <div class="panel-header">NODE_TELEMETRY</div>
+        <div class="stat-row">IP_PUB <span class="val" id="v-ip">...</span></div>
+        <div class="stat-row">ENCRYPTION <span class="val" id="v-stat" style="color:#ff3333">OFF</span></div>
+        <div class="stat-row">TIMEOUT <span class="val" id="idle-txt">300s</span></div>
         
-        <button class="nav-btn" style="margin-top:auto" onclick="toggleVPN()">Toggle Encryption</button>
-        <button class="nav-btn" onclick="downloadLogs()">Export Session</button>
-        <button class="nav-btn" style="background:rgba(255,0,0,0.1); color:red; border-color:red;" onclick="location.reload()">Emergency Kill</button>
+        <button class="nav-btn" style="margin-top: 10px;" onclick="toggleVPN()">BRIDGE_VPN</button>
+        <button class="nav-btn" onclick="downloadLogs()">EXTRACT_BUFFER</button>
+        <button class="nav-btn kill-btn" onclick="location.reload()">TERMINATE_SESSION</button>
     </aside>
 </div>
 
@@ -121,58 +103,60 @@
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const chars = "0123456789ABCDEF!@#$%^&*";
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00ff41";
+        ctx.fillStyle = "#0F0";
         ctx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
             const text = chars[Math.floor(Math.random() * chars.length)];
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.985) drops[i] = 0;
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         }
     }
-    setInterval(draw, 33);
+    setInterval(draw, 35);
 
     let buffer = "", logs = [], idleTime = 0;
 
     function handleInput(e) {
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
-            document.getElementById('bios-screen').style.display = "none";
-            document.getElementById('login-screen').style.display = "flex";
-            canvas.style.opacity = "1"; buffer = "";
+            document.getElementById('bios-screen').style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById('bios-screen').style.display = "none";
+                document.getElementById('login-screen').style.display = "flex";
+            }, 500);
+            buffer = "";
         }
     }
 
     function validate() {
         if(document.getElementById('passInput').value === "admin@99") {
-            const card = document.getElementById('lCard');
-            card.classList.add('dissolve');
+            document.getElementById('login-screen').style.opacity = "0";
             setTimeout(() => {
                 document.getElementById('login-screen').style.display = "none";
                 document.getElementById('dashboard').style.display = "grid";
                 loadTools();
-                log("AUTH_SUCCESS: Session authorized for UID_0.");
+                log("NODE_LINK_ESTABLISHED. ROOT_PRIVILEGES_GRANTED.");
                 fetchIP();
-            }, 800);
+            }, 500);
         }
     }
 
     function loadTools() {
         const nav = document.getElementById('tool-nav');
-        const list = ["Kernel_Infect", "SQL_Tunnel", "RSA_Shatter", "Mac_Ghost", "Trace_Clean", "Shell_Inject", "DNS_Poison", "Packet_Sieve", "Node_Kill", "Net_Map"];
+        const list = ["KERNEL_FLIP", "SQL_PULSE", "RSA_SHATTER", "MAC_GHOST", "TRACE_CLEAN", "ROOT_SHELL", "DNS_POISON", "PACKET_SIEV", "REMOTE_KILL", "NET_CRAWL"];
         list.forEach((item, idx) => {
             let btn = document.createElement('button');
             btn.className = "nav-btn";
-            btn.innerHTML = `[${idx+1}] ${item}`;
-            btn.onclick = () => log(`Payload executed: ${item}... [STATUS: OK]`);
+            btn.innerHTML = `<span style="opacity:0.3; font-size:0.6rem;">0${idx+1}</span> ${item}`;
+            btn.onclick = () => log(`Payload executed: ${item}... OK.`);
             nav.appendChild(btn);
         });
     }
@@ -188,19 +172,19 @@
     function log(text) {
         const t = document.getElementById('terminal'), d = document.createElement('div');
         t.appendChild(d);
-        d.innerHTML = `<span style="opacity:0.3">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
+        d.innerHTML = `<span style="color:#224422;">[${new Date().toLocaleTimeString()}]</span> > ${text}`;
         t.scrollTop = t.scrollHeight;
         logs.push(d.innerText);
     }
 
     function toggleVPN() {
         const vS = document.getElementById('v-stat');
-        if(vS.innerText === "INACTIVE") {
-            vS.innerText = "ACTIVE"; vS.style.color = "var(--neon)";
-            log("VPN Layer: Tunnel established via Proxy_Node_07.");
+        if(vS.innerText === "OFF") {
+            vS.innerText = "ON"; vS.style.color = "var(--neon)";
+            log("VPN TUNNEL ESTABLISHED VIA OMNI_PROXY.");
         } else {
-            vS.innerText = "INACTIVE"; vS.style.color = "red";
-            log("VPN Layer: Connection terminated.");
+            vS.innerText = "OFF"; vS.style.color = "#ff3333";
+            log("VPN CONNECTION DROPPED.");
         }
     }
 
@@ -215,7 +199,7 @@
         const blob = new Blob([logs.join('\n')], {type: 'text/plain'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = "session_data.txt"; a.click();
+        a.download = "session_log.txt"; a.click();
     }
 </script>
 </body>
