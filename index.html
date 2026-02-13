@@ -3,147 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // NEXUS_FINAL</title>
+    <title>CYBERNETIX // RELIABLE_CORE</title>
     <style>
-        :root { --neon: #00ff41; --glass: rgba(0, 8, 0, 0.9); --border: 1px solid rgba(0, 255, 65, 0.4); }
+        :root { --neon: #00ff41; --glass: rgba(0, 12, 0, 0.92); --border: 1px solid rgba(0, 255, 65, 0.5); }
         body { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
-        
-        /* Matrix Background */
-        canvas { position: fixed; top: 0; left: 0; z-index: 0; }
-        
-        /* Interface Layers */
-        #login-screen, #dashboard { position: relative; z-index: 10; height: 100%; width: 100%; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.6; }
+        #ui-layer { position: relative; z-index: 10; height: 100%; width: 100%; }
         
         /* Login UI */
-        #login-screen { display: flex; justify-content: center; align-items: center; transition: opacity 0.6s ease; }
-        .login-box { 
-            background: var(--glass); border: var(--border); padding: 50px; 
-            text-align: center; backdrop-filter: blur(15px); 
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.2); border-radius: 4px; 
-        }
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+        .login-box { background: var(--glass); border: var(--border); padding: 40px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 0 40px rgba(0,255,65,0.2); }
         
-        input { 
-            background: #000; border: 1px solid #333; color: var(--neon); 
-            padding: 15px; width: 280px; text-align: center; font-size: 1.2rem; 
-            margin-bottom: 25px; outline: none; letter-spacing: 2px;
-        }
-        input:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
-        
-        .btn { 
-            background: var(--neon); color: #000; font-weight: bold; 
-            border: none; padding: 12px 40px; cursor: pointer; 
-            text-transform: uppercase; width: 100%; transition: 0.3s;
-        }
-        .btn:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        input { background: #000; border: 1px solid #333; color: var(--neon); padding: 12px; width: 260px; text-align: center; font-size: 1.2rem; margin-bottom: 20px; outline: none; }
+        .btn { background: var(--neon); color: black; font-weight: bold; border: none; padding: 12px 35px; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .btn:hover { background: #fff; box-shadow: 0 0 15px #fff; }
 
-        /* Dashboard UI */
-        #dashboard { display: none; grid-template-columns: 280px 1fr; opacity: 0; transition: opacity 1s ease; }
-        nav { background: rgba(0, 0, 0, 0.95); border-right: var(--border); padding: 30px; }
-        main { padding: 40px; overflow-y: auto; background: rgba(0,0,0,0.3); }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
-        .card { 
-            background: var(--glass); border: var(--border); padding: 25px; 
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .card:hover { transform: scale(1.02); border-color: #fff; }
-        
-        .tool-input { width: 90%; background: #000; border: 1px solid #444; color: var(--neon); padding: 10px; margin: 10px 0; }
-        .error { color: #ff3131; font-size: 0.8rem; margin-top: 15px; display: none; font-weight: bold; }
+        /* Dashboard */
+        #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; opacity: 0; transition: opacity 0.8s; }
+        nav { background: rgba(0,0,0,0.9); border-right: var(--border); padding: 25px; }
+        main { padding: 40px; overflow-y: auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--glass); border: var(--border); padding: 20px; }
     </style>
 </head>
 <body>
 
     <canvas id="matrix"></canvas>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h1 style="letter-spacing: 10px; margin: 0 0 10px 0;">ENCRYPTED</h1>
-            <p style="font-size: 0.7rem; color: #666; margin-bottom: 30px;">AUTHORIZATION REQUIRED // SHA-256</p>
-            <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') runAuth()">
-            <br>
-            <button class="btn" onclick="runAuth()">Unlock System</button>
-            <p id="fail-msg" class="error">[!] AUTH_FAILURE: INVALID_CREDENTIALS</p>
+    <div id="ui-layer">
+        <div id="login-screen">
+            <div class="login-box">
+                <h1 style="letter-spacing: 5px;">SYSTEM_ACCESS</h1>
+                <p style="font-size: 0.7rem; color: #666; margin-bottom: 25px;">LEVEL 4 ENCRYPTION ACTIVE</p>
+                <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') runLogin()">
+                <button class="btn" onclick="runLogin()">ACCESS TERMINAL</button>
+                <p id="fail" style="color:#ff3131; display:none; margin-top:15px; font-size:0.8rem;">[!] INVALID ACCESS KEY</p>
+            </div>
+        </div>
+
+        <div id="dashboard">
+            <nav>
+                <h2>CYBERNETIX</h2>
+                <p style="font-size:0.7rem; color:#444">> ROOT_USER_READY</p>
+                <button class="btn" style="margin-top:20px; font-size:0.7rem;" onclick="location.reload()">LOGOUT</button>
+            </nav>
+            <main>
+                <div class="grid">
+                    <div class="card">
+                        <h3>YT_VIDEO_DL</h3>
+                        <input type="text" placeholder="URL..." style="width:90%; background:#000; border:1px solid #444; color:var(--neon); padding:8px;">
+                        <button class="btn" style="margin-top:10px; font-size:0.8rem;">START MP4 FETCH</button>
+                    </div>
+                    <div class="card">
+                        <h3>YT_AUDIO_DL</h3>
+                        <input type="text" placeholder="URL..." style="width:90%; background:#000; border:1px solid #444; color:var(--neon); padding:8px;">
+                        <button class="btn" style="margin-top:10px; font-size:0.8rem; background:#fff;">START MP3 FETCH</button>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <div id="dashboard">
-        <nav>
-            <h2 style="letter-spacing: 3px;">CYBERNETIX</h2>
-            <div style="font-size: 0.7rem; color: #555; margin-top: 20px;">
-                <p>> STATUS: <span style="color:var(--neon)">AUTHORIZED</span></p>
-                <p>> NODE: GHOST_GATE</p>
-            </div>
-            <div style="margin-top: auto; border-top: 1px solid #222; padding-top: 20px;">
-                <button class="btn" style="font-size: 0.7rem;" onclick="location.reload()">Lock Terminal</button>
-            </div>
-        </nav>
-        <main>
-            <h1 style="font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 15px;">ARSENAL_MODULES_v4</h1>
-            <div class="grid">
-                <div class="card">
-                    <h3>MP4_EXTRACTOR</h3>
-                    <input type="text" class="tool-input" placeholder="YouTube URL...">
-                    <button class="btn" style="font-size: 0.8rem;">Initialize Download</button>
-                </div>
-                <div class="card">
-                    <h3>MP3_CONVERTER</h3>
-                    <input type="text" class="tool-input" placeholder="YouTube URL...">
-                    <button class="btn" style="font-size: 0.8rem; background: #fff;">Extract Audio</button>
-                </div>
-                <div class="card" style="border-style: dashed;">
-                    <h3>VPN_PROXY</h3>
-                    <p style="font-size: 0.7rem; color: #888;">Current Node: <span style="color:var(--neon)">Zurich, CH</span></p>
-                    <button class="btn" style="font-size: 0.8rem; background: #333; color: #fff;">Switch Node</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
     <script>
-        // Matrix Rain Animation
+        // Matrix Rain
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const fontSize = 16;
-        const columns = Math.floor(canvas.width / fontSize);
-        const drops = Array(columns).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0";
-            ctx.font = fontSize + "px monospace";
-            drops.forEach((y, i) => {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, y * fontSize);
-                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
+        const columns = canvas.width/fontSize;
+        const rainDrops = Array.from({length: columns}).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
+            rainDrops.forEach((y, i) => {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, y*fontSize);
+                if(y*fontSize > canvas.height && Math.random() > 0.975) rainDrops[i] = 0;
+                rainDrops[i]++;
             });
         }
-        setInterval(drawMatrix, 35);
+        setInterval(draw, 30);
 
-        // Security logic for password: admin@99
-        async function runAuth() {
-            const input = document.getElementById('pass-field').value.trim();
-            const target = "c5b2a75368a186411d331405e6080646c82093557454805e278631189d53359d"; // SHA-256 for admin@99
-
-            const msgBuffer = new TextEncoder().encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-
-            if (hashHex === target) {
-                document.getElementById('login-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    const dash = document.getElementById('dashboard');
-                    dash.style.display = 'grid';
-                    setTimeout(() => dash.style.opacity = '1', 50);
-                }, 600);
+        // Simple but hidden password check
+        function runLogin() {
+            const val = document.getElementById('pass-field').value;
+            // Password is admin@99 - obfuscated below
+            const key = ['a','d','m','i','n','@','9','9'].join(''); 
+            
+            if (val === key) {
+                document.getElementById('login-screen').style.display = 'none';
+                const dash = document.getElementById('dashboard');
+                dash.style.display = 'grid';
+                setTimeout(() => dash.style.opacity = '1', 50);
             } else {
-                document.getElementById('fail-msg').style.display = 'block';
+                document.getElementById('fail').style.display = 'block';
                 document.getElementById('pass-field').value = '';
             }
         }
