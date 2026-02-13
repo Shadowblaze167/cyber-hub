@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNETIX // RELIABLE_CORE</title>
+    <title>CYBERNETIX // INFILTRATION_OS</title>
     <style>
-        :root { --neon: #00ff41; --glass: rgba(0, 12, 0, 0.92); --border: 1px solid rgba(0, 255, 65, 0.5); }
+        :root { --neon: #00ff41; --glass: rgba(0, 15, 0, 0.94); --border: 1px solid rgba(0, 255, 65, 0.4); }
         body { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.6; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.5; }
         #ui-layer { position: relative; z-index: 10; height: 100%; width: 100%; }
         
-        /* Login UI */
+        /* Login */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
         .login-box { background: var(--glass); border: var(--border); padding: 40px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 0 40px rgba(0,255,65,0.2); }
-        
         input { background: #000; border: 1px solid #333; color: var(--neon); padding: 12px; width: 260px; text-align: center; font-size: 1.2rem; margin-bottom: 20px; outline: none; }
-        .btn { background: var(--neon); color: black; font-weight: bold; border: none; padding: 12px 35px; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .btn { background: var(--neon); color: black; font-weight: bold; border: none; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { background: #fff; box-shadow: 0 0 15px #fff; }
 
         /* Dashboard */
         #dashboard { display: none; grid-template-columns: 280px 1fr; height: 100vh; opacity: 0; transition: opacity 0.8s; }
-        nav { background: rgba(0,0,0,0.9); border-right: var(--border); padding: 25px; }
-        main { padding: 40px; overflow-y: auto; }
+        nav { background: rgba(0,0,0,0.95); border-right: var(--border); padding: 25px; display: flex; flex-direction: column; }
+        main { padding: 30px; overflow-y: auto; }
+        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--glass); border: var(--border); padding: 20px; }
+        .card { background: var(--glass); border: var(--border); padding: 20px; position: relative; }
+        .card h3 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        
+        /* Terminal */
+        #terminal { background: #000; border: var(--border); height: 150px; margin-top: 20px; padding: 15px; font-size: 0.75rem; overflow-y: hidden; line-height: 1.4; color: #00ff41; }
+        
+        .status-tag { font-size: 0.7rem; padding: 2px 5px; background: #111; border: 1px solid var(--neon); margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -33,74 +39,43 @@
     <div id="ui-layer">
         <div id="login-screen">
             <div class="login-box">
-                <h1 style="letter-spacing: 5px;">SYSTEM_ACCESS</h1>
-                <p style="font-size: 0.7rem; color: #666; margin-bottom: 25px;">LEVEL 4 ENCRYPTION ACTIVE</p>
+                <h1 style="letter-spacing: 5px;">CYBERNETIX_CORE</h1>
                 <input type="password" id="pass-field" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') runLogin()">
-                <button class="btn" onclick="runLogin()">ACCESS TERMINAL</button>
-                <p id="fail" style="color:#ff3131; display:none; margin-top:15px; font-size:0.8rem;">[!] INVALID ACCESS KEY</p>
+                <button class="btn" style="width:100%" onclick="runLogin()">BOOT SYSTEM</button>
             </div>
         </div>
 
         <div id="dashboard">
             <nav>
-                <h2>CYBERNETIX</h2>
-                <p style="font-size:0.7rem; color:#444">> ROOT_USER_READY</p>
-                <button class="btn" style="margin-top:20px; font-size:0.7rem;" onclick="location.reload()">LOGOUT</button>
+                <h2>NEXUS_v5</h2>
+                <div style="font-size: 0.8rem; margin: 20px 0;">
+                    <p>SYSTEM: <span style="color:#fff">ENCRYPTED</span></p>
+                    <p>UPLINK: <span id="uplink-status" style="color:#f00">OFFLINE</span></p>
+                </div>
+                <button class="btn" style="font-size:0.7rem;" onclick="toggleVPN()">TOGGLE VPN GATEWAY</button>
+                <div style="margin-top:auto; font-size:0.7rem; color:#444;">ID: 88-X / ROOT</div>
             </nav>
+
             <main>
                 <div class="grid">
                     <div class="card">
-                        <h3>YT_VIDEO_DL</h3>
-                        <input type="text" placeholder="URL..." style="width:90%; background:#000; border:1px solid #444; color:var(--neon); padding:8px;">
-                        <button class="btn" style="margin-top:10px; font-size:0.8rem;">START MP4 FETCH</button>
+                        <h3>MEDIA_EXTRACTOR <span class="status-tag">YT-DL</span></h3>
+                        <input type="text" placeholder="URL..." style="width:90%; background:black; border:1px solid #333; color:var(--neon); padding:8px;">
+                        <button class="btn" style="width:48%; font-size:0.7rem;" onclick="log('Initiating MP4 Fetch...')">MP4</button>
+                        <button class="btn" style="width:48%; font-size:0.7rem; background:#fff;" onclick="log('Stripping Audio Stream...')">MP3</button>
                     </div>
+
                     <div class="card">
-                        <h3>YT_AUDIO_DL</h3>
-                        <input type="text" placeholder="URL..." style="width:90%; background:#000; border:1px solid #444; color:var(--neon); padding:8px;">
-                        <button class="btn" style="margin-top:10px; font-size:0.8rem; background:#fff;">START MP3 FETCH</button>
+                        <h3>NETWORK_SCANNER <span class="status-tag">NMAP</span></h3>
+                        <input type="text" placeholder="Target IP (e.g. 192.168.1.1)" style="width:90%; background:black; border:1px solid #333; color:var(--neon); padding:8px;">
+                        <button class="btn" style="width:100%; font-size:0.7rem;" onclick="log('Scanning ports on target...')">BEGIN SCAN</button>
                     </div>
-                </div>
-            </main>
-        </div>
-    </div>
 
-    <script>
-        // Matrix Rain
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const fontSize = 16;
-        const columns = canvas.width/fontSize;
-        const rainDrops = Array.from({length: columns}).fill(1);
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
-            rainDrops.forEach((y, i) => {
-                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-                ctx.fillText(text, i*fontSize, y*fontSize);
-                if(y*fontSize > canvas.height && Math.random() > 0.975) rainDrops[i] = 0;
-                rainDrops[i]++;
-            });
-        }
-        setInterval(draw, 30);
+                    <div class="card">
+                        <h3>PACKET_SNIFFER <span class="status-tag">W-SHARK</span></h3>
+                        <p style="font-size:0.7rem; color:#888;">Monitor incoming/outgoing traffic on ETH0.</p>
+                        <button class="btn" style="width:100%; font-size:0.7rem; background:#333; color:#fff;" onclick="log('Interspersing packets...')">LISTEN</button>
+                    </div>
 
-        // Simple but hidden password check
-        function runLogin() {
-            const val = document.getElementById('pass-field').value;
-            // Password is admin@99 - obfuscated below
-            const key = ['a','d','m','i','n','@','9','9'].join(''); 
-            
-            if (val === key) {
-                document.getElementById('login-screen').style.display = 'none';
-                const dash = document.getElementById('dashboard');
-                dash.style.display = 'grid';
-                setTimeout(() => dash.style.opacity = '1', 50);
-            } else {
-                document.getElementById('fail').style.display = 'block';
-                document.getElementById('pass-field').value = '';
-            }
-        }
-    </script>
-</body>
-</html>
+                    <div class="card">
+                        <h3>BRUTE_FORCE <span class="
