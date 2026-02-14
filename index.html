@@ -2,203 +2,211 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chrome Dino</title>
     <style>
-        :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 15, 0, 0.9); }
-        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; color: var(--neon); }
+        :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 10, 0, 0.94); }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', 'Fira Code', monospace; background: #000; color: var(--neon); }
 
-        /* --- LAYER 1: THE CLEAN DECOY (NO HINTS) --- */
-        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s ease-in-out; }
-        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; }
+        /* --- THE INNOCENT DECOY --- */
+        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1); }
+        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; cursor: default; }
         #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; border-radius: 2px; }
-        .cactus { width: 20px; height: 40px; background: #535353; position: absolute; bottom: 0; }
-        #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; font-family: sans-serif; }
+        .cactus { width: 18px; height: 38px; background: #535353; position: absolute; bottom: 0; }
+        #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; font-family: sans-serif; letter-spacing: 2px; }
 
-        /* --- LAYER 2: LOGIN & BREACH FX --- */
-        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.5s; }
-        .auth-card { border: 1px solid var(--neon); padding: 60px; background: #000; box-shadow: 0 0 50px rgba(0,255,65,0.2); text-align: center; position: relative; z-index: 10; transition: 0.5s; }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 15px; width: 350px; margin-top: 30px; }
-        
-        #breach-ring { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; background: transparent; border: 2px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
-        @keyframes pulse-out { 0% { width: 0; height: 0; opacity: 1; border-width: 30px; } 100% { width: 300vw; height: 300vw; opacity: 0; border-width: 1px; } }
+        /* --- GLOBAL MATRIX --- */
+        .m-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.2; pointer-events: none; }
 
-        /* --- LAYER 3: ADVANCED CONSOLE --- */
-        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 50px 1fr 220px; gap: 2px; background: #000; }
-        .m-canvas { position: absolute; inset: 0; z-index: 1; opacity: 0.2; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.1); backdrop-filter: blur(15px); display: flex; flex-direction: column; overflow: hidden; z-index: 5; opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .panel.visible { opacity: 1; transform: translateY(0); }
+        /* --- LOGIN & SHOCKWAVE EFFECT --- */
+        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.6s; }
+        .auth-card { border: 1px solid var(--neon); padding: 70px; background: #000; box-shadow: 0 0 40px rgba(0, 255, 65, 0.15); text-align: center; position: relative; z-index: 10; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2.2rem; text-align: center; outline: none; letter-spacing: 12px; width: 380px; margin-top: 35px; }
         
-        .p-hdr { padding: 12px; font-size: 10px; background: rgba(0, 255, 65, 0.1); color: #888; letter-spacing: 2px; }
-        #term { flex-grow: 1; padding: 20px; font-size: 12px; overflow-y: auto; color: var(--neon); scrollbar-width: none; line-height: 1.6; }
-        .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 15px; }
-        .btn { background: transparent; border: 1px solid #222; color: #555; padding: 10px; font-size: 9px; cursor: pointer; transition: 0.2s; }
-        .btn:hover { border-color: var(--neon); color: var(--neon); background: rgba(0,255,65,0.05); }
-        .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: bold; }
+        #shockwave { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; background: transparent; border: 3px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
+        @keyframes shock { 0% { width: 0; height: 0; opacity: 1; border-width: 40px; } 100% { width: 300vw; height: 300vw; opacity: 0; border-width: 1px; } }
+
+        /* --- ADVANCED APEX CONSOLE --- */
+        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 55px 1fr 220px; gap: 3px; background: #080808; padding: 4px; }
+        .panel { background: var(--glass); border: 1px solid rgba(0, 255, 65, 0.08); backdrop-filter: blur(15px); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px); transition: 0.7s cubic-bezier(0.2, 1, 0.2, 1); }
+        .panel.active { opacity: 1; transform: translateY(0); }
         
-        .progress-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.3s; margin-top: 5px; box-shadow: 0 0 10px var(--neon); }
-        #laser { position: fixed; top: 0; left: -10px; width: 10px; height: 100%; background: var(--alert); box-shadow: 0 0 30px var(--alert); z-index: 1000; display: none; }
-        @keyframes sweep { from { left: -10px; } to { left: 110%; } }
+        .p-hdr { padding: 12px 18px; font-size: 10px; background: rgba(0, 255, 65, 0.04); color: #777; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 65, 0.08); }
+        #term { flex-grow: 1; padding: 22px; font-size: 12px; overflow-y: auto; color: var(--neon); scrollbar-width: none; line-height: 1.7; }
+        .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; }
+        .btn { background: rgba(0, 255, 65, 0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; transition: 0.2s; text-align: left; }
+        .btn:hover { border-color: var(--neon); color: var(--neon); background: rgba(0, 255, 65, 0.06); }
+        .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: 800; background: rgba(255, 204, 0, 0.02); }
+        
+        .prog-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--neon); }
+        #laser { position: fixed; top: 0; left: -12px; width: 12px; height: 100%; background: var(--alert); box-shadow: 0 0 35px var(--alert); z-index: 1000; display: none; }
+        @keyframes sweep { 0% { left: -12px; } 100% { left: 110%; } }
     </style>
 </head>
-<body onkeydown="keyEvent(event)">
+<body onkeydown="handleKeys(event)">
 
     <div id="laser"></div>
-    <div id="breach-ring"></div>
+    <div id="shockwave"></div>
 
     <div id="decoy">
         <div id="score">00000</div>
         <div id="game-box"><div id="dino"></div></div>
-        </div>
+    </div>
 
     <div id="login-layer">
         <canvas id="login-matrix" class="m-canvas"></canvas>
         <div style="height:100vh; display:flex; align-items:center; justify-content:center;">
-            <div class="auth-card" id="auth-card">
-                <div style="font-size: 9px; letter-spacing: 5px; color: var(--neon);">ENCRYPTED_GATE_v2.0.4</div>
-                <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') runBreach()">
+            <div class="auth-card" id="auth-box">
+                <div style="font-size: 10px; letter-spacing: 6px; color: var(--neon); opacity: 0.6;">ENCRYPTED_OS_HANDSHAKE</div>
+                <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') startBreach()">
             </div>
         </div>
     </div>
 
     <div id="console">
         <canvas id="main-matrix" class="m-canvas"></canvas>
-        <header style="grid-column: 1/-1; background:#000; border-bottom:1px solid #222; display:flex; align-items:center; padding:0 25px; font-size:11px; z-index:10;">
-            OMNI_X // TITAN_OS // VPN: <span id="v-stat" style="color:red; margin-left:10px;">INSECURE</span>
+        <header style="grid-column: 1/-1; background:#000; display:flex; align-items:center; padding:0 25px; font-size:11px; border-bottom: 1px solid #1a1a1a; letter-spacing: 1px;">
+            OMNI_X // HYPERION // VPN_SHIELD: <span id="v-stat" style="color:var(--alert); margin-left:10px;">OFFLINE</span>
+            <div style="margin-left: auto; opacity: 0.5;" id="clock">00:00:00</div>
         </header>
 
         <aside class="panel" id="p1">
-            <div class="p-hdr">Operational_Suite</div>
-            <div class="feat-grid" id="grid"></div>
-            <button class="btn btn-urban" onclick="startFeature('URBAN_VPN_OVERRIDE')">> ACTIVATE URBAN P2P</button>
+            <div class="p-hdr">Operational_Modules</div>
+            <div class="feat-grid" id="f-grid"></div>
+            <button class="btn btn-urban" onclick="exec('URBAN_VPN_ACTIVATE')">> INITIALIZE URBAN_P2P_TUNNEL</button>
         </aside>
 
         <main class="panel" id="p2">
-            <div class="p-hdr">Kernel_Log</div>
+            <div class="p-hdr">Kernel_Log_Feed</div>
             <div id="term"></div>
-            <div id="p-container" style="padding:0 20px 15px 20px; display:none;">
-                <div style="background:#111; height:4px; width:100%;"><div id="p-bar" class="progress-bar"></div></div>
+            <div id="p-wrap" style="padding:0 20px 15px; display:none;">
+                <div style="background:#111; height:3px; width:100%;"><div id="p-engine" class="prog-bar"></div></div>
             </div>
         </main>
 
         <aside class="panel" id="p3">
-            <div class="p-hdr">Hardware_Stats</div>
-            <div style="padding:20px; font-size:11px; line-height:2.2;">
-                IP_ADDR: <span id="sys-ip" style="color:#fff">---</span><br>
-                GEO_LOC: <span id="sys-geo" style="color:var(--urban)">...</span><br>
-                CPU_LOAD: <span style="color:var(--neon)">14.2%</span>
+            <div class="p-hdr">Hardware_Telemetry</div>
+            <div style="padding:22px; font-size:11px; line-height:2.4;">
+                NODE_IP: <span id="ip" style="color:#fff">---</span><br>
+                GEO_LOC: <span id="loc" style="color:var(--urban)">...</span><br>
+                CPU_STATUS: <span style="color:var(--neon)">STABLE (14%)</span>
             </div>
-            <div class="p-hdr">Ghost_Nodes</div>
-            <div id="nodes" style="padding:15px; font-size:9px; opacity:0.4; overflow-y:auto; flex-grow:1;"></div>
-            <button class="btn" style="border-color:var(--alert); color:var(--alert); margin:10px;" onclick="location.reload()">TERMINATE_OS</button>
+            <div class="p-hdr">Network_Nodes</div>
+            <div id="nodes" style="padding:12px; font-size:10px; opacity:0.3; overflow-y:auto; flex-grow:1;"></div>
+            <button class="btn" style="border-color:var(--alert); color:var(--alert); margin:15px;" onclick="location.reload()">SIG_WIPE_ENV</button>
         </aside>
 
         <div class="panel" id="p4" style="grid-column: 2/4;">
-            <div class="p-hdr">Traffic_Visualizer</div>
-            <canvas id="vis-canvas" style="width:100%; height:100%;"></canvas>
+            <div class="p-hdr">Traffic_Flow_Analysis</div>
+            <canvas id="flow-canvas" style="width:100%; height:100%;"></canvas>
         </div>
     </div>
 
 <script>
     let buffer = "", score = 0, dinoY = 0, dy = 0, active = true;
-    const features = ["Packet_Sniff", "MAC_Spoof", "Hash_Cracker", "SQL_Inject", "DDoS_Attack", "Proxy_Rot", "DNS_Tunnel", "Meta_Scrape", "Port_Scan", "SSH_Brute", "Session_Hijack", "Root_Check", "Payload_Gen", "Deep_Scan", "Node_Jumper", "Traffic_Mirr", "FW_Bypass", "Auth_Wipe", "Ghost_Mode", "Kernel_Debug"];
+    const feats = ["PacketSniff", "MACSpoof", "HashCrack", "SQLInject", "DDoS_Stress", "ProxyRot", "DNSTunnel", "MetaScrape", "PortScan", "SSHBrute", "SessionHi", "RootCheck", "PayloadGen", "DeepScan", "NodeJump", "TrafficMirr", "FW_Bypass", "AuthWipe", "GhostMode", "KernelDebug"];
 
-    function keyEvent(e) {
+    function handleKeys(e) {
         if(e.code === "Space" && dinoY === 0) dy = 14;
         buffer += e.key.toLowerCase();
-        if(buffer.includes("root")) { buffer = ""; triggerWarp(); }
+        if(buffer.includes("root")) { buffer = ""; runWarp(); }
     }
 
-    function dinoLoop() {
+    function gameLoop() {
         if(!active) return;
         dinoY += dy; dy -= 0.8;
         if(dinoY <= 0) { dinoY = 0; dy = 0; }
         document.getElementById('dino').style.bottom = dinoY + "px";
         score++; document.getElementById('score').innerText = score.toString().padStart(5,'0');
-        requestAnimationFrame(dinoLoop);
+        requestAnimationFrame(gameLoop);
     }
-    dinoLoop();
+    gameLoop();
 
-    function spawnCactus() {
+    function spawn() {
         if(!active) return;
         const c = document.createElement('div');
-        c.className = 'cactus';
-        c.style.right = '-25px';
+        c.className = 'cactus'; c.style.right = '-25px';
         document.getElementById('game-box').appendChild(c);
         let pos = -25;
-        const move = setInterval(() => {
-            if(!active) { clearInterval(move); c.remove(); return; }
-            pos += 7.5; c.style.right = pos + "px";
-            if(pos > 520 && pos < 550 && dinoY < 40) { score = 0; }
-            if(pos > 700) { clearInterval(move); c.remove(); }
+        const m = setInterval(() => {
+            if(!active) { clearInterval(m); c.remove(); return; }
+            pos += 7.8; c.style.right = pos + "px";
+            if(pos > 520 && pos < 550 && dinoY < 38) score = 0; // Collision Polish
+            if(pos > 700) { clearInterval(m); c.remove(); }
         }, 16);
-        setTimeout(spawnCactus, 2000 + Math.random() * 2500);
+        setTimeout(spawn, 2000 + Math.random() * 2000);
     }
-    spawnCactus();
+    spawn();
 
-    function triggerWarp() {
+    function runWarp() {
         active = false;
         const l = document.getElementById('laser');
-        l.style.display = 'block'; l.style.animation = 'sweep 0.6s linear forwards';
+        l.style.display = 'block'; l.style.animation = 'sweep 0.7s cubic-bezier(0.7, 0, 0.3, 1) forwards';
         setTimeout(() => {
-            document.getElementById('decoy').style.display = 'none';
-            document.getElementById('login-layer').style.display = 'block';
-            setTimeout(() => document.getElementById('login-layer').style.opacity = '1', 50);
-            startMatrix('login-matrix');
-            document.getElementById('passkey').focus();
-        }, 450);
+            document.getElementById('decoy').style.opacity = "0";
+            document.getElementById('decoy').style.transform = "scale(0.95)";
+            setTimeout(() => {
+                document.getElementById('decoy').style.display = 'none';
+                document.getElementById('login-layer').style.display = 'block';
+                setTimeout(() => document.getElementById('login-layer').style.opacity = '1', 50);
+                drawMatrix('login-matrix');
+                document.getElementById('passkey').focus();
+            }, 600);
+        }, 350);
     }
 
-    function runBreach() {
+    function startBreach() {
         if(btoa(document.getElementById('passkey').value) === "YWRtaW5AOTk=") {
-            const card = document.getElementById('auth-card');
-            const ring = document.getElementById('breach-ring');
-            card.style.transform = "scale(0.8) rotateX(90deg)"; card.style.opacity = "0";
-            ring.style.animation = "pulse-out 1s ease-out forwards";
+            const box = document.getElementById('auth-box');
+            const shock = document.getElementById('shockwave');
+            box.style.transform = "scale(0.8) rotateX(90deg)"; box.style.opacity = "0";
+            shock.style.animation = "shock 1s ease-out forwards";
+            
             setTimeout(() => {
                 document.getElementById('login-layer').style.display = 'none';
                 document.getElementById('console').style.display = 'grid';
-                startMatrix('main-matrix');
+                drawMatrix('main-matrix');
                 initConsole();
-                // Sequenced appearance
                 ['p1', 'p2', 'p3', 'p4'].forEach((id, i) => {
-                    setTimeout(() => document.getElementById(id).classList.add('visible'), i * 200);
+                    setTimeout(() => document.getElementById(id).classList.add('active'), i * 150);
                 });
             }, 800);
         } else { document.getElementById('passkey').value = ""; }
     }
 
     function initConsole() {
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
         fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-            document.getElementById('sys-ip').innerText = d.ip;
-            document.getElementById('sys-geo').innerText = d.city.toUpperCase();
+            document.getElementById('ip').innerText = d.ip;
+            document.getElementById('loc').innerText = d.city.toUpperCase();
         });
-        const grid = document.getElementById('grid');
-        features.forEach(f => { grid.innerHTML += `<button class="btn" onclick="startFeature('${f}')">${f}</button>`; });
-        const nodes = document.getElementById('nodes');
-        for(let i=0; i<15; i++) nodes.innerHTML += `<div>> NODE_SYNC: 192.168.1.${i}</div>`;
-        log("TITAN_OS: NEURAL_LINK_ESTABLISHED");
+        const g = document.getElementById('f-grid');
+        feats.forEach(f => g.innerHTML += `<button class="btn" onclick="exec('${f}')">${f}</button>`);
+        const n = document.getElementById('nodes');
+        for(let i=0; i<15; i++) n.innerHTML += `<div>> SYNC_NODE_10.${i}.254</div>`;
+        log("HYPERION_PRIME: SYSTEMS_ONLINE");
     }
 
-    function startFeature(name) {
-        log(`INIT: ${name}...`);
-        const pCont = document.getElementById('p-container');
-        const pBar = document.getElementById('p-bar');
-        pCont.style.display = 'block';
+    function exec(name) {
+        log(`EXECUTING: ${name}...`);
+        const pW = document.getElementById('p-wrap');
+        const pE = document.getElementById('p-engine');
+        pW.style.display = 'block';
         let w = 0;
-        const int = setInterval(() => {
-            w += Math.random() * 20; pBar.style.width = w + "%";
+        const i = setInterval(() => {
+            w += Math.random() * 25; pE.style.width = w + "%";
             if(w >= 100) {
-                clearInterval(int);
+                clearInterval(i);
                 setTimeout(() => {
-                    pCont.style.display = 'none'; pBar.style.width = "0%";
-                    if(name === 'URBAN_VPN_OVERRIDE') {
-                        document.getElementById('v-stat').innerText = "PROTECTED";
+                    pW.style.display = 'none'; pE.style.width = "0%";
+                    if(name === 'URBAN_VPN_ACTIVATE') {
+                        document.getElementById('v-stat').innerText = "SECURED";
                         document.getElementById('v-stat').style.color = "var(--urban)";
-                        log("URBAN_VPN: TUNNEL_OPEN");
-                    } else { log(`${name}: SUCCESS`); }
+                        log("URBAN_VPN: ENCRYPTED TUNNEL ESTABLISHED");
+                    } else { log(`${name}: SUCCESSFUL`); }
                 }, 400);
             }
-        }, 80);
+        }, 70);
     }
 
     function log(m) {
@@ -207,17 +215,16 @@
         t.scrollTop = t.scrollHeight;
     }
 
-    function startMatrix(id) {
-        const c = document.getElementById(id);
-        const ctx = c.getContext('2d');
+    function drawMatrix(id) {
+        const c = document.getElementById(id); const ctx = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
         const col = Array(Math.floor(c.width/20)).fill(1);
         setInterval(() => {
-            ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0,0,c.width,c.height);
             ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
             col.forEach((y, i) => {
                 ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, y*20);
-                if(y*20 > c.height && Math.random() > 0.985) col[i] = 0;
+                if(y*20 > c.height && Math.random() > 0.98) col[i] = 0;
                 col[i]++;
             });
         }, 50);
