@@ -2,112 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chrome Dino</title>
+    <title>Omni-X | Advanced Interface</title>
     <style>
-        :root { --neon: #00ff41; --bg: #000; --panel: rgba(0, 5, 0, 0.9); --glitch: #ff003c; }
-        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; }
+        :root { --neon: #00ff41; --bg: #020202; --panel: rgba(0, 10, 0, 0.85); --alert: #ff003c; }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', 'Courier New', monospace; background: #000; }
 
-        /* --- STAGE 1: THE DECOY --- */
-        #decoy-layer { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.6s cubic-bezier(0.9, 0, 0.1, 1); }
-        #canvas-wrap { position: relative; width: 600px; height: 160px; border-bottom: 2px solid #535353; overflow: hidden; }
-        #dino { width: 40px; height: 44px; background: #535353; position: absolute; bottom: 0; left: 50px; }
-        .cactus { width: 18px; height: 38px; background: #535353; position: absolute; bottom: 0; }
-        #score-board { font-size: 24px; color: #535353; margin-bottom: 10px; }
+        /* --- STAGE 1: DINO GAME (DECOY) --- */
+        #game-layer { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s transform cubic-bezier(1, 0, 0, 1); }
+        #canvas-wrap { position: relative; width: 640px; height: 180px; border-bottom: 3px solid #333; overflow: hidden; }
+        #dino { width: 44px; height: 44px; background: #333; position: absolute; bottom: 0; left: 50px; border-radius: 4px; z-index: 2; }
+        .cactus { width: 20px; height: 40px; background: #333; position: absolute; bottom: 0; }
+        #score-text { font-size: 32px; color: #333; margin-bottom: 20px; font-weight: 800; letter-spacing: 2px; }
 
-        /* --- STAGE 2: THE WARP ENTRANCE --- */
-        #warp-layer { position: fixed; inset: 0; z-index: 150; background: #000; display: none; overflow: hidden; }
-        .star { position: absolute; background: var(--neon); width: 2px; height: 2px; border-radius: 50%; }
+        /* --- STAGE 2: LOGIN INTERFACE --- */
+        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 1.2s opacity; }
+        .gate-center { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
+        .auth-card { border: 1px solid var(--neon); padding: 60px; background: rgba(0,0,0,0.9); box-shadow: 0 0 50px rgba(0,255,65,0.15); border-radius: 2px; text-align: center; }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 12px; width: 350px; margin-top: 30px; }
 
-        /* --- STAGE 3: THE LOGIN GATE --- */
-        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 1s; }
-        .gate-content { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
-        .auth-card { border: 1px solid var(--neon); padding: 50px; background: #000; box-shadow: 0 0 40px rgba(0, 255, 65, 0.1); animation: flicker 2s infinite; }
-        @keyframes flicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.5; } }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 1.8rem; text-align: center; outline: none; letter-spacing: 8px; width: 300px; margin-top: 20px; }
+        /* --- STAGE 3: THE MAIN CONSOLE --- */
+        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 320px; grid-template-rows: 60px 1fr 240px; gap: 2px; background: #000; }
+        .bg-canvas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+        .header { grid-column: 1 / -1; background: #000; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; padding: 0 25px; color: var(--neon); font-size: 12px; letter-spacing: 2px; }
+        .panel { background: var(--panel); border: 1px solid rgba(0, 255, 65, 0.1); display: flex; flex-direction: column; backdrop-filter: blur(15px); }
+        .p-hdr { padding: 12px; font-size: 10px; background: rgba(0, 255, 65, 0.05); color: #888; border-bottom: 1px solid rgba(0, 255, 65, 0.1); text-transform: uppercase; }
+        
+        #term { flex-grow: 1; padding: 25px; color: var(--neon); font-size: 13px; overflow-y: auto; scrollbar-width: none; }
+        .action-btn { background: none; border: 1px solid var(--neon); color: var(--neon); padding: 12px; margin: 8px 25px; cursor: pointer; font-family: inherit; font-size: 11px; text-transform: uppercase; transition: 0.3s; }
+        .action-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
 
-        /* --- STAGE 4: THE PHANTOM CONSOLE --- */
-        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 300px 1fr 300px; gap: 2px; background: #000; }
-        #bg-matrix { position: absolute; inset: 0; z-index: -1; opacity: 0.15; }
-        .panel { background: var(--panel); border: 1px solid rgba(0,255,65,0.1); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .p-hdr { padding: 10px; font-size: 10px; background: rgba(0,255,65,0.05); color: var(--neon); border-bottom: 1px solid rgba(0,255,65,0.1); text-transform: uppercase; }
-        #term { flex-grow: 1; padding: 20px; color: var(--neon); font-size: 12px; overflow-y: auto; line-height: 1.5; }
-        .tool-btn { background: none; border: 1px solid var(--neon); color: var(--neon); padding: 10px; margin: 5px 20px; cursor: pointer; font-family: inherit; transition: 0.3s; }
-        .tool-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
-
-        /* TRANSITION FX */
-        .shatter-left { transform: translateX(-100%) skewX(-10deg); filter: blur(10px); }
-        .shatter-right { transform: translateX(100%) skewX(10deg); filter: blur(10px); }
+        /* GLITCH & FX */
+        .glitch-overlay { position: fixed; inset: 0; background: var(--alert); z-index: 500; opacity: 0; pointer-events: none; }
+        @keyframes flashRed { 0% { opacity: 0.8; } 100% { opacity: 0; } }
+        .shatter { transform: scale(1.5) rotate(5deg); opacity: 0; filter: blur(20px); }
     </style>
 </head>
-<body onkeydown="keyHandler(event)">
+<body onkeydown="keyMonitor(event)">
 
-    <div id="decoy-layer">
-        <div id="score-board">00000</div>
+    <div id="glitch-screen" class="glitch-overlay"></div>
+
+    <div id="game-layer">
+        <div id="score-text">00000</div>
         <div id="canvas-wrap">
             <div id="dino"></div>
         </div>
-        <p style="color: #bbb; font-size: 11px; margin-top: 20px;">SYSTEMS_STABLE // PRESS SPACE</p>
+        <p style="color: #999; font-size: 11px; margin-top: 30px; letter-spacing: 4px;">INITIALIZING DECOY_ENV.SYS</p>
     </div>
 
-    <div id="warp-layer"></div>
-
     <div id="login-layer">
-        <div class="gate-content">
+        <canvas id="gate-matrix" class="bg-canvas"></canvas>
+        <div class="gate-center">
             <div class="auth-card">
-                <div style="color:var(--neon); font-size: 10px; letter-spacing: 5px;">KEY_CHALLENGE_REQUIRED</div>
-                <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') tryAccess()">
+                <div style="color:var(--neon); font-size: 10px; letter-spacing: 6px;">IDENT_CHALLENGE_REQUIRED</div>
+                <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') startAuth()">
             </div>
         </div>
     </div>
 
     <div id="console">
-        <canvas id="bg-matrix"></canvas>
-        <aside class="panel">
-            <div class="p-hdr">Utility_Core</div>
-            <button class="tool-btn" onclick="task('DECRYPT')">DECRYPT_STREAM</button>
-            <button class="tool-btn" onclick="task('SPOOF')">SPOOF_MAC_ID</button>
-            <div style="padding: 20px; font-size: 11px; color: #666;">
-                IP: <span id="val-ip" style="color:#fff">---</span><br>
-                LOC: <span id="val-loc" style="color:var(--neon)">Searching...</span>
+        <canvas id="main-matrix" class="bg-canvas"></canvas>
+        
+        <div class="header">
+            OMNI_X // ADVANCED_OS_CORE // STATUS: <span style="color:white; margin-left:10px;">ENCRYPTED</span>
+            <div id="clock" style="margin-left: auto;">00:00:00</div>
+        </div>
+
+        <aside class="panel" style="grid-row: 2 / 4;">
+            <div class="p-hdr">Utility_Suite</div>
+            <button class="action-btn" onclick="runProc('NETWORK_SCAN')">Scan_Packets</button>
+            <button class="action-btn" onclick="runProc('MAC_SPOOF')">Mask_Hardware</button>
+            <button class="action-btn" onclick="runProc('BRUTE_FORCE')">Hash_Cracker</button>
+            <div style="margin-top:auto; padding:25px; font-size:11px; border-top:1px solid #111;">
+                IP_ADDR: <span id="sys-ip" style="color:#fff">---</span><br>
+                GEO_LOC: <span id="sys-geo" style="color:var(--neon)">...</span>
             </div>
         </aside>
-        <main class="panel">
-            <div class="p-hdr">Terminal_Output</div>
+
+        <main class="panel" style="grid-column: 2 / 3; grid-row: 2 / 3;">
+            <div class="p-hdr">Kernel_Stream</div>
             <div id="term"></div>
         </main>
-        <aside class="panel">
-            <div class="p-hdr">Nodes_Online</div>
-            <div id="nodes" style="padding:10px; font-size:10px; opacity:0.6; line-height:2;"></div>
-            <button class="tool-btn" style="border-color:var(--glitch); color:var(--glitch); margin-top:auto; margin-bottom:20px;" onclick="location.reload()">SIG_TERMINATE</button>
+
+        <aside class="panel" style="grid-row: 2 / 4;">
+            <div class="p-hdr">Remote_Nodes_Live</div>
+            <div id="node-box" style="padding:15px; font-size:10px; color:#666; overflow-y:auto; flex-grow:1;"></div>
+            <button class="action-btn" style="border-color:var(--alert); color:var(--alert);" onclick="location.reload()">Terminate</button>
         </aside>
+
+        <div class="panel" style="grid-column: 2 / 3; grid-row: 3 / 4;">
+            <div class="p-hdr">Traffic_Visualizer</div>
+            <canvas id="vis-canvas" style="width:100%; height:100%;"></canvas>
+        </div>
     </div>
 
 <script>
     let buffer = "";
-    let score = 0;
-    let dinoY = 0;
-    let dy = 0;
-    let active = true;
+    let score = 0, dinoY = 0, dy = 0, active = true;
 
-    // --- 1. DINO GAME ---
-    function keyHandler(e) {
-        if(e.code === "Space" && dinoY === 0) dy = 13;
+    // --- 1. DINO GAME LOGIC ---
+    function keyMonitor(e) {
+        if(e.code === "Space" && dinoY === 0) dy = 13.5;
         
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
             buffer = "";
-            startWarpEntrance();
+            transitionToLogin();
         }
     }
 
     function gameLoop() {
         if(!active) return;
         dinoY += dy;
-        dy -= 0.7;
+        dy -= 0.75; // Gravity
         if(dinoY <= 0) { dinoY = 0; dy = 0; }
         document.getElementById('dino').style.bottom = dinoY + "px";
         score++;
-        document.getElementById('score-board').innerText = score.toString().padStart(5, '0');
+        document.getElementById('score-text').innerText = score.toString().padStart(5, '0');
         requestAnimationFrame(gameLoop);
     }
     gameLoop();
@@ -116,109 +126,99 @@
         if(!active) return;
         const c = document.createElement('div');
         c.className = 'cactus';
-        c.style.right = '-20px';
+        c.style.right = '-25px';
         document.getElementById('canvas-wrap').appendChild(c);
-        let pos = -20;
+        let pos = -25;
         const move = setInterval(() => {
             if(!active) { clearInterval(move); c.remove(); return; }
-            pos += 6;
+            pos += 7;
             c.style.right = pos + "px";
-            if(pos > 515 && pos < 545 && dinoY < 38) {
-                alert("STABLE_SYNC_LOST. Score: " + score);
-                location.reload();
+            
+            // Collision Detection
+            if(pos > 520 && pos < 550 && dinoY < 40) {
+                resetGame();
+                clearInterval(move);
+                c.remove();
             }
-            if(pos > 650) { clearInterval(move); c.remove(); }
+            if(pos > 700) { clearInterval(move); c.remove(); }
         }, 16);
-        setTimeout(spawnCactus, 2500 + Math.random() * 3000); // Rare Cacti
+        setTimeout(spawnCactus, 2000 + Math.random() * 2000);
     }
     spawnCactus();
 
-    // --- 2. COOL ENTRANCE (WARP) ---
-    function startWarpEntrance() {
-        active = false;
-        const decoy = document.getElementById('decoy-layer');
-        decoy.classList.add('shatter-left');
-        
-        const warp = document.getElementById('warp-layer');
-        warp.style.display = 'block';
-
-        // Create Warp Stars
-        for(let i=0; i<60; i++) {
-            let star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = '50%';
-            star.style.top = '50%';
-            warp.appendChild(star);
-            
-            let angle = Math.random() * Math.PI * 2;
-            let speed = Math.random() * 5 + 2;
-            let vx = Math.cos(angle) * speed;
-            let vy = Math.sin(angle) * speed;
-            
-            let pos = 0;
-            const anim = setInterval(() => {
-                pos += 1;
-                star.style.transform = `translate(${vx * pos}px, ${vy * pos}px) scale(${pos/10})`;
-                if(pos > 100) { star.remove(); clearInterval(anim); }
-            }, 10);
-        }
-
-        setTimeout(() => {
-            warp.style.display = 'none';
-            document.getElementById('login-layer').style.display = 'block';
-            setTimeout(() => { document.getElementById('login-layer').style.opacity = '1'; }, 50);
-            document.getElementById('passkey').focus();
-        }, 1200);
+    function resetGame() {
+        const glitch = document.getElementById('glitch-screen');
+        glitch.style.animation = "flashRed 0.4s ease-out";
+        score = 0;
+        document.getElementById('score-text').innerText = "00000";
+        setTimeout(() => glitch.style.animation = "", 400);
     }
 
-    // --- 3. CONSOLE ---
-    function tryAccess() {
+    // --- 2. TRANSITION ---
+    function transitionToLogin() {
+        active = false;
+        document.getElementById('game-layer').classList.add('shatter');
+        const login = document.getElementById('login-layer');
+        login.style.display = 'block';
+        setTimeout(() => { login.style.opacity = '1'; }, 50);
+        renderMatrix('gate-matrix');
+        document.getElementById('passkey').focus();
+    }
+
+    // --- 3. CONSOLE OPERATIONS ---
+    function startAuth() {
         if(btoa(document.getElementById('passkey').value) === "YWRtaW5AOTk=") {
             document.getElementById('login-layer').style.display = 'none';
             document.getElementById('console').style.display = 'grid';
-            startMatrix();
-            boot();
+            renderMatrix('main-matrix');
+            bootConsole();
         } else {
             document.getElementById('passkey').value = "";
         }
     }
 
-    function boot() {
+    function bootConsole() {
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
         fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-            document.getElementById('val-ip').innerText = d.ip;
-            document.getElementById('val-loc').innerText = d.city.toUpperCase();
+            document.getElementById('sys-ip').innerText = d.ip;
+            document.getElementById('sys-geo').innerText = d.city.toUpperCase();
         });
-        const n = document.getElementById('nodes');
-        for(let i=0; i<10; i++) n.innerHTML += `<div>> NODE_CONNECTED: 192.168.${i}.254</div>`;
-        log("GHOST_SHELL_V4: ONLINE");
+        const nodes = document.getElementById('node-box');
+        for(let i=0; i<12; i++) {
+            nodes.innerHTML += `<div>> NODE_CONNECTED: 10.0.${i}.255</div>`;
+        }
+        pushLog("GHOST_SHELL_OS: INITIALIZED SUCCESSFULLY");
     }
 
-    function task(t) {
-        log(`INITIATING_${t}...`);
-        setTimeout(() => log(`STREAM_HANDSHAKE: [OK]`), 800);
-        setTimeout(() => log(`${t}_SEQUENCE_COMPLETE.`), 2000);
+    function runProc(name) {
+        pushLog(`STARTING_${name}...`);
+        setTimeout(() => pushLog(`PACKET_SYNC: [100%]`), 1000);
+        setTimeout(() => pushLog(`RESULT: ENCRYPTION_BYPASS_SUCCESS`), 2500);
     }
 
-    function log(m) {
+    function pushLog(m) {
         const t = document.getElementById('term');
-        t.innerHTML += `<div><span style="opacity:0.3">[${new Date().toLocaleTimeString()}]</span> ${m}</div>`;
+        t.innerHTML += `<div><span style="opacity:0.2">[${new Date().toLocaleTimeString()}]</span> ${m}</div>`;
         t.scrollTop = t.scrollHeight;
     }
 
-    function startMatrix() {
-        const c = document.getElementById('bg-matrix');
+    // --- 4. OPTIMIZED MATRIX ENGINE ---
+    function renderMatrix(canvasId) {
+        const c = document.getElementById(canvasId);
         const ctx = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
-        const col = Array(Math.floor(c.width/20)).fill(1);
-        setInterval(() => {
-            ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
-            ctx.fillStyle = "#0F0"; ctx.font = "14px monospace";
-            col.forEach((y, i) => {
+        const columns = Array(Math.floor(c.width/20)).fill(1);
+        function step() {
+            ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
+            columns.forEach((y, i) => {
                 ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, y*20);
-                if(y*20 > c.height && Math.random() > 0.98) col[i] = 0;
-                col[i]++;
+                if(y*20 > c.height && Math.random() > 0.985) columns[i] = 0;
+                columns[i]++;
             });
-        }, 50);
+            requestAnimationFrame(step);
+        }
+        step();
     }
 </script>
 </body>
