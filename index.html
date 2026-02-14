@@ -3,45 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni-X // Evolution</title>
+    <title>Omni-X // Ultimate_Genesis</title>
     <style>
         :root { 
             --neon: #00ff41; --urban: #00ccff; --alert: #ff003c; 
             --glass: rgba(5, 12, 5, 0.95); --font: 'JetBrains Mono', monospace;
-            --radius: 2px; --speed: 0.5s; --blur: 10px;
+            --radius: 2px; --speed: 0.4s; --blur: 15px;
         }
-
         * { box-sizing: border-box; transition: background var(--speed), border var(--speed), border-radius var(--speed); }
         body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: var(--font); background: #000; color: var(--neon); }
         
-        /* Dynamic Scanlines */
-        #fx-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1000; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px); }
+        #fx-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1000; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); }
+        #matrix-canvas { position: absolute; inset: 0; z-index: 1; opacity: 0.6; display: none; cursor: crosshair; }
 
         /* --- DECOY --- */
-        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s ease-in-out; }
+        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s cubic-bezier(0.7, 0, 0.3, 1); }
         #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; }
         #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; border-radius: 4px; }
 
         /* --- LOGIN --- */
-        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.5s; }
-        .auth-card { border: 1px solid var(--neon); padding: 50px; background: rgba(0,20,0,0.4); backdrop-filter: blur(var(--blur)); box-shadow: 0 0 40px rgba(0,255,65,0.1); text-align: center; border-radius: var(--radius); }
+        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.8s; overflow: hidden; }
+        .auth-card { position: relative; z-index: 5; border: 1px solid var(--neon); padding: 50px; background: rgba(0,0,0,0.85); backdrop-filter: blur(var(--blur)); text-align: center; border-radius: var(--radius); }
         input[type="password"] { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 1.5rem; text-align: center; outline: none; width: 300px; margin-top: 25px; letter-spacing: 5px; }
 
         /* --- CONSOLE --- */
-        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 300px 1fr 300px; grid-template-rows: 60px 1fr 280px; gap: 10px; padding: 10px; }
-        .panel { background: var(--glass); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(10px); backdrop-filter: blur(var(--blur)); }
+        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 320px; grid-template-rows: 60px 1fr 280px; gap: 12px; padding: 12px; background: #000; }
+        .panel { background: var(--glass); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(15px); backdrop-filter: blur(var(--blur)); }
         .panel.active { opacity: 1; transform: translateY(0); }
-        .p-hdr { padding: 12px; font-size: 10px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--urban); letter-spacing: 2px; }
+        .p-hdr { padding: 12px; font-size: 10px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--urban); letter-spacing: 2px; }
 
-        #ai-chat { flex-grow: 1; padding: 15px; font-size: 11px; overflow-y: auto; scrollbar-width: none; }
-        #ai-input { background: rgba(255,255,255,0.03); border: none; border-top: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 18px; width: 100%; outline: none; }
+        #ai-chat { flex-grow: 1; padding: 15px; font-size: 11px; overflow-y: auto; scrollbar-width: none; line-height: 1.6; }
+        #ai-input { background: rgba(0,0,0,0.5); border: none; border-top: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 18px; width: 100%; outline: none; font-family: var(--font); }
         #term { flex-grow: 1; padding: 15px; font-size: 11px; overflow-y: auto; color: var(--neon); scrollbar-width: none; }
         
-        .btn { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 12px; font-size: 9px; cursor: pointer; text-align: left; border-radius: var(--radius); }
+        .btn { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 12px; font-size: 9px; cursor: pointer; text-align: left; }
         .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
-
-        #visualizer { height: 60px; display: flex; align-items: flex-end; gap: 2px; padding: 10px; background: rgba(0,0,0,0.3); }
-        .bar { flex: 1; background: var(--neon); height: 10%; transition: 0.1s; }
 
         #shockwave { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; border: 2px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
         @keyframes shock { 0% { width: 0; height: 0; opacity: 1; border-width: 20px; } 100% { width: 250vw; height: 250vw; opacity: 0; border-width: 1px; } }
@@ -49,51 +45,52 @@
 </head>
 <body onkeydown="handleGlobal(event)">
 
+<canvas id="matrix-canvas"></canvas>
 <div id="fx-overlay"></div>
 <div id="shockwave"></div>
 
 <div id="decoy">
     <div id="score" style="font-size:30px; color:#555">00000</div>
     <div id="game-box"><div id="dino"></div></div>
+    <p style="color:#aaa; font-size:10px; margin-top:20px;">[ SYSTEM LOCKED // TRIGGER ROOT ]</p>
 </div>
 
 <div id="login-layer">
     <div style="height: 100vh; display: flex; align-items: center; justify-content: center;">
         <div class="auth-card">
-            <div style="font-size: 10px; letter-spacing: 5px; color: var(--urban);">GATEWAY_PROTOCOL</div>
+            <div style="font-size: 10px; letter-spacing: 5px; color: var(--urban);">ENCRYPTED_AUTH_V4</div>
             <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') authenticate()">
         </div>
     </div>
 </div>
 
 <div id="console">
-    <header style="grid-column: 1/-1; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-        <div style="font-size: 12px; font-weight: bold;">OMNI-X // <span id="status-text">EVOLUTION_OS</span></div>
-        <div id="clock" style="margin-left: auto; font-size: 10px; opacity: 0.5;">00:00:00</div>
+    <header style="grid-column: 1/-1; display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div style="font-size: 12px; font-weight: bold; letter-spacing: 2px;">OMNI-X // <span id="node">NODE_099</span></div>
+        <div id="clock" style="margin-left: auto; font-size: 10px; opacity: 0.6;">00:00:00</div>
     </header>
 
     <aside class="panel" id="p1" style="grid-row: 2/4;">
-        <div class="p-hdr">Utility_Core</div>
-        <div id="tools" style="display: grid; gap: 5px; padding: 10px;"></div>
-        <div id="visualizer"></div>
+        <div class="p-hdr">Kernel_Modules</div>
+        <div id="tools" style="display: grid; gap: 5px; padding: 12px;"></div>
     </aside>
 
     <main class="panel" id="p2">
-        <div class="p-hdr">Runtime_Kernel</div>
+        <div class="p-hdr">Runtime_Log</div>
         <div id="term"></div>
     </main>
 
     <aside class="panel" id="p3">
-        <div class="p-hdr">Titan_Vault_DB</div>
+        <div class="p-hdr">Titan_Vault</div>
         <div id="vault-list" style="padding: 12px; font-size: 10px; flex-grow: 1;"></div>
-        <button class="btn" style="margin: 10px; border-color: var(--urban); color: var(--urban);" onclick="document.getElementById('f').click()">INGEST_DATA</button>
+        <button class="btn" style="margin: 10px; border-color: var(--urban); color: var(--urban); text-align: center;" onclick="document.getElementById('f').click()">INGEST_BINARY</button>
         <input type="file" id="f" style="display:none" onchange="vaultFile(this)">
     </aside>
 
     <aside class="panel" id="p4" style="grid-column: 2/4;">
-        <div class="p-hdr">Neural_Architect (Gemini)</div>
+        <div class="p-hdr">Neural Gemini Pro Interface</div>
         <div id="ai-chat"></div>
-        <input type="text" id="ai-input" placeholder="Talk to Architect (e.g. 'Hide the left panel', 'Make it Cyberpunk red')..." onkeypress="if(event.key==='Enter') talk()">
+        <input type="text" id="ai-input" placeholder="Ask Gemini anything or command the UI..." onkeypress="if(event.key==='Enter') talk()">
     </aside>
 </div>
 
@@ -104,13 +101,7 @@
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash-latest",
-        systemInstruction: `You are the Omni-X Architect. 
-        If the user asks for ANY UI change (colors, hiding panels, font size, etc), output ONLY a JSON:
-        {
-          "neon": "HEX", "urban": "HEX", "alert": "HEX", "glass": "RGBA", 
-          "radius": "px", "blur": "px", "layout": {"p1": "none/flex", "p3": "none/flex"}
-        }.
-        Otherwise, give a 1-sentence technical response.`
+        systemInstruction: "You are the Omni-X Architect powered by Gemini. You have two roles. 1: If the user asks for UI/style changes, output ONLY a JSON: {\"neon\": \"HEX\", \"urban\": \"HEX\", \"glass\": \"RGBA\", \"radius\": \"px\", \"blur\": \"px\", \"layout\": {\"p1\": \"none/flex\", \"p3\": \"none/flex\"}}. 2: If the user asks any other general question, answer as a brilliant, helpful AI assistant."
     });
 
     window.talk = async function() {
@@ -118,9 +109,9 @@
         const chat = document.getElementById('ai-chat');
         if(!input.value) return;
 
-        chat.innerHTML += `<div style="color:var(--urban); margin-bottom:10px;">> USER: ${input.value}</div>`;
+        chat.innerHTML += `<div style="color:var(--urban); margin-bottom:12px; padding-left:5px; border-left:2px solid var(--urban)">> ${input.value}</div>`;
         const val = input.value; input.value = "";
-        const m = document.createElement('div'); m.innerHTML = "> Syncing..."; chat.appendChild(m);
+        const m = document.createElement('div'); m.innerHTML = "> GEMINI: Processing..."; chat.appendChild(m);
 
         try {
             const res = await model.generateContent(val);
@@ -139,18 +130,49 @@
                     if(cfg.layout.p1) document.getElementById('p1').style.display = cfg.layout.p1;
                     if(cfg.layout.p3) document.getElementById('p3').style.display = cfg.layout.p3;
                 }
-                m.innerHTML = "> Architect: Environment evolved.";
-            } else { m.innerHTML = `> Architect: ${txt}`; }
-        } catch(e) { m.innerHTML = "> Architect: LINK_FAILED."; }
+                m.innerHTML = "> ARCHITECT: Visual sync complete.";
+            } else { 
+                m.innerHTML = `> GEMINI: ${txt.replace(/\n/g, '<br>')}`; 
+            }
+        } catch(e) { m.innerHTML = "> SYSTEM_ERR: Neural link severed."; }
         chat.scrollTop = chat.scrollHeight;
     }
 </script>
 
 <script>
-    let buffer = "", db;
-    const tools = ["Scan_Port", "Brute_SSH", "SQL_Map", "Wipe_Cache", "Proxy_Chain"];
+    let buffer = "", db, matrixInterval;
+    let mouse = { x: -100, y: -100 };
 
-    const req = indexedDB.open("OmniEvolution", 1);
+    function startMatrix() {
+        const c = document.getElementById('matrix-canvas');
+        const ctx = c.getContext('2d');
+        c.style.display = 'block';
+        c.width = window.innerWidth; c.height = window.innerHeight;
+        const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ";
+        const fontSize = 18;
+        const columns = Math.floor(c.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        window.onmousemove = e => { mouse.x = e.clientX; mouse.y = e.clientY; };
+
+        matrixInterval = setInterval(() => {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, c.width, c.height);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--neon').trim();
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                if(Math.hypot(x - mouse.x, y - mouse.y) < 100) drops[i] -= 3;
+                ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
+                if (y > c.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }, 30);
+    }
+
+    const req = indexedDB.open("OmniUltimate", 1);
     req.onupgradeneeded = e => e.target.result.createObjectStore("vault", {keyPath:"id", autoIncrement:true});
     req.onsuccess = e => db = e.target.result;
 
@@ -161,34 +183,29 @@
     }
 
     function goAuth() {
-        document.getElementById('decoy').style.transform = "translateY(-100vh) scale(0.8)";
+        document.getElementById('decoy').style.transform = "translateY(-100vh)";
         document.getElementById('login-layer').style.display = 'block';
+        startMatrix();
         setTimeout(() => { document.getElementById('login-layer').style.opacity = 1; document.getElementById('passkey').focus(); }, 100);
     }
 
     function authenticate() {
         if(document.getElementById('passkey').value === "admin@99") {
+            clearInterval(matrixInterval);
+            document.getElementById('matrix-canvas').style.display = 'none';
             document.getElementById('shockwave').style.animation = "shock 0.6s forwards";
             setTimeout(() => { document.getElementById('login-layer').style.display='none'; document.getElementById('console').style.display='grid'; boot(); }, 500);
         } else { document.getElementById('passkey').value = ""; }
     }
 
     function boot() {
-        tools.forEach(t => {
-            const b = document.createElement('button'); b.className = 'btn'; b.innerText = `[CMD] ${t}`;
-            b.onclick = () => log(`Task ${t}: Completed.`); document.getElementById('tools').appendChild(b);
+        ["Port_Scan", "Bypass", "SQL_Map", "Proxy", "Log_Wipe"].forEach(t => {
+            const b = document.createElement('button'); b.className = 'btn'; b.innerText = `[EXEC] ${t}`;
+            b.onclick = () => log(`Task ${t}: OK.`); document.getElementById('tools').appendChild(b);
         });
-        
-        // Build Visualizer
-        const vis = document.getElementById('visualizer');
-        for(let i=0; i<20; i++) vis.innerHTML += `<div class="bar"></div>`;
-        setInterval(() => {
-            document.querySelectorAll('.bar').forEach(b => b.style.height = Math.random()*100 + "%");
-        }, 150);
-
         ['p1','p2','p3','p4'].forEach((p, i) => setTimeout(() => document.getElementById(p).classList.add('active'), i*100));
         setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-        log("Evolution OS v3.0.1 Ready.");
+        log("Omni-X Ultimate v5.0 Active.");
     }
 
     function log(m) {
@@ -203,7 +220,7 @@
         reader.onload = e => {
             const tx = db.transaction("vault", "readwrite");
             tx.objectStore("vault").add({ name: f.name, data: e.target.result });
-            tx.oncomplete = () => { log(`Stored: ${f.name}`); updateVault(); };
+            tx.oncomplete = () => { log(`Vault: Stored ${f.name}`); updateVault(); };
         };
         reader.readAsDataURL(f);
     }
@@ -212,7 +229,7 @@
         const list = document.getElementById('vault-list'); list.innerHTML = "";
         db.transaction("vault").objectStore("vault").openCursor().onsuccess = e => {
             const c = e.target.result;
-            if(c) { list.innerHTML += `<div style="margin-bottom:5px; color:var(--urban)">📂 ${c.value.name}</div>`; c.continue(); }
+            if(c) { list.innerHTML += `<div style="margin-bottom:6px; border-left:2px solid var(--neon); padding-left:8px;">${c.value.name}</div>`; c.continue(); }
         }
     }
 </script>
