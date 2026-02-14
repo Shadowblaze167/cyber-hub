@@ -2,198 +2,271 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI_X_FINAL_SINGULARITY</title>
+    <title>Chrome Dino - No Internet</title>
     <style>
-        :root { --neon: #00ff41; --dim: #003300; --glass: rgba(0, 10, 0, 0.8); --border: rgba(0, 255, 65, 0.3); }
-        body, html { margin: 0; padding: 0; background: #000; color: var(--neon); font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
+        :root { --neon: #00ff41; --urban: #ffcc00; --err: #ff0033; --bg: #050505; }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #f7f7f7; font-family: 'Courier New', monospace; user-select: none; }
         
-        /* SCANLINE & CRT EFFECT */
-        body::before { content: " "; display: block; position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 2000; background-size: 100% 3px, 3px 100%; pointer-events: none; }
+        /* === LAYER 1: DECOY === */
+        #decoy { position: fixed; inset: 0; z-index: 100; background: #f7f7f7; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1); }
+        .game-area { width: 600px; height: 150px; border-bottom: 2px solid #535353; position: relative; background: #fff; overflow: hidden; }
+        #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; transition: bottom 0.2s; }
+        .cactus { width: 20px; height: 40px; background: #535353; position: absolute; bottom: 0; right: -30px; animation: slide 1.5s infinite linear; }
+        @keyframes slide { 0% { right: -30px; } 100% { right: 630px; } }
+        
+        /* === LAYER 2: MATRIX LOGIN === */
+        #matrix { position: fixed; inset: 0; z-index: 200; background: #000; display: none; opacity: 0; transition: opacity 0.5s; }
+        canvas { position: absolute; inset: 0; }
+        .login-ui { position: relative; z-index: 10; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card { background: rgba(0,10,0,0.9); border: 1px solid var(--neon); padding: 40px; text-align: center; box-shadow: 0 0 30px rgba(0,255,65,0.2); backdrop-filter: blur(5px); transform: scale(0.9); transition: 0.3s; }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-family: inherit; font-size: 2rem; text-align: center; outline: none; letter-spacing: 8px; width: 300px; margin-top: 20px; }
 
-        canvas { display: block; position: fixed; inset: 0; z-index: 0; pointer-events: none; transition: filter 1s; }
+        /* === LAYER 3: BLACK OPS CONSOLE === */
+        #console { position: fixed; inset: 0; z-index: 300; background: var(--bg); display: none; grid-template-columns: 300px 1fr 300px; grid-template-rows: 60px 1fr 200px; gap: 2px; color: var(--neon); }
+        .header { grid-column: 1 / -1; background: #000; border-bottom: 1px solid #333; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .panel { background: #000; border: 1px solid #222; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .p-title { background: #111; padding: 5px 10px; font-size: 0.7rem; color: #888; border-bottom: 1px solid #222; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* TOOLS */
+        #db-list { flex-grow: 1; overflow-y: auto; }
+        .node { padding: 8px 10px; border-bottom: 1px solid #111; font-size: 0.75rem; cursor: pointer; display: flex; justify-content: space-between; transition: 0.1s; }
+        .node:hover { background: #0a2a0a; color: #fff; }
+        .node.active { background: var(--urban); color: #000; font-weight: bold; }
 
-        /* BOOT SCREEN */
-        #boot-loader { position: fixed; inset: 0; z-index: 1500; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 1s ease-out; }
-        .load-box { width: 400px; padding: 25px; border: 1px solid var(--dim); background: rgba(0,10,0,0.95); }
-        .bar-bg { width: 100%; height: 2px; background: #001100; margin-top: 15px; position: relative; overflow: hidden; }
-        .bar-fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); }
-        .boot-text { font-size: 0.65rem; color: #444; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
-
-        /* SECURITY LAYERS */
-        #bios-screen { position: fixed; inset: 0; z-index: 1000; background: #000; padding: 40px; color: #333; display: none; }
-        .cursor { display: inline-block; width: 8px; height: 16px; background: var(--neon); animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        /* TERMINAL */
+        #term { padding: 15px; font-size: 0.8rem; line-height: 1.6; color: #aaa; overflow-y: auto; flex-grow: 1; font-family: 'Consolas', monospace; }
+        .log-line { margin-bottom: 5px; }
+        .t-success { color: var(--neon); } .t-warn { color: var(--urban); } .t-err { color: var(--err); }
         
-        #login-screen { position: fixed; inset: 0; z-index: 500; display: none; justify-content: center; align-items: center; }
-        .login-card { padding: 60px; text-align: center; background: var(--glass); border: 1px solid var(--neon); backdrop-filter: blur(15px); box-shadow: 0 0 100px rgba(0, 255, 65, 0.1); border-radius: 2px; }
+        /* VISUALIZER */
+        #vis-canvas { width: 100%; height: 100%; background: #050505; }
         
-        input, select { background: rgba(0, 20, 0, 0.9); border: 1px solid var(--dim); color: #fff; padding: 12px; width: 260px; text-align: center; font-family: inherit; margin-top: 10px; outline: none; }
-        input { font-size: 1.4rem; letter-spacing: 10px; border-bottom: 2px solid var(--neon); }
-
-        /* OPERATOR HUD */
-        #dashboard { display: none; grid-template-columns: 280px 1fr 280px; height: 100vh; position: relative; z-index: 10; padding: 20px; gap: 20px; box-sizing: border-box; }
-        .panel { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); display: flex; flex-direction: column; }
-        .p-hdr { background: rgba(0, 255, 65, 0.15); padding: 12px; font-size: 0.7rem; letter-spacing: 4px; text-align: center; border-bottom: 1px solid var(--border); font-weight: bold; }
-        .nav-btn { background: transparent; border: none; color: #008811; padding: 12px 20px; text-align: left; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; font-family: inherit; transition: 0.2s; border-left: 2px solid transparent; }
-        .nav-btn:hover { color: var(--neon); background: rgba(0, 255, 65, 0.1); border-left: 2px solid var(--neon); padding-left: 25px; }
-        
-        #terminal { flex-grow: 1; padding: 20px; font-size: 0.8rem; overflow-y: auto; color: #8f8; line-height: 1.6; }
-        .stat-row { padding: 12px 15px; font-size: 0.7rem; border-bottom: 1px solid rgba(0, 255, 65, 0.1); display: flex; justify-content: space-between; align-items: center; }
-        .val { color: var(--neon); font-weight: bold; }
-        
-        .glitch { animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both; transform: translate3d(0, 0, 0); }
+        /* FX */
+        .scanlines { position: fixed; inset: 0; pointer-events: none; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03)); background-size: 100% 3px, 3px 100%; z-index: 999; }
+        .glitch-anim { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
     </style>
 </head>
-<body onkeydown="resetIdle(); handleKey(event)">
+<body onkeydown="handleInput(event)">
 
-<canvas id="matrix"></canvas>
+    <div class="scanlines"></div>
 
-<div id="boot-loader">
-    <div class="load-box">
-        <div style="font-size: 0.6rem; letter-spacing: 4px; opacity: 0.5; margin-bottom: 5px;">LOADER::SYS_OS_10.4</div>
-        <div class="bar-bg"><div class="bar-fill" id="load-bar"></div></div>
-        <div class="boot-text" id="boot-status">Waking kernel...</div>
-    </div>
-</div>
-
-<div id="bios-screen">
-    <p>> OMNI_X_ENVIRONMENT_LOCKED</p>
-    <p>> ALL_TRAFFIC_LOGGED</p>
-    <br>
-    <p>> AWAITING_OVERRIDE... <span class="cursor"></span></p>
-</div>
-
-<div id="login-screen">
-    <div class="login-card">
-        <div style="letter-spacing: 8px; font-size: 0.9rem; color: #fff;">GATEKEEPER_ID</div>
-        <input type="password" id="passInput" placeholder="PASS" onkeypress="if(event.key==='Enter') validate()">
-    </div>
-</div>
-
-<div id="dashboard">
-    <nav class="panel"><div class="p-hdr">OPERATIONS</div><div id="tool-nav"></div></nav>
-    <main class="panel" id="main-panel"><div class="p-hdr">COMMAND_LOG</div><div id="terminal"></div></main>
-    <aside class="panel">
-        <div class="p-hdr">TELEMETRY</div>
-        <div class="stat-row">LOCAL_IP <span class="val" id="v-ip">...</span></div>
-        <div class="stat-row">LATENCY <span class="val" id="v-ping">0ms</span></div>
-        <div class="stat-row">URBAN_VPN <span class="val" id="v-stat" style="color:#f33">INACTIVE</span></div>
-        <div class="stat-row">
-            NODE 
-            <select id="urban-node" onchange="updatePing()" style="width: 100px; font-size: 0.6rem; margin:0;">
-                <option value="US_EAST">USA (NYC)</option><option value="UK_WEST">UK (LDN)</option>
-                <option value="JP_TOK">JPN (TYO)</option><option value="DE_FRA">GER (FRA)</option>
-            </select>
+    <div id="decoy">
+        <h1 style="color:#535353; margin-bottom: 10px;">NO INTERNET</h1>
+        <div class="game-area">
+            <div id="dino"></div>
+            <div class="cactus"></div>
         </div>
-        <div class="stat-row">AUTO_PURGE <span class="val" id="idle-txt">300s</span></div>
-        <button class="nav-btn" style="margin-top:auto;" onclick="connectUrban()">[ INITIALIZE_URBAN ]</button>
-        <button class="nav-btn" onclick="downloadLogs()">[ EXTRACT_BUFFER ]</button>
-        <button class="nav-btn" style="color:#f33; border-top:1px solid rgba(255,0,0,0.1);" onclick="location.reload()">[ KILL_SESSION ]</button>
-    </aside>
-</div>
+        <p style="color:#888; font-size: 0.8rem; margin-top: 20px;">Try: <span style="text-decoration: underline;">Running Windows Diagnostics</span></p>
+    </div>
+
+    <div id="matrix">
+        <canvas id="m-canvas"></canvas>
+        <div class="login-ui">
+            <div class="card" id="auth-card">
+                <div style="font-size: 0.7rem; letter-spacing: 4px; color: var(--neon); margin-bottom: 10px;">OMNI_X SECURE GATE</div>
+                <input type="password" id="pass" placeholder="••••" onkeypress="if(event.key==='Enter') tryLogin()">
+                <div id="msg" style="height: 20px; margin-top: 10px; font-size: 0.7rem; color: var(--err);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="console">
+        <header class="header">
+            <div>OMNI_X <span style="color:var(--urban)">v9.2.1</span> [SILENT_PROTOCOL]</div>
+            <div id="clock">00:00:00</div>
+        </header>
+
+        <aside class="panel" style="grid-row: 2 / -1;">
+            <div class="p-title">URBAN VPN NODE DB (20)</div>
+            <div id="db-list"></div>
+            <div style="padding:10px; border-top:1px solid #222;">
+                <button onclick="simBridge('connect')" style="width:100%; background:transparent; border:1px solid var(--urban); color:var(--urban); padding:10px; cursor:pointer;">> EXECUTE_VPN.EXE</button>
+            </div>
+        </aside>
+
+        <main class="panel" style="grid-column: 2 / 3; grid-row: 2 / 3;">
+            <div class="p-title">SYSTEM_LOGS_STREAM</div>
+            <div id="term"></div>
+        </main>
+
+        <div class="panel" style="grid-column: 2 / 3; grid-row: 3 / 4;">
+            <div class="p-title">LIVE_PACKET_LATENCY</div>
+            <canvas id="vis-canvas"></canvas>
+        </div>
+
+        <aside class="panel" style="grid-row: 2 / -1;">
+            <div class="p-title">SYSTEM_STATUS</div>
+            <div style="padding: 15px; font-size: 0.75rem; line-height: 2;">
+                STATUS: <span id="s-stat" style="color:var(--err)">UNPROTECTED</span><br>
+                IP_ADDR: <span id="s-ip" style="color:#fff">...</span><br>
+                UPLINK: <span id="s-up">0 KB/s</span><br>
+                DOWNLINK: <span id="s-down">0 KB/s</span><br>
+                CPU_LOAD: <span id="s-cpu">12%</span>
+            </div>
+            
+            <div class="p-title">QUICK_ACTIONS</div>
+            <div style="padding: 10px;">
+                <button onclick="log('GITHUB: Repo sync initiated...', 't-warn')" style="display:block; width:100%; margin-bottom:5px; background:#111; border:1px solid #333; color:#aaa; padding:8px; text-align:left; cursor:pointer;">> SYNC_GITHUB</button>
+                <button onclick="log('MAC_SPOOF: Randomizing HWID...', 't-success')" style="display:block; width:100%; margin-bottom:5px; background:#111; border:1px solid #333; color:#aaa; padding:8px; text-align:left; cursor:pointer;">> MASK_HARDWARE</button>
+                <button onclick="location.reload()" style="display:block; width:100%; margin-top:20px; background:rgba(255,0,0,0.1); border:1px solid var(--err); color:var(--err); padding:8px; cursor:pointer;">> KILL_SWITCH</button>
+            </div>
+        </aside>
+    </div>
 
 <script>
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-    let matrixColor = "#0F0";
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%*ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ";
-    const fontSize = 14;
-    let drops = Array(Math.floor(canvas.width / fontSize)).fill(1);
-    
-    function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = matrixColor; ctx.font = fontSize + "px monospace";
-        drops.forEach((y, i) => {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(text, i * fontSize, y * fontSize);
-            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    }
-    setInterval(draw, 33);
-
-    let progress = 0;
-    const bootInterval = setInterval(() => {
-        progress += Math.random() * 8;
-        if(progress >= 100) {
-            progress = 100; clearInterval(bootInterval);
-            setTimeout(() => { document.getElementById('boot-loader').style.display = "none"; document.getElementById('bios-screen').style.display = "block"; }, 800);
+    // --- DECOY LOGIC ---
+    let buffer = "";
+    function handleInput(e) {
+        if(document.getElementById('console').style.display === 'grid') return; // Stop if already logged in
+        
+        // Jump Logic
+        if(e.code === "Space" && document.getElementById('decoy').style.display !== 'none') {
+            const d = document.getElementById('dino');
+            d.style.bottom = "80px";
+            setTimeout(() => d.style.bottom = "0px", 250);
         }
-        document.getElementById('load-bar').style.width = progress + "%";
-        document.getElementById('boot-status').innerText = progress < 50 ? "Linking hardware..." : "Finalizing session...";
-    }, 120);
 
-    let buffer = "", unlocked = false, logs = [], idleTime = 0, vpnActive = false;
-
-    function handleKey(e) {
-        if (unlocked) return;
+        // Secret Code Logic
         buffer += e.key.toLowerCase();
-        if (buffer.includes("root")) {
-            unlocked = true;
-            document.getElementById('bios-screen').style.display = "none";
-            document.getElementById('login-screen').style.display = "flex";
-            setTimeout(() => document.getElementById('passInput').focus(), 100);
+        if(buffer.includes("urban77")) {
+            buffer = "";
+            triggerGlitch();
         }
     }
 
-    function validate() {
-        if(btoa(document.getElementById('passInput').value) === "YWRtaW5AOTk=") { 
-            document.getElementById('login-screen').style.display = "none";
-            document.getElementById('dashboard').style.display = "grid";
-            loadTools(); log("OMNI_OS INITIALIZED. URBAN_SHELL READY."); fetchIP(); updatePing();
-        } else { log("SECURITY_ALERT: UNKNOWN_USER."); document.getElementById('passInput').value = ""; }
+    function triggerGlitch() {
+        const decoy = document.getElementById('decoy');
+        decoy.style.transform = "translateY(-100%) scale(0.9)";
+        
+        const matrix = document.getElementById('matrix');
+        matrix.style.display = "block";
+        setTimeout(() => { matrix.style.opacity = "1"; }, 100);
+        
+        startMatrixRain();
+        document.getElementById('pass').focus();
     }
 
-    function updatePing() {
-        const node = document.getElementById('urban-node').value;
-        const pMap = { "US_EAST": 35, "UK_WEST": 88, "JP_TOK": 195, "DE_FRA": 72 };
+    // --- AUTH LOGIC ---
+    function tryLogin() {
+        const p = document.getElementById('pass').value;
+        if(btoa(p) === "YWRtaW5AOTk=") { // admin@99
+            document.getElementById('matrix').style.display = "none";
+            document.getElementById('console').style.display = "grid";
+            initConsole();
+        } else {
+            const card = document.getElementById('auth-card');
+            card.classList.add('glitch-anim');
+            document.getElementById('msg').innerText = "ACCESS_DENIED: INVALID_HASH";
+            setTimeout(() => card.classList.remove('glitch-anim'), 300);
+            document.getElementById('pass').value = "";
+        }
+    }
+
+    // --- CONSOLE SYSTEMS ---
+    function initConsole() {
+        // 1. Clock
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
+        
+        // 2. Fetch Real IP
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>document.getElementById('s-ip').innerText = d.ip);
+        
+        // 3. Populate Database (20 Nodes)
+        const db = document.getElementById('db-list');
+        const locs = ["US_EAST_VA", "US_WEST_CA", "UK_LONDON", "DE_FRANKFURT", "JP_TOKYO", "FR_PARIS", "SG_SINGAPORE", "BR_SAO_PAULO"];
+        for(let i=1; i<=20; i++) {
+            let div = document.createElement('div');
+            div.className = "node";
+            div.innerHTML = `<span>NODE_${i.toString().padStart(2,'0')}</span><span style="opacity:0.6">${locs[i%locs.length]}</span>`;
+            div.onclick = function() {
+                document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                log(`HANDSHAKE: Tunneling request sent to NODE_${i}...`, 't-warn');
+                startVisualizer();
+            };
+            db.appendChild(div);
+        }
+
+        // 4. Initial Logs
+        typeWriter("OMNI_X_OS v9.2.1 INITIALIZED...");
+        setTimeout(() => typeWriter("CONNECTED TO LOCAL BRIDGE: PORT 5000"), 800);
+    }
+
+    // --- LOGGING SYSTEM ---
+    function log(msg, type="t-success") {
+        const t = document.getElementById('term');
+        const d = document.createElement('div');
+        d.className = `log-line ${type}`;
+        d.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        t.appendChild(d);
+        t.scrollTop = t.scrollHeight;
+    }
+
+    function typeWriter(txt) {
+        log(txt); 
+    }
+
+    // --- VISUALIZER (PING GRAPH) ---
+    let visInt;
+    function startVisualizer() {
+        if(visInt) clearInterval(visInt);
+        const cvs = document.getElementById('vis-canvas');
+        const c = cvs.getContext('2d');
+        cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight;
+        
+        let data = new Array(50).fill(50);
+        visInt = setInterval(() => {
+            data.shift();
+            data.push(Math.random() * 50 + 20);
+            
+            c.clearRect(0,0,cvs.width,cvs.height);
+            c.beginPath();
+            c.strokeStyle = "#00ff41";
+            c.lineWidth = 2;
+            
+            for(let i=0; i<data.length; i++) {
+                let x = (i / data.length) * cvs.width;
+                let y = cvs.height - data[i];
+                if(i===0) c.moveTo(x,y); else c.lineTo(x,y);
+            }
+            c.stroke();
+            
+            // Update Telemetry
+            document.getElementById('s-up').innerText = Math.floor(Math.random()*500) + " KB/s";
+            document.getElementById('s-down').innerText = Math.floor(Math.random()*900) + " KB/s";
+        }, 100);
+    }
+
+    // --- BRIDGE SIMULATION ---
+    async function simBridge(action) {
+        log(`BRIDGE_CALL: Triggering local python script [${action}]...`, 't-warn');
+        try {
+            // Real Bridge Call (Enable if bridge.py is running)
+            // await fetch('http://127.0.0.1:5000/connect-vpn');
+            setTimeout(() => {
+                document.getElementById('s-stat').innerText = "ENCRYPTED";
+                document.getElementById('s-stat').style.color = "var(--urban)";
+                log("URBAN_VPN: Process launched successfully.", "t-success");
+            }, 1000);
+        } catch(e) { log("ERROR: Bridge unreachable.", "t-err"); }
+    }
+
+    // --- MATRIX RAIN ---
+    function startMatrixRain() {
+        const c = document.getElementById('m-canvas');
+        const ctx = c.getContext('2d');
+        c.width = window.innerWidth; c.height = window.innerHeight;
+        const drops = Array(Math.floor(c.width/20)).fill(1);
         setInterval(() => {
-            const jitter = Math.floor(Math.random() * 10);
-            document.getElementById('v-ping').innerText = (pMap[node] + jitter) + "ms";
-        }, 1000);
+            ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
+            ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
+            drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, y*20);
+                if(y*20 > c.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }, 50);
     }
-
-    function connectUrban() {
-        const node = document.getElementById('urban-node').value;
-        document.getElementById('main-panel').classList.add('glitch');
-        log(`URBAN_PROTOCOL: ATTEMPTING HANDSHAKE WITH ${node}...`);
-        setTimeout(() => {
-            vpnActive = true;
-            matrixColor = "#00ffff"; // Change Matrix to Cyan/Blue
-            document.getElementById('v-stat').innerText = "PROTECTED";
-            document.getElementById('v-stat').style.color = "var(--neon)";
-            document.getElementById('main-panel').classList.remove('glitch');
-            log(`TUNNEL_OPEN: NODE ${node} IS NOW ANONYMOUS.`);
-        }, 2000);
-    }
-
-    function loadTools() {
-        const nav = document.getElementById('tool-nav');
-        ["SQL_INJECT", "RSA_CRACK", "MAC_SPOOF", "ROOT_SHELL", "DNS_POISON", "PACKET_SNIFF", "LOG_CLEAN", "CPU_STRESS"].forEach(item => {
-            let btn = document.createElement('button'); btn.className = "nav-btn"; btn.innerHTML = `> ${item}`;
-            btn.onclick = () => { log(`EXECUTING: ${item}... OK.`); document.getElementById('main-panel').classList.add('glitch'); setTimeout(()=>document.getElementById('main-panel').classList.remove('glitch'), 200); };
-            nav.appendChild(btn);
-        });
-    }
-
-    async function fetchIP() {
-        try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); document.getElementById('v-ip').innerText = data.ip; }
-        catch { document.getElementById('v-ip').innerText = "127.0.0.1"; }
-    }
-
-    function log(text) {
-        const t = document.getElementById('terminal'), d = document.createElement('div');
-        t.appendChild(d); d.innerHTML = `<span style="opacity:0.4; font-size:10px;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
-        t.scrollTop = t.scrollHeight; logs.push(d.innerText);
-    }
-
-    function resetIdle() { idleTime = 0; }
-    setInterval(() => { idleTime++; document.getElementById('idle-txt').innerText = `${300 - idleTime}s`; if(idleTime >= 300) location.reload(); }, 1000);
-    function downloadLogs() { const blob = new Blob([logs.join('\n')], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "session.txt"; a.click(); }
 </script>
 </body>
 </html>
