@@ -4,82 +4,81 @@
     <meta charset="UTF-8">
     <title>Chrome Dino</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --panel: rgba(0, 20, 0, 0.85); }
-        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'Courier New', monospace; background: #f7f7f7; }
+        :root { --neon: #00ff41; --bg: #000; --panel: rgba(0, 5, 0, 0.9); --glitch: #ff003c; }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; }
 
-        /* --- LAYER 1: THE GAME --- */
-        #game-layer { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
-        #canvas-wrap { position: relative; width: 600px; height: 150px; border-bottom: 2px solid #535353; overflow: hidden; }
-        #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; }
-        .cactus { width: 15px; height: 35px; background: #535353; position: absolute; bottom: 0; }
-        #score-box { font-family: sans-serif; color: #535353; font-size: 20px; margin-bottom: 20px; }
+        /* --- STAGE 1: THE DECOY --- */
+        #decoy-layer { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.6s cubic-bezier(0.9, 0, 0.1, 1); }
+        #canvas-wrap { position: relative; width: 600px; height: 160px; border-bottom: 2px solid #535353; overflow: hidden; }
+        #dino { width: 40px; height: 44px; background: #535353; position: absolute; bottom: 0; left: 50px; }
+        .cactus { width: 18px; height: 38px; background: #535353; position: absolute; bottom: 0; }
+        #score-board { font-size: 24px; color: #535353; margin-bottom: 10px; }
 
-        /* --- LAYER 2: LOGIN --- */
-        #login-layer { position: fixed; inset: 0; z-index: 200; background: #000; display: none; opacity: 0; transition: 1s; }
-        .gate { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
-        .auth-card { border: 1px solid var(--neon); padding: 50px; background: rgba(0,0,0,0.9); text-align: center; }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 10px; width: 300px; }
+        /* --- STAGE 2: THE WARP ENTRANCE --- */
+        #warp-layer { position: fixed; inset: 0; z-index: 150; background: #000; display: none; overflow: hidden; }
+        .star { position: absolute; background: var(--neon); width: 2px; height: 2px; border-radius: 50%; }
 
-        /* --- LAYER 3: CONSOLE --- */
-        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 300px 1fr 300px; gap: 2px; }
-        .bg-matrix { position: absolute; inset: 0; z-index: -1; opacity: 0.15; }
-        .p-box { background: var(--panel); border: 1px solid rgba(0,255,65,0.1); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .p-hdr { padding: 10px; font-size: 11px; background: rgba(0,255,65,0.1); color: var(--neon); letter-spacing: 2px; }
-        
-        #term { flex-grow: 1; padding: 20px; color: var(--neon); font-size: 13px; overflow-y: auto; }
-        .tool-btn { background: none; border: 1px solid var(--neon); color: var(--neon); padding: 10px; margin: 10px; cursor: pointer; font-family: inherit; font-size: 12px; }
-        .tool-btn:hover { background: var(--neon); color: #000; }
+        /* --- STAGE 3: THE LOGIN GATE --- */
+        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 1s; }
+        .gate-content { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; }
+        .auth-card { border: 1px solid var(--neon); padding: 50px; background: #000; box-shadow: 0 0 40px rgba(0, 255, 65, 0.1); animation: flicker 2s infinite; }
+        @keyframes flicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.5; } }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 1.8rem; text-align: center; outline: none; letter-spacing: 8px; width: 300px; margin-top: 20px; }
 
-        /* LASER ANIMATION */
-        #laser { position: fixed; top: 0; left: -10px; width: 5px; height: 100%; background: #ff003c; box-shadow: 0 0 20px #ff003c; z-index: 1000; display: none; }
-        @keyframes slice { from { left: -10px; } to { left: 100%; } }
+        /* --- STAGE 4: THE PHANTOM CONSOLE --- */
+        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 300px 1fr 300px; gap: 2px; background: #000; }
+        #bg-matrix { position: absolute; inset: 0; z-index: -1; opacity: 0.15; }
+        .panel { background: var(--panel); border: 1px solid rgba(0,255,65,0.1); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .p-hdr { padding: 10px; font-size: 10px; background: rgba(0,255,65,0.05); color: var(--neon); border-bottom: 1px solid rgba(0,255,65,0.1); text-transform: uppercase; }
+        #term { flex-grow: 1; padding: 20px; color: var(--neon); font-size: 12px; overflow-y: auto; line-height: 1.5; }
+        .tool-btn { background: none; border: 1px solid var(--neon); color: var(--neon); padding: 10px; margin: 5px 20px; cursor: pointer; font-family: inherit; transition: 0.3s; }
+        .tool-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
+
+        /* TRANSITION FX */
+        .shatter-left { transform: translateX(-100%) skewX(-10deg); filter: blur(10px); }
+        .shatter-right { transform: translateX(100%) skewX(10deg); filter: blur(10px); }
     </style>
 </head>
-<body onkeydown="handleInput(event)">
+<body onkeydown="keyHandler(event)">
 
-    <div id="laser"></div>
-
-    <div id="game-layer">
-        <div id="score-box">00000</div>
+    <div id="decoy-layer">
+        <div id="score-board">00000</div>
         <div id="canvas-wrap">
             <div id="dino"></div>
         </div>
-        <p style="color: #ccc; font-size: 12px; margin-top: 20px;">PRESS SPACE TO JUMP</p>
+        <p style="color: #bbb; font-size: 11px; margin-top: 20px;">SYSTEMS_STABLE // PRESS SPACE</p>
     </div>
 
+    <div id="warp-layer"></div>
+
     <div id="login-layer">
-        <canvas id="gate-matrix" class="bg-matrix"></canvas>
-        <div class="gate">
+        <div class="gate-content">
             <div class="auth-card">
-                <div style="color:var(--neon); font-size: 10px; letter-spacing: 5px;">SECURE_INPUT_REQUIRED</div>
-                <input type="password" id="pass" placeholder="••••" onkeypress="if(event.key==='Enter') auth()">
+                <div style="color:var(--neon); font-size: 10px; letter-spacing: 5px;">KEY_CHALLENGE_REQUIRED</div>
+                <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') tryAccess()">
             </div>
         </div>
     </div>
 
     <div id="console">
-        <canvas id="main-matrix" class="bg-matrix"></canvas>
-        
-        <aside class="p-box">
-            <div class="p-hdr">SYSTEM_TOOLS</div>
-            <button class="tool-btn" onclick="runSim('DECRYPT')">DECRYPT_DATA</button>
-            <button class="tool-btn" onclick="runSim('SNIFF')">PACKET_SNIFFER</button>
-            <button class="tool-btn" onclick="runSim('BRUTE')">BRUTE_FORCE_V2</button>
-            <div style="padding: 15px; font-size: 12px; border-top: 1px solid #111;">
-                IP: <span id="ip-val" style="color:#fff">---</span><br>
-                GEO: <span id="loc-val" style="color:#888">...</span>
+        <canvas id="bg-matrix"></canvas>
+        <aside class="panel">
+            <div class="p-hdr">Utility_Core</div>
+            <button class="tool-btn" onclick="task('DECRYPT')">DECRYPT_STREAM</button>
+            <button class="tool-btn" onclick="task('SPOOF')">SPOOF_MAC_ID</button>
+            <div style="padding: 20px; font-size: 11px; color: #666;">
+                IP: <span id="val-ip" style="color:#fff">---</span><br>
+                LOC: <span id="val-loc" style="color:var(--neon)">Searching...</span>
             </div>
         </aside>
-
-        <main class="p-box">
-            <div class="p-hdr">LIVE_TERMINAL</div>
+        <main class="panel">
+            <div class="p-hdr">Terminal_Output</div>
             <div id="term"></div>
         </main>
-
-        <aside class="p-box">
-            <div class="p-hdr">REMOTE_NODES</div>
-            <div id="nodes" style="flex-grow:1; overflow-y:auto; padding:10px; font-size:11px;"></div>
-            <button class="tool-btn" style="border-color:red; color:red;" onclick="location.reload()">TERMINATE_SESSION</button>
+        <aside class="panel">
+            <div class="p-hdr">Nodes_Online</div>
+            <div id="nodes" style="padding:10px; font-size:10px; opacity:0.6; line-height:2;"></div>
+            <button class="tool-btn" style="border-color:var(--glitch); color:var(--glitch); margin-top:auto; margin-bottom:20px;" onclick="location.reload()">SIG_TERMINATE</button>
         </aside>
     </div>
 
@@ -87,141 +86,139 @@
     let buffer = "";
     let score = 0;
     let dinoY = 0;
-    let velocity = 0;
-    let gravity = 0.6;
-    let isGameOver = false;
+    let dy = 0;
+    let active = true;
 
-    // --- 1. REAL DINO PHYSICS ---
-    function handleInput(e) {
-        if(e.code === "Space" && dinoY === 0) {
-            velocity = 12;
-        }
+    // --- 1. DINO GAME ---
+    function keyHandler(e) {
+        if(e.code === "Space" && dinoY === 0) dy = 13;
         
-        // Invisible Secret Word: root
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) {
             buffer = "";
-            executeLaser();
+            startWarpEntrance();
         }
     }
 
     function gameLoop() {
-        if(isGameOver) return;
-        
-        // Gravity logic
-        dinoY += velocity;
-        velocity -= gravity;
-        if(dinoY <= 0) {
-            dinoY = 0;
-            velocity = 0;
-        }
+        if(!active) return;
+        dinoY += dy;
+        dy -= 0.7;
+        if(dinoY <= 0) { dinoY = 0; dy = 0; }
         document.getElementById('dino').style.bottom = dinoY + "px";
-        
-        // Score
         score++;
-        document.getElementById('score-box').innerText = score.toString().padStart(5, '0');
-        
+        document.getElementById('score-board').innerText = score.toString().padStart(5, '0');
         requestAnimationFrame(gameLoop);
     }
     gameLoop();
 
-    // Spawn Cacti
     function spawnCactus() {
-        if(isGameOver) return;
-        const cactus = document.createElement('div');
-        cactus.className = 'cactus';
-        cactus.style.right = '-30px';
-        document.getElementById('canvas-wrap').appendChild(cactus);
-        
-        let pos = -30;
-        const moveInt = setInterval(() => {
-            pos += 5;
-            cactus.style.right = pos + "px";
-            
-            // Collision detection
-            if(pos > 510 && pos < 540 && dinoY < 35) {
-                isGameOver = true;
-                alert("GAME OVER. Score: " + score);
+        if(!active) return;
+        const c = document.createElement('div');
+        c.className = 'cactus';
+        c.style.right = '-20px';
+        document.getElementById('canvas-wrap').appendChild(c);
+        let pos = -20;
+        const move = setInterval(() => {
+            if(!active) { clearInterval(move); c.remove(); return; }
+            pos += 6;
+            c.style.right = pos + "px";
+            if(pos > 515 && pos < 545 && dinoY < 38) {
+                alert("STABLE_SYNC_LOST. Score: " + score);
                 location.reload();
             }
-            if(pos > 650) {
-                clearInterval(moveInt);
-                cactus.remove();
-            }
-        }, 20);
-        setTimeout(spawnCactus, Math.random() * 2000 + 1000);
+            if(pos > 650) { clearInterval(move); c.remove(); }
+        }, 16);
+        setTimeout(spawnCactus, 2500 + Math.random() * 3000); // Rare Cacti
     }
     spawnCactus();
 
-    // --- 2. TRANSITION ---
-    function executeLaser() {
-        isGameOver = true;
-        const laser = document.getElementById('laser');
-        laser.style.display = 'block';
-        laser.style.animation = 'slice 0.6s linear forwards';
+    // --- 2. COOL ENTRANCE (WARP) ---
+    function startWarpEntrance() {
+        active = false;
+        const decoy = document.getElementById('decoy-layer');
+        decoy.classList.add('shatter-left');
         
+        const warp = document.getElementById('warp-layer');
+        warp.style.display = 'block';
+
+        // Create Warp Stars
+        for(let i=0; i<60; i++) {
+            let star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = '50%';
+            star.style.top = '50%';
+            warp.appendChild(star);
+            
+            let angle = Math.random() * Math.PI * 2;
+            let speed = Math.random() * 5 + 2;
+            let vx = Math.cos(angle) * speed;
+            let vy = Math.sin(angle) * speed;
+            
+            let pos = 0;
+            const anim = setInterval(() => {
+                pos += 1;
+                star.style.transform = `translate(${vx * pos}px, ${vy * pos}px) scale(${pos/10})`;
+                if(pos > 100) { star.remove(); clearInterval(anim); }
+            }, 10);
+        }
+
         setTimeout(() => {
-            document.getElementById('game-layer').style.display = 'none';
+            warp.style.display = 'none';
             document.getElementById('login-layer').style.display = 'block';
-            document.getElementById('login-layer').style.opacity = '1';
-            startMatrix('gate-matrix');
-            document.getElementById('pass').focus();
-        }, 500);
+            setTimeout(() => { document.getElementById('login-layer').style.opacity = '1'; }, 50);
+            document.getElementById('passkey').focus();
+        }, 1200);
     }
 
     // --- 3. CONSOLE ---
-    function auth() {
-        if(btoa(document.getElementById('pass').value) === "YWRtaW5AOTk=") {
+    function tryAccess() {
+        if(btoa(document.getElementById('passkey').value) === "YWRtaW5AOTk=") {
             document.getElementById('login-layer').style.display = 'none';
             document.getElementById('console').style.display = 'grid';
-            startMatrix('main-matrix');
-            initConsole();
+            startMatrix();
+            boot();
         } else {
-            document.getElementById('pass').value = "";
+            document.getElementById('passkey').value = "";
         }
     }
 
-    function initConsole() {
+    function boot() {
         fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-            document.getElementById('ip-val').innerText = d.ip;
-            document.getElementById('loc-val').innerText = d.city + ", " + d.country;
+            document.getElementById('val-ip').innerText = d.ip;
+            document.getElementById('val-loc').innerText = d.city.toUpperCase();
         });
-
-        const nodes = document.getElementById('nodes');
-        for(let i=0; i<15; i++) {
-            nodes.innerHTML += `<div style="padding:5px; border-bottom:1px solid #111;">> NODE_ADDR: ${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.0.1</div>`;
-        }
-        log("GHOST_OS: KERNEL_LOADED");
+        const n = document.getElementById('nodes');
+        for(let i=0; i<10; i++) n.innerHTML += `<div>> NODE_CONNECTED: 192.168.${i}.254</div>`;
+        log("GHOST_SHELL_V4: ONLINE");
     }
 
-    function runSim(type) {
-        log(`INITIATING_${type}...`);
-        setTimeout(() => log(`STREAMING_${type}_PACKETS...`), 1000);
-        setTimeout(() => log(`STATUS: [COMPLETE]`), 3000);
+    function task(t) {
+        log(`INITIATING_${t}...`);
+        setTimeout(() => log(`STREAM_HANDSHAKE: [OK]`), 800);
+        setTimeout(() => log(`${t}_SEQUENCE_COMPLETE.`), 2000);
     }
 
     function log(m) {
         const t = document.getElementById('term');
-        t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${m}</div>`;
+        t.innerHTML += `<div><span style="opacity:0.3">[${new Date().toLocaleTimeString()}]</span> ${m}</div>`;
         t.scrollTop = t.scrollHeight;
     }
 
-    // --- 4. MATRIX BACKGROUND ---
-    function startMatrix(id) {
-        const c = document.getElementById(id);
+    function startMatrix() {
+        const c = document.getElementById('bg-matrix');
         const ctx = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
-        const drops = Array(Math.floor(c.width/20)).fill(1);
-        function draw() {
+        const col = Array(Math.floor(c.width/20)).fill(1);
+        setInterval(() => {
             ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
-            ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
-            for(let i=0; i<drops.length; i++) {
-                ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, drops[i]*20);
-                if(drops[i]*20 > c.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(draw, 50);
+            ctx.fillStyle = "#0F0"; ctx.font = "14px monospace";
+            col.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, y*20);
+                if(y*20 > c.height && Math.random() > 0.98) col[i] = 0;
+                col[i]++;
+            });
+        }, 50);
     }
 </script>
 </body>
