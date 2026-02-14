@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chrome Dino</title>
     <style>
-        :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 10, 0, 0.96); }
-        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; color: var(--neon); }
+        :root { 
+            --neon: #00ff41; 
+            --urban: #ffcc00; 
+            --alert: #ff003c; 
+            --glass: rgba(0, 8, 0, 0.96); 
+            --font: 'JetBrains Mono', monospace;
+        }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: var(--font); background: #000; color: var(--neon); transition: filter 0.2s ease; }
 
         /* --- DECOY --- */
         #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s cubic-bezier(0.7, 0, 0.3, 1); }
@@ -14,39 +21,35 @@
         .cactus { width: 18px; height: 38px; background: #535353; position: absolute; bottom: 0; }
         #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; }
 
-        /* --- UI FX --- */
-        .m-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.2; pointer-events: none; }
+        /* --- FX --- */
+        .m-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.15; pointer-events: none; }
         #shockwave { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; background: transparent; border: 3px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
         @keyframes shock { 0% { width: 0; height: 0; opacity: 1; border-width: 40px; } 100% { width: 300vw; height: 300vw; opacity: 0; border-width: 1px; } }
 
         /* --- LOGIN --- */
         #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.6s; }
         .auth-card { border: 1px solid var(--neon); padding: 70px; background: #000; box-shadow: 0 0 30px rgba(0,255,65,0.1); text-align: center; }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 12px; width: 380px; margin-top: 35px; }
+        input[type="password"] { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 12px; width: 380px; margin-top: 35px; }
 
-        /* --- CONSOLE --- */
-        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 55px 1fr 220px; gap: 3px; background: #080808; padding: 4px; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.08); backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px); transition: 0.7s; }
+        /* --- CONSOLE CORE --- */
+        #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 55px 1fr 250px; gap: 4px; background: #050505; padding: 4px; }
+        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.08); backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px); transition: 0.5s; }
         .panel.active { opacity: 1; transform: translateY(0); }
-        
-        .p-hdr { padding: 12px 18px; font-size: 10px; background: rgba(0,255,65,0.04); color: #666; letter-spacing: 3px; border-bottom: 1px solid rgba(0,255,65,0.08); }
-        #term { flex-grow: 1; padding: 20px; font-size: 11px; overflow-y: auto; color: var(--neon); scrollbar-width: none; }
-        
-        /* VAULT UI (INDEXED DB) */
+        .p-hdr { padding: 12px 18px; font-size: 10px; background: rgba(255,255,255,0.04); color: #888; letter-spacing: 3px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+
+        /* NEURAL INTERFACE */
+        #ai-chat { flex-grow: 1; padding: 15px; font-size: 11px; overflow-y: auto; color: #fff; background: rgba(0,0,0,0.4); line-height: 1.5; scrollbar-width: none; }
+        #ai-input { background: transparent; border: none; color: #fff; font-size: 12px; width: 100%; outline: none; padding: 12px; border-top: 1px solid #222; }
+
+        /* VAULT */
         #vault-list { padding: 10px; font-size: 10px; flex-grow: 1; overflow-y: auto; }
-        .file-item { display: flex; flex-direction: column; padding: 8px; border-bottom: 1px solid #111; margin-bottom: 5px; background: rgba(0,255,65,0.02); }
-        .file-meta { display: flex; justify-content: space-between; margin-bottom: 5px; color: #888; }
-        .file-actions { display: flex; gap: 5px; }
-        .f-btn { background: transparent; border: 1px solid var(--neon); color: var(--neon); font-size: 8px; cursor: pointer; padding: 2px 6px; }
-        .f-btn.del { border-color: var(--alert); color: var(--alert); }
-        
-        .upload-btn { background: var(--neon); color: #000; border: none; padding: 12px; font-size: 11px; font-weight: bold; cursor: pointer; margin: 10px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #111; color: #888; }
+        .f-btn { background: transparent; border: 1px solid var(--neon); color: var(--neon); font-size: 8px; cursor: pointer; padding: 3px 7px; margin-left: 4px; }
+
+        #term { flex-grow: 1; padding: 20px; font-size: 11px; overflow-y: auto; color: var(--neon); scrollbar-width: none; }
         .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; }
-        .btn { background: rgba(0,255,65,0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; text-align: left; }
-        .btn:hover { border-color: var(--neon); color: var(--neon); }
-        .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: bold; }
-        
-        .prog-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--neon); }
+        .btn { background: rgba(255,255,255,0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; text-align: left; }
+        .prog-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.2s; }
         #laser { position: fixed; top: 0; left: -15px; width: 15px; height: 100%; background: var(--alert); z-index: 1000; display: none; }
         @keyframes sweep { from { left: -15px; } to { left: 115%; } }
     </style>
@@ -73,13 +76,13 @@
     <div id="console">
         <canvas id="main-matrix" class="m-canvas"></canvas>
         <header style="grid-column: 1/-1; background:#000; display:flex; align-items:center; padding:0 25px; font-size:11px; border-bottom: 1px solid #1a1a1a;">
-            OMNI_X // TITAN_DB // <span id="v-stat" style="color:var(--alert); margin-left:10px;">INSECURE</span>
+            GENESIS_ARCHITECT // TITAN_DB // NEURAL_MORPH_ENABLED
+            <div style="margin-left: auto; opacity: 0.5;" id="clock">00:00:00</div>
         </header>
 
         <aside class="panel" id="p1">
             <div class="p-hdr">Operational_Modules</div>
             <div class="feat-grid" id="f-grid"></div>
-            <button class="btn btn-urban" onclick="exec('URBAN_VPN')">> ACTIVATE URBAN_TUNNEL</button>
         </aside>
 
         <main class="panel" id="p2">
@@ -91,29 +94,84 @@
         </main>
 
         <aside class="panel" id="p3">
-            <div class="p-hdr">Titan_Vault (IndexedDB)</div>
+            <div class="p-hdr">Titan_Vault</div>
             <div id="vault-list"></div>
             <input type="file" id="file-input" style="display:none" onchange="handleUpload(this)">
-            <button class="upload-btn" onclick="document.getElementById('file-input').click()">INGEST_LARGE_FILE</button>
-            <button class="btn" style="border-color:var(--alert); color:var(--alert); margin: 0 10px 10px;" onclick="wipeDatabase()">PURGE_DATABASE</button>
+            <button class="btn" style="color:var(--neon); border-color:var(--neon); margin:10px;" onclick="document.getElementById('file-input').click()">INGEST_FILE</button>
         </aside>
 
-        <div class="panel" id="p4" style="grid-column: 2/4;">
-            <div class="p-hdr">Flow_Analysis</div>
+        <aside class="panel" id="p4" style="grid-column: 1/2; grid-row: 3/4;">
+            <div class="p-hdr">Neural_Architect (Gemini)</div>
+            <div id="ai-chat"></div>
+            <input type="text" id="ai-input" placeholder="Give theme command..." onkeypress="if(event.key==='Enter') callGemini()">
+        </aside>
+
+        <div class="panel" id="p5" style="grid-column: 2/4; grid-row: 3/4;">
+            <div class="p-hdr">Visualizer_Stream</div>
             <canvas id="flow-canvas" style="width:100%; height:100%;"></canvas>
         </div>
     </div>
+
+<script type="module">
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const API_KEY = "AIzaSyDjahWfc3S0D8nKVZB5XFrmE84a0RM3eGs";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    
+    // System instructions for AI UI Morphs
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are the Hyperion Architect. You can change the website UI. If user wants a theme/color change, start response with '[UI_CHANGE]' then a JSON object with keys: neon, urban, alert, glass. Example: [UI_CHANGE] {\"neon\":\"#00ffff\",\"urban\":\"#ff00ff\",\"alert\":\"#ffffff\",\"glass\":\"rgba(0,0,20,0.9)\"}"
+    });
+
+    window.callGemini = async function() {
+        const input = document.getElementById('ai-input');
+        const chat = document.getElementById('ai-chat');
+        const val = input.value; if(!val) return;
+        
+        chat.innerHTML += `<div style="color:var(--urban); margin-top:5px;">> USER: ${val}</div>`;
+        input.value = "";
+        const aiMsg = document.createElement('div');
+        aiMsg.innerHTML = `> AI: Analyzing...`;
+        chat.appendChild(aiMsg);
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            const result = await model.generateContent(val);
+            let text = result.response.text();
+
+            if (text.includes("[UI_CHANGE]")) {
+                const parts = text.split("[UI_CHANGE]");
+                text = parts[0] || "Applying aesthetic reconfiguration...";
+                const themeData = JSON.parse(parts[1]);
+                applyTheme(themeData);
+            }
+
+            aiMsg.innerHTML = `> AI: ${text}`;
+        } catch (e) { aiMsg.innerHTML = `> AI: CONNECTION_LOST`; }
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function applyTheme(data) {
+        const r = document.documentElement;
+        if(data.neon) r.style.setProperty('--neon', data.neon);
+        if(data.urban) r.style.setProperty('--urban', data.urban);
+        if(data.alert) r.style.setProperty('--alert', data.alert);
+        if(data.glass) r.style.setProperty('--glass', data.glass);
+        
+        document.body.style.filter = "brightness(3) contrast(2)";
+        setTimeout(() => document.body.style.filter = "none", 150);
+        window.log("NEURAL_ARCHITECT: UI_RECONFIGURED");
+    }
+</script>
 
 <script>
     let buffer = "", score = 0, dinoY = 0, dy = 0, active = true, db;
     const feats = ["PacketSniff", "MACSpoof", "HashCrack", "SQLInject", "DDoS_Stress", "ProxyRot", "DNSTunnel", "MetaScrape", "PortScan", "SSHBrute", "SessionHi", "RootCheck", "PayloadGen", "DeepScan", "NodeJump", "TrafficMirr", "FW_Bypass", "AuthWipe", "GhostMode", "KernelDebug"];
 
-    // --- INDEXED DB ENGINE ---
+    // DB setup
     const request = indexedDB.open("TitanVault", 1);
-    request.onupgradeneeded = e => {
-        db = e.target.result;
-        db.createObjectStore("files", { keyPath: "id", autoIncrement: true });
-    };
+    request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("files", { keyPath: "id", autoIncrement: true }); };
     request.onsuccess = e => { db = e.target.result; };
 
     function onKey(e) {
@@ -132,10 +190,26 @@
     }
     gameLoop();
 
+    function spawn() {
+        if(!active) return;
+        const c = document.createElement('div');
+        c.className = 'cactus'; c.style.right = '-25px';
+        document.getElementById('game-box').appendChild(c);
+        let pos = -25;
+        const m = setInterval(() => {
+            if(!active) { clearInterval(m); c.remove(); return; }
+            pos += 8; c.style.right = pos + "px";
+            if(pos > 520 && pos < 550 && dinoY < 40) score = 0;
+            if(pos > 700) { clearInterval(m); c.remove(); }
+        }, 16);
+        setTimeout(spawn, 2000 + Math.random() * 2000);
+    }
+    spawn();
+
     function runWarp() {
         active = false;
-        const l = document.getElementById('laser');
-        l.style.display = 'block'; l.style.animation = 'sweep 0.7s forwards';
+        document.getElementById('laser').style.display = 'block';
+        document.getElementById('laser').style.animation = 'sweep 0.7s forwards';
         setTimeout(() => {
             document.getElementById('decoy').style.display = 'none';
             document.getElementById('login-layer').style.display = 'block';
@@ -152,99 +226,63 @@
                 document.getElementById('login-layer').style.display = 'none';
                 document.getElementById('console').style.display = 'grid';
                 drawMatrix('main-matrix');
-                init();
+                initConsole();
             }, 800);
         }
     }
 
-    function init() {
-        const g = document.getElementById('f-grid');
-        feats.forEach(f => g.innerHTML += `<button class="btn" onclick="exec('${f}')">${f}</button>`);
+    function initConsole() {
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
+        feats.forEach(f => document.getElementById('f-grid').innerHTML += `<button class="btn" onclick="exec('${f}')">${f}</button>`);
         updateVaultUI();
-        ['p1', 'p2', 'p3', 'p4'].forEach((id, i) => setTimeout(() => document.getElementById(id).classList.add('active'), i * 150));
-        log("TITAN_DB: MOUNTED. CAPACITY_OPTIMIZED.");
+        ['p1', 'p2', 'p3', 'p4', 'p5'].forEach((id, i) => setTimeout(() => document.getElementById(id).classList.add('active'), i * 100));
+        log("ARCHITECT_LINK: ESTABLISHED.");
     }
 
     function handleUpload(input) {
-        const file = input.files[0];
-        if(!file) return;
-        exec(`VAULT_STORAGE: ${file.name}`);
-        
+        const file = input.files[0]; if(!file) return;
+        exec(`STORAGE_PROC: ${file.name}`);
         const reader = new FileReader();
         reader.onload = e => {
             const tx = db.transaction("files", "readwrite");
-            tx.objectStore("files").add({
-                name: file.name,
-                size: (file.size/1024).toFixed(1) + 'KB',
-                type: file.type,
-                data: e.target.result
-            });
-            tx.oncomplete = () => { updateVaultUI(); log(`ENCRYPTED_INGEST: ${file.name}`); };
+            tx.objectStore("files").add({ name: file.name, size: (file.size/1024).toFixed(1) + 'KB', data: e.target.result });
+            tx.oncomplete = () => { updateVaultUI(); log(`INGESTED: ${file.name}`); };
         };
         reader.readAsDataURL(file);
     }
 
     function updateVaultUI() {
-        const list = document.getElementById('vault-list');
-        list.innerHTML = "";
+        const list = document.getElementById('vault-list'); list.innerHTML = "";
         const tx = db.transaction("files", "readonly");
         tx.objectStore("files").openCursor().onsuccess = e => {
             const cursor = e.target.result;
             if(cursor) {
                 const f = cursor.value;
-                list.innerHTML += `
-                    <div class="file-item">
-                        <div class="file-meta"><span>${f.name}</span><span>${f.size}</span></div>
-                        <div class="file-actions">
-                            <button class="f-btn" onclick="downloadFile(${f.id})">GET</button>
-                            <button class="f-btn del" onclick="deleteFile(${f.id})">DEL</button>
-                        </div>
-                    </div>`;
+                list.innerHTML += `<div class="file-item"><span>${f.name}</span><div><button class="f-btn" onclick="dl(${f.id})">GET</button></div></div>`;
                 cursor.continue();
             }
         };
     }
 
-    function downloadFile(id) {
+    window.dl = function(id) {
         const tx = db.transaction("files", "readonly");
         tx.objectStore("files").get(id).onsuccess = e => {
             const f = e.target.result;
-            const a = document.createElement("a");
-            a.href = f.data; a.download = f.name; a.click();
+            const a = document.createElement("a"); a.href = f.data; a.download = f.name; a.click();
         };
-    }
-
-    function deleteFile(id) {
-        const tx = db.transaction("files", "readwrite");
-        tx.objectStore("files").delete(id).oncomplete = () => { updateVaultUI(); log(`ENTRY_${id}_DELETED`); };
-    }
-
-    function wipeDatabase() {
-        const tx = db.transaction("files", "readwrite");
-        tx.objectStore("files").clear().oncomplete = () => { updateVaultUI(); log("DATABASE_PURGED."); };
     }
 
     function exec(name) {
         log(`EXEC: ${name}...`);
-        const pW = document.getElementById('p-wrap');
-        const pE = document.getElementById('p-engine');
-        pW.style.display = 'block';
+        document.getElementById('p-wrap').style.display = 'block';
         let w = 0;
         const i = setInterval(() => {
-            w += 10; pE.style.width = w + "%";
-            if(w >= 100) {
-                clearInterval(i);
-                setTimeout(() => { pW.style.display = 'none'; pE.style.width = "0%"; 
-                    if(name === 'URBAN_VPN') {
-                        document.getElementById('v-stat').innerText = "PROTECTED";
-                        document.getElementById('v-stat').style.color = "var(--urban)";
-                    }
-                }, 300);
-            }
-        }, 40);
+            w += 20; document.getElementById('p-engine').style.width = w + "%";
+            if(w >= 100) { clearInterval(i); setTimeout(() => document.getElementById('p-wrap').style.display = 'none', 300); }
+        }, 50);
     }
 
-    function log(m) {
+    window.log = function(m) {
         const t = document.getElementById('term');
         t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${m}</div>`;
         t.scrollTop = t.scrollHeight;
@@ -256,7 +294,7 @@
         const col = Array(Math.floor(c.width/20)).fill(1);
         setInterval(() => {
             ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0,0,c.width,c.height);
-            ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
+            ctx.fillStyle = rStyle('--neon'); ctx.font = "15px monospace";
             col.forEach((y, i) => {
                 ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96), i*20, y*20);
                 if(y*20 > c.height && Math.random() > 0.98) col[i] = 0;
@@ -264,6 +302,7 @@
             });
         }, 50);
     }
+    function rStyle(v) { return getComputedStyle(document.documentElement).getPropertyValue(v); }
 </script>
 </body>
 </html>
