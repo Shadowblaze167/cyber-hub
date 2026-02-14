@@ -2,41 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Omni-X | Singularity</title>
+    <title>Chrome Dino</title>
     <style>
         :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 15, 0, 0.9); }
         body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; color: var(--neon); }
 
-        /* --- STAGE 1: DINO --- */
-        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s cubic-bezier(1, 0, 0, 1); }
-        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #333; position: relative; overflow: hidden; }
-        #dino { width: 40px; height: 40px; background: #333; position: absolute; bottom: 0; left: 50px; }
-        .cactus { width: 20px; height: 40px; background: #333; position: absolute; bottom: 0; }
+        /* --- LAYER 1: THE CLEAN DECOY (NO HINTS) --- */
+        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s ease-in-out; }
+        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; }
+        #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; border-radius: 2px; }
+        .cactus { width: 20px; height: 40px; background: #535353; position: absolute; bottom: 0; }
+        #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; font-family: sans-serif; }
 
-        /* --- STAGE 2: LOGIN & ANIMATIONS --- */
+        /* --- LAYER 2: LOGIN & BREACH FX --- */
         #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.5s; }
         .auth-card { border: 1px solid var(--neon); padding: 60px; background: #000; box-shadow: 0 0 50px rgba(0,255,65,0.2); text-align: center; position: relative; z-index: 10; transition: 0.5s; }
         input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 15px; width: 350px; margin-top: 30px; }
         
-        /* The Breach Pulse */
-        #breach-ring { position: fixed; top: 50%; left: 50%; width: 10px; height: 10px; background: transparent; border: 2px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
-        @keyframes pulse-out { 0% { width: 0; height: 0; opacity: 1; border-width: 20px; } 100% { width: 250vw; height: 250vw; opacity: 0; border-width: 1px; } }
+        #breach-ring { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; background: transparent; border: 2px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
+        @keyframes pulse-out { 0% { width: 0; height: 0; opacity: 1; border-width: 30px; } 100% { width: 300vw; height: 300vw; opacity: 0; border-width: 1px; } }
 
-        /* --- STAGE 3: CONSOLE --- */
+        /* --- LAYER 3: ADVANCED CONSOLE --- */
         #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 50px 1fr 220px; gap: 2px; background: #000; }
         .m-canvas { position: absolute; inset: 0; z-index: 1; opacity: 0.2; }
-        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.1); backdrop-filter: blur(15px); display: flex; flex-direction: column; overflow: hidden; z-index: 5; opacity: 0; transform: translateY(20px); transition: 0.6s cubic-bezier(0.2, 1, 0.2, 1); }
+        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.1); backdrop-filter: blur(15px); display: flex; flex-direction: column; overflow: hidden; z-index: 5; opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .panel.visible { opacity: 1; transform: translateY(0); }
         
         .p-hdr { padding: 12px; font-size: 10px; background: rgba(0, 255, 65, 0.1); color: #888; letter-spacing: 2px; }
         #term { flex-grow: 1; padding: 20px; font-size: 12px; overflow-y: auto; color: var(--neon); scrollbar-width: none; line-height: 1.6; }
         .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 15px; }
-        .btn { background: transparent; border: 1px solid #222; color: #555; padding: 10px; font-size: 9px; cursor: pointer; text-align: left; transition: 0.2s; }
+        .btn { background: transparent; border: 1px solid #222; color: #555; padding: 10px; font-size: 9px; cursor: pointer; transition: 0.2s; }
         .btn:hover { border-color: var(--neon); color: var(--neon); background: rgba(0,255,65,0.05); }
         .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: bold; }
         
         .progress-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.3s; margin-top: 5px; box-shadow: 0 0 10px var(--neon); }
         #laser { position: fixed; top: 0; left: -10px; width: 10px; height: 100%; background: var(--alert); box-shadow: 0 0 30px var(--alert); z-index: 1000; display: none; }
+        @keyframes sweep { from { left: -10px; } to { left: 110%; } }
     </style>
 </head>
 <body onkeydown="keyEvent(event)">
@@ -45,16 +46,15 @@
     <div id="breach-ring"></div>
 
     <div id="decoy">
-        <div id="score" style="font-size:32px; color:#333; font-weight:900; margin-bottom:10px;">00000</div>
+        <div id="score">00000</div>
         <div id="game-box"><div id="dino"></div></div>
-        <p style="color:#aaa; font-size: 11px; margin-top: 20px; letter-spacing: 5px;">TYPE 'ROOT' TO OVERRIDE</p>
-    </div>
+        </div>
 
     <div id="login-layer">
         <canvas id="login-matrix" class="m-canvas"></canvas>
         <div style="height:100vh; display:flex; align-items:center; justify-content:center;">
             <div class="auth-card" id="auth-card">
-                <div style="font-size: 9px; letter-spacing: 5px; color: var(--neon);">SYSTEM_ACCESS_LOCKED</div>
+                <div style="font-size: 9px; letter-spacing: 5px; color: var(--neon);">ENCRYPTED_GATE_v2.0.4</div>
                 <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') runBreach()">
             </div>
         </div>
@@ -63,7 +63,7 @@
     <div id="console">
         <canvas id="main-matrix" class="m-canvas"></canvas>
         <header style="grid-column: 1/-1; background:#000; border-bottom:1px solid #222; display:flex; align-items:center; padding:0 25px; font-size:11px; z-index:10;">
-            OMNI_X // SINGULARITY_OS // VPN: <span id="v-stat" style="color:red; margin-left:10px;">INSECURE</span>
+            OMNI_X // TITAN_OS // VPN: <span id="v-stat" style="color:red; margin-left:10px;">INSECURE</span>
         </header>
 
         <aside class="panel" id="p1">
@@ -85,7 +85,7 @@
             <div style="padding:20px; font-size:11px; line-height:2.2;">
                 IP_ADDR: <span id="sys-ip" style="color:#fff">---</span><br>
                 GEO_LOC: <span id="sys-geo" style="color:var(--urban)">...</span><br>
-                LATENCY: <span id="sys-ping">--ms</span>
+                CPU_LOAD: <span style="color:var(--neon)">14.2%</span>
             </div>
             <div class="p-hdr">Ghost_Nodes</div>
             <div id="nodes" style="padding:15px; font-size:9px; opacity:0.4; overflow-y:auto; flex-grow:1;"></div>
@@ -149,32 +149,22 @@
     }
 
     function runBreach() {
-        const input = document.getElementById('passkey').value;
-        if(btoa(input) === "YWRtaW5AOTk=") {
-            // Cool Animation Start
+        if(btoa(document.getElementById('passkey').value) === "YWRtaW5AOTk=") {
             const card = document.getElementById('auth-card');
             const ring = document.getElementById('breach-ring');
-            
-            card.style.transform = "scale(0.8) rotateX(90deg)";
-            card.style.opacity = "0";
-            
+            card.style.transform = "scale(0.8) rotateX(90deg)"; card.style.opacity = "0";
             ring.style.animation = "pulse-out 1s ease-out forwards";
-            
             setTimeout(() => {
                 document.getElementById('login-layer').style.display = 'none';
                 document.getElementById('console').style.display = 'grid';
                 startMatrix('main-matrix');
                 initConsole();
-                
-                // Sequence Panel Appearances
-                setTimeout(() => document.getElementById('p1').classList.add('visible'), 100);
-                setTimeout(() => document.getElementById('p2').classList.add('visible'), 300);
-                setTimeout(() => document.getElementById('p3').classList.add('visible'), 500);
-                setTimeout(() => document.getElementById('p4').classList.add('visible'), 700);
+                // Sequenced appearance
+                ['p1', 'p2', 'p3', 'p4'].forEach((id, i) => {
+                    setTimeout(() => document.getElementById(id).classList.add('visible'), i * 200);
+                });
             }, 800);
-        } else {
-            document.getElementById('passkey').value = "";
-        }
+        } else { document.getElementById('passkey').value = ""; }
     }
 
     function initConsole() {
@@ -183,12 +173,10 @@
             document.getElementById('sys-geo').innerText = d.city.toUpperCase();
         });
         const grid = document.getElementById('grid');
-        features.forEach(f => {
-            grid.innerHTML += `<button class="btn" onclick="startFeature('${f}')">${f}</button>`;
-        });
+        features.forEach(f => { grid.innerHTML += `<button class="btn" onclick="startFeature('${f}')">${f}</button>`; });
         const nodes = document.getElementById('nodes');
-        for(let i=0; i<15; i++) nodes.innerHTML += `<div>> NODE_SYNC: 104.18.${i}.44</div>`;
-        log("SINGULARITY_OS: NEURAL_LINK_ESTABLISHED");
+        for(let i=0; i<15; i++) nodes.innerHTML += `<div>> NODE_SYNC: 192.168.1.${i}</div>`;
+        log("TITAN_OS: NEURAL_LINK_ESTABLISHED");
     }
 
     function startFeature(name) {
@@ -198,8 +186,7 @@
         pCont.style.display = 'block';
         let w = 0;
         const int = setInterval(() => {
-            w += Math.random() * 20;
-            pBar.style.width = w + "%";
+            w += Math.random() * 20; pBar.style.width = w + "%";
             if(w >= 100) {
                 clearInterval(int);
                 setTimeout(() => {
