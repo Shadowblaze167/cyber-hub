@@ -51,7 +51,6 @@
         .btn { background: rgba(255,255,255,0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; text-align: left; }
         .prog-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.2s; }
         #laser { position: fixed; top: 0; left: -15px; width: 15px; height: 100%; background: var(--alert); z-index: 1000; display: none; }
-        @keyframes sweep { from { left: -15px; } to { left: 115%; } }
     </style>
 </head>
 <body onkeydown="onKey(event)">
@@ -113,15 +112,23 @@
     </div>
 
 <script type="module">
-    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+    import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "https://esm.run/@google/generative-ai";
 
     const API_KEY = "AIzaSyDjahWfc3S0D8nKVZB5XFrmE84a0RM3eGs";
     const genAI = new GoogleGenerativeAI(API_KEY);
     
-    // System instructions for AI UI Morphs
+    // Safety settings to prevent "Hacking" false positives
+    const safetySettings = [
+      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    ];
+
     const model = genAI.getGenerativeModel({ 
         model: "gemini-1.5-flash",
-        systemInstruction: "You are the Hyperion Architect. You can change the website UI. If user wants a theme/color change, start response with '[UI_CHANGE]' then a JSON object with keys: neon, urban, alert, glass. Example: [UI_CHANGE] {\"neon\":\"#00ffff\",\"urban\":\"#ff00ff\",\"alert\":\"#ffffff\",\"glass\":\"rgba(0,0,20,0.9)\"}"
+        safetySettings,
+        systemInstruction: "You are the Hyperion Architect. If user wants a theme change, output ONLY a JSON object like this: {\"neon\":\"#00ff00\",\"urban\":\"#ffff00\",\"alert\":\"#ff0000\",\"glass\":\"rgba(0,0,0,0.9)\"}. Do not use markdown code blocks."
     });
 
     window.callGemini = async function() {
@@ -139,16 +146,25 @@
         try {
             const result = await model.generateContent(val);
             let text = result.response.text();
-
-            if (text.includes("[UI_CHANGE]")) {
-                const parts = text.split("[UI_CHANGE]");
-                text = parts[0] || "Applying aesthetic reconfiguration...";
-                const themeData = JSON.parse(parts[1]);
-                applyTheme(themeData);
+            
+            // Regex to find JSON object even if mixed with text
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            
+            if (jsonMatch) {
+                try {
+                    const themeData = JSON.parse(jsonMatch[0]);
+                    applyTheme(themeData);
+                    text = "Aesthetic reconfiguration applied.";
+                } catch (e) {
+                    console.error("JSON Parse Error", e);
+                }
             }
 
             aiMsg.innerHTML = `> AI: ${text}`;
-        } catch (e) { aiMsg.innerHTML = `> AI: CONNECTION_LOST`; }
+        } catch (e) { 
+            console.error(e);
+            aiMsg.innerHTML = `> AI: LINK_FAILURE [${e.message || 'Check Console'}]`; 
+        }
         chat.scrollTop = chat.scrollHeight;
     }
 
