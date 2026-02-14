@@ -2,48 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chrome Dino</title>
     <style>
-        :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 10, 0, 0.94); }
-        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', 'Fira Code', monospace; background: #000; color: var(--neon); }
+        :root { --neon: #00ff41; --urban: #ffcc00; --alert: #ff003c; --glass: rgba(0, 10, 0, 0.96); }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: 'JetBrains Mono', monospace; background: #000; color: var(--neon); }
 
-        /* --- THE INNOCENT DECOY --- */
-        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.2s cubic-bezier(0.7, 0, 0.3, 1); }
-        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; cursor: default; }
-        #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; border-radius: 2px; }
+        /* --- DECOY --- */
+        #decoy { position: fixed; inset: 0; z-index: 100; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s cubic-bezier(0.7, 0, 0.3, 1); }
+        #game-box { width: 640px; height: 160px; border-bottom: 2px solid #535353; position: relative; overflow: hidden; }
+        #dino { width: 40px; height: 40px; background: #535353; position: absolute; bottom: 0; left: 50px; }
         .cactus { width: 18px; height: 38px; background: #535353; position: absolute; bottom: 0; }
-        #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; font-family: sans-serif; letter-spacing: 2px; }
+        #score { font-size: 32px; color: #535353; margin-bottom: 10px; font-weight: 900; }
 
-        /* --- GLOBAL MATRIX --- */
+        /* --- UI FX --- */
         .m-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.2; pointer-events: none; }
-
-        /* --- LOGIN & SHOCKWAVE EFFECT --- */
-        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.6s; }
-        .auth-card { border: 1px solid var(--neon); padding: 70px; background: #000; box-shadow: 0 0 40px rgba(0, 255, 65, 0.15); text-align: center; position: relative; z-index: 10; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2.2rem; text-align: center; outline: none; letter-spacing: 12px; width: 380px; margin-top: 35px; }
-        
         #shockwave { position: fixed; top: 50%; left: 50%; width: 1px; height: 1px; background: transparent; border: 3px solid var(--neon); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 250; opacity: 0; }
         @keyframes shock { 0% { width: 0; height: 0; opacity: 1; border-width: 40px; } 100% { width: 300vw; height: 300vw; opacity: 0; border-width: 1px; } }
 
-        /* --- ADVANCED APEX CONSOLE --- */
+        /* --- LOGIN --- */
+        #login-layer { position: fixed; inset: 0; z-index: 200; display: none; background: #000; opacity: 0; transition: 0.6s; }
+        .auth-card { border: 1px solid var(--neon); padding: 70px; background: #000; box-shadow: 0 0 30px rgba(0,255,65,0.1); text-align: center; }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--neon); color: #fff; font-size: 2rem; text-align: center; outline: none; letter-spacing: 12px; width: 380px; margin-top: 35px; }
+
+        /* --- CONSOLE --- */
         #console { position: fixed; inset: 0; z-index: 300; display: none; grid-template-columns: 320px 1fr 300px; grid-template-rows: 55px 1fr 220px; gap: 3px; background: #080808; padding: 4px; }
-        .panel { background: var(--glass); border: 1px solid rgba(0, 255, 65, 0.08); backdrop-filter: blur(15px); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px); transition: 0.7s cubic-bezier(0.2, 1, 0.2, 1); }
+        .panel { background: var(--glass); border: 1px solid rgba(0,255,65,0.08); backdrop-filter: blur(20px); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px); transition: 0.7s; }
         .panel.active { opacity: 1; transform: translateY(0); }
         
-        .p-hdr { padding: 12px 18px; font-size: 10px; background: rgba(0, 255, 65, 0.04); color: #777; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 65, 0.08); }
-        #term { flex-grow: 1; padding: 22px; font-size: 12px; overflow-y: auto; color: var(--neon); scrollbar-width: none; line-height: 1.7; }
+        .p-hdr { padding: 12px 18px; font-size: 10px; background: rgba(0,255,65,0.04); color: #666; letter-spacing: 3px; border-bottom: 1px solid rgba(0,255,65,0.08); }
+        #term { flex-grow: 1; padding: 20px; font-size: 11px; overflow-y: auto; color: var(--neon); scrollbar-width: none; }
+        
+        /* VAULT UI (INDEXED DB) */
+        #vault-list { padding: 10px; font-size: 10px; flex-grow: 1; overflow-y: auto; }
+        .file-item { display: flex; flex-direction: column; padding: 8px; border-bottom: 1px solid #111; margin-bottom: 5px; background: rgba(0,255,65,0.02); }
+        .file-meta { display: flex; justify-content: space-between; margin-bottom: 5px; color: #888; }
+        .file-actions { display: flex; gap: 5px; }
+        .f-btn { background: transparent; border: 1px solid var(--neon); color: var(--neon); font-size: 8px; cursor: pointer; padding: 2px 6px; }
+        .f-btn.del { border-color: var(--alert); color: var(--alert); }
+        
+        .upload-btn { background: var(--neon); color: #000; border: none; padding: 12px; font-size: 11px; font-weight: bold; cursor: pointer; margin: 10px; }
         .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; }
-        .btn { background: rgba(0, 255, 65, 0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; transition: 0.2s; text-align: left; }
-        .btn:hover { border-color: var(--neon); color: var(--neon); background: rgba(0, 255, 65, 0.06); }
-        .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: 800; background: rgba(255, 204, 0, 0.02); }
+        .btn { background: rgba(0,255,65,0.02); border: 1px solid #1a1a1a; color: #555; padding: 10px; font-size: 9px; cursor: pointer; text-align: left; }
+        .btn:hover { border-color: var(--neon); color: var(--neon); }
+        .btn-urban { border-color: var(--urban); color: var(--urban); grid-column: 1/-1; font-weight: bold; }
         
         .prog-bar { height: 2px; background: var(--neon); width: 0%; transition: width 0.2s; box-shadow: 0 0 10px var(--neon); }
-        #laser { position: fixed; top: 0; left: -12px; width: 12px; height: 100%; background: var(--alert); box-shadow: 0 0 35px var(--alert); z-index: 1000; display: none; }
-        @keyframes sweep { 0% { left: -12px; } 100% { left: 110%; } }
+        #laser { position: fixed; top: 0; left: -15px; width: 15px; height: 100%; background: var(--alert); z-index: 1000; display: none; }
+        @keyframes sweep { from { left: -15px; } to { left: 115%; } }
     </style>
 </head>
-<body onkeydown="handleKeys(event)">
+<body onkeydown="onKey(event)">
 
     <div id="laser"></div>
     <div id="shockwave"></div>
@@ -57,7 +65,6 @@
         <canvas id="login-matrix" class="m-canvas"></canvas>
         <div style="height:100vh; display:flex; align-items:center; justify-content:center;">
             <div class="auth-card" id="auth-box">
-                <div style="font-size: 10px; letter-spacing: 6px; color: var(--neon); opacity: 0.6;">ENCRYPTED_OS_HANDSHAKE</div>
                 <input type="password" id="passkey" placeholder="••••" onkeypress="if(event.key==='Enter') startBreach()">
             </div>
         </div>
@@ -65,19 +72,18 @@
 
     <div id="console">
         <canvas id="main-matrix" class="m-canvas"></canvas>
-        <header style="grid-column: 1/-1; background:#000; display:flex; align-items:center; padding:0 25px; font-size:11px; border-bottom: 1px solid #1a1a1a; letter-spacing: 1px;">
-            OMNI_X // HYPERION // VPN_SHIELD: <span id="v-stat" style="color:var(--alert); margin-left:10px;">OFFLINE</span>
-            <div style="margin-left: auto; opacity: 0.5;" id="clock">00:00:00</div>
+        <header style="grid-column: 1/-1; background:#000; display:flex; align-items:center; padding:0 25px; font-size:11px; border-bottom: 1px solid #1a1a1a;">
+            OMNI_X // TITAN_DB // <span id="v-stat" style="color:var(--alert); margin-left:10px;">INSECURE</span>
         </header>
 
         <aside class="panel" id="p1">
             <div class="p-hdr">Operational_Modules</div>
             <div class="feat-grid" id="f-grid"></div>
-            <button class="btn btn-urban" onclick="exec('URBAN_VPN_ACTIVATE')">> INITIALIZE URBAN_P2P_TUNNEL</button>
+            <button class="btn btn-urban" onclick="exec('URBAN_VPN')">> ACTIVATE URBAN_TUNNEL</button>
         </aside>
 
         <main class="panel" id="p2">
-            <div class="p-hdr">Kernel_Log_Feed</div>
+            <div class="p-hdr">Kernel_Log</div>
             <div id="term"></div>
             <div id="p-wrap" style="padding:0 20px 15px; display:none;">
                 <div style="background:#111; height:3px; width:100%;"><div id="p-engine" class="prog-bar"></div></div>
@@ -85,28 +91,32 @@
         </main>
 
         <aside class="panel" id="p3">
-            <div class="p-hdr">Hardware_Telemetry</div>
-            <div style="padding:22px; font-size:11px; line-height:2.4;">
-                NODE_IP: <span id="ip" style="color:#fff">---</span><br>
-                GEO_LOC: <span id="loc" style="color:var(--urban)">...</span><br>
-                CPU_STATUS: <span style="color:var(--neon)">STABLE (14%)</span>
-            </div>
-            <div class="p-hdr">Network_Nodes</div>
-            <div id="nodes" style="padding:12px; font-size:10px; opacity:0.3; overflow-y:auto; flex-grow:1;"></div>
-            <button class="btn" style="border-color:var(--alert); color:var(--alert); margin:15px;" onclick="location.reload()">SIG_WIPE_ENV</button>
+            <div class="p-hdr">Titan_Vault (IndexedDB)</div>
+            <div id="vault-list"></div>
+            <input type="file" id="file-input" style="display:none" onchange="handleUpload(this)">
+            <button class="upload-btn" onclick="document.getElementById('file-input').click()">INGEST_LARGE_FILE</button>
+            <button class="btn" style="border-color:var(--alert); color:var(--alert); margin: 0 10px 10px;" onclick="wipeDatabase()">PURGE_DATABASE</button>
         </aside>
 
         <div class="panel" id="p4" style="grid-column: 2/4;">
-            <div class="p-hdr">Traffic_Flow_Analysis</div>
+            <div class="p-hdr">Flow_Analysis</div>
             <canvas id="flow-canvas" style="width:100%; height:100%;"></canvas>
         </div>
     </div>
 
 <script>
-    let buffer = "", score = 0, dinoY = 0, dy = 0, active = true;
+    let buffer = "", score = 0, dinoY = 0, dy = 0, active = true, db;
     const feats = ["PacketSniff", "MACSpoof", "HashCrack", "SQLInject", "DDoS_Stress", "ProxyRot", "DNSTunnel", "MetaScrape", "PortScan", "SSHBrute", "SessionHi", "RootCheck", "PayloadGen", "DeepScan", "NodeJump", "TrafficMirr", "FW_Bypass", "AuthWipe", "GhostMode", "KernelDebug"];
 
-    function handleKeys(e) {
+    // --- INDEXED DB ENGINE ---
+    const request = indexedDB.open("TitanVault", 1);
+    request.onupgradeneeded = e => {
+        db = e.target.result;
+        db.createObjectStore("files", { keyPath: "id", autoIncrement: true });
+    };
+    request.onsuccess = e => { db = e.target.result; };
+
+    function onKey(e) {
         if(e.code === "Space" && dinoY === 0) dy = 14;
         buffer += e.key.toLowerCase();
         if(buffer.includes("root")) { buffer = ""; runWarp(); }
@@ -122,96 +132,121 @@
     }
     gameLoop();
 
-    function spawn() {
-        if(!active) return;
-        const c = document.createElement('div');
-        c.className = 'cactus'; c.style.right = '-25px';
-        document.getElementById('game-box').appendChild(c);
-        let pos = -25;
-        const m = setInterval(() => {
-            if(!active) { clearInterval(m); c.remove(); return; }
-            pos += 7.8; c.style.right = pos + "px";
-            if(pos > 520 && pos < 550 && dinoY < 38) score = 0; // Collision Polish
-            if(pos > 700) { clearInterval(m); c.remove(); }
-        }, 16);
-        setTimeout(spawn, 2000 + Math.random() * 2000);
-    }
-    spawn();
-
     function runWarp() {
         active = false;
         const l = document.getElementById('laser');
-        l.style.display = 'block'; l.style.animation = 'sweep 0.7s cubic-bezier(0.7, 0, 0.3, 1) forwards';
+        l.style.display = 'block'; l.style.animation = 'sweep 0.7s forwards';
         setTimeout(() => {
-            document.getElementById('decoy').style.opacity = "0";
-            document.getElementById('decoy').style.transform = "scale(0.95)";
-            setTimeout(() => {
-                document.getElementById('decoy').style.display = 'none';
-                document.getElementById('login-layer').style.display = 'block';
-                setTimeout(() => document.getElementById('login-layer').style.opacity = '1', 50);
-                drawMatrix('login-matrix');
-                document.getElementById('passkey').focus();
-            }, 600);
-        }, 350);
+            document.getElementById('decoy').style.display = 'none';
+            document.getElementById('login-layer').style.display = 'block';
+            setTimeout(() => document.getElementById('login-layer').style.opacity = '1', 50);
+            drawMatrix('login-matrix');
+            document.getElementById('passkey').focus();
+        }, 400);
     }
 
     function startBreach() {
         if(btoa(document.getElementById('passkey').value) === "YWRtaW5AOTk=") {
-            const box = document.getElementById('auth-box');
-            const shock = document.getElementById('shockwave');
-            box.style.transform = "scale(0.8) rotateX(90deg)"; box.style.opacity = "0";
-            shock.style.animation = "shock 1s ease-out forwards";
-            
+            document.getElementById('shockwave').style.animation = "shock 1s forwards";
             setTimeout(() => {
                 document.getElementById('login-layer').style.display = 'none';
                 document.getElementById('console').style.display = 'grid';
                 drawMatrix('main-matrix');
-                initConsole();
-                ['p1', 'p2', 'p3', 'p4'].forEach((id, i) => {
-                    setTimeout(() => document.getElementById(id).classList.add('active'), i * 150);
-                });
+                init();
             }, 800);
-        } else { document.getElementById('passkey').value = ""; }
+        }
     }
 
-    function initConsole() {
-        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-        fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
-            document.getElementById('ip').innerText = d.ip;
-            document.getElementById('loc').innerText = d.city.toUpperCase();
-        });
+    function init() {
         const g = document.getElementById('f-grid');
         feats.forEach(f => g.innerHTML += `<button class="btn" onclick="exec('${f}')">${f}</button>`);
-        const n = document.getElementById('nodes');
-        for(let i=0; i<15; i++) n.innerHTML += `<div>> SYNC_NODE_10.${i}.254</div>`;
-        log("HYPERION_PRIME: SYSTEMS_ONLINE");
+        updateVaultUI();
+        ['p1', 'p2', 'p3', 'p4'].forEach((id, i) => setTimeout(() => document.getElementById(id).classList.add('active'), i * 150));
+        log("TITAN_DB: MOUNTED. CAPACITY_OPTIMIZED.");
+    }
+
+    function handleUpload(input) {
+        const file = input.files[0];
+        if(!file) return;
+        exec(`VAULT_STORAGE: ${file.name}`);
+        
+        const reader = new FileReader();
+        reader.onload = e => {
+            const tx = db.transaction("files", "readwrite");
+            tx.objectStore("files").add({
+                name: file.name,
+                size: (file.size/1024).toFixed(1) + 'KB',
+                type: file.type,
+                data: e.target.result
+            });
+            tx.oncomplete = () => { updateVaultUI(); log(`ENCRYPTED_INGEST: ${file.name}`); };
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateVaultUI() {
+        const list = document.getElementById('vault-list');
+        list.innerHTML = "";
+        const tx = db.transaction("files", "readonly");
+        tx.objectStore("files").openCursor().onsuccess = e => {
+            const cursor = e.target.result;
+            if(cursor) {
+                const f = cursor.value;
+                list.innerHTML += `
+                    <div class="file-item">
+                        <div class="file-meta"><span>${f.name}</span><span>${f.size}</span></div>
+                        <div class="file-actions">
+                            <button class="f-btn" onclick="downloadFile(${f.id})">GET</button>
+                            <button class="f-btn del" onclick="deleteFile(${f.id})">DEL</button>
+                        </div>
+                    </div>`;
+                cursor.continue();
+            }
+        };
+    }
+
+    function downloadFile(id) {
+        const tx = db.transaction("files", "readonly");
+        tx.objectStore("files").get(id).onsuccess = e => {
+            const f = e.target.result;
+            const a = document.createElement("a");
+            a.href = f.data; a.download = f.name; a.click();
+        };
+    }
+
+    function deleteFile(id) {
+        const tx = db.transaction("files", "readwrite");
+        tx.objectStore("files").delete(id).oncomplete = () => { updateVaultUI(); log(`ENTRY_${id}_DELETED`); };
+    }
+
+    function wipeDatabase() {
+        const tx = db.transaction("files", "readwrite");
+        tx.objectStore("files").clear().oncomplete = () => { updateVaultUI(); log("DATABASE_PURGED."); };
     }
 
     function exec(name) {
-        log(`EXECUTING: ${name}...`);
+        log(`EXEC: ${name}...`);
         const pW = document.getElementById('p-wrap');
         const pE = document.getElementById('p-engine');
         pW.style.display = 'block';
         let w = 0;
         const i = setInterval(() => {
-            w += Math.random() * 25; pE.style.width = w + "%";
+            w += 10; pE.style.width = w + "%";
             if(w >= 100) {
                 clearInterval(i);
-                setTimeout(() => {
-                    pW.style.display = 'none'; pE.style.width = "0%";
-                    if(name === 'URBAN_VPN_ACTIVATE') {
-                        document.getElementById('v-stat').innerText = "SECURED";
+                setTimeout(() => { pW.style.display = 'none'; pE.style.width = "0%"; 
+                    if(name === 'URBAN_VPN') {
+                        document.getElementById('v-stat').innerText = "PROTECTED";
                         document.getElementById('v-stat').style.color = "var(--urban)";
-                        log("URBAN_VPN: ENCRYPTED TUNNEL ESTABLISHED");
-                    } else { log(`${name}: SUCCESSFUL`); }
-                }, 400);
+                    }
+                }, 300);
             }
-        }, 70);
+        }, 40);
     }
 
     function log(m) {
         const t = document.getElementById('term');
-        t.innerHTML += `<div><span style="opacity:0.2">[${new Date().toLocaleTimeString()}]</span> ${m}</div>`;
+        t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${m}</div>`;
         t.scrollTop = t.scrollHeight;
     }
 
