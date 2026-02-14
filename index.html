@@ -117,7 +117,6 @@
     const API_KEY = "AIzaSyDjahWfc3S0D8nKVZB5XFrmE84a0RM3eGs";
     const genAI = new GoogleGenerativeAI(API_KEY);
     
-    // Safety settings to prevent "Hacking" false positives
     const safetySettings = [
       { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -125,8 +124,9 @@
       { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
     ];
 
+    // UPDATED MODEL NAME TO CONCRETE VERSION "gemini-1.5-flash-001"
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-1.5-flash-001",
         safetySettings,
         systemInstruction: "You are the Hyperion Architect. If user wants a theme change, output ONLY a JSON object like this: {\"neon\":\"#00ff00\",\"urban\":\"#ffff00\",\"alert\":\"#ff0000\",\"glass\":\"rgba(0,0,0,0.9)\"}. Do not use markdown code blocks."
     });
@@ -147,7 +147,6 @@
             const result = await model.generateContent(val);
             let text = result.response.text();
             
-            // Regex to find JSON object even if mixed with text
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             
             if (jsonMatch) {
@@ -163,7 +162,8 @@
             aiMsg.innerHTML = `> AI: ${text}`;
         } catch (e) { 
             console.error(e);
-            aiMsg.innerHTML = `> AI: LINK_FAILURE [${e.message || 'Check Console'}]`; 
+            // Fallback for visual feedback
+            aiMsg.innerHTML = `> AI: ERROR [${e.message || 'Model_Not_Found'}]`; 
         }
         chat.scrollTop = chat.scrollHeight;
     }
